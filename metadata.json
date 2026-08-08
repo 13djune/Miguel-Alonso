@@ -1,0 +1,6 @@
+{
+  "name": "Miguel Alonso - Fashion Designer Portfolio",
+  "description": "An immersive 3D fashion design portfolio featuring interactive planets, an HTML/Tailwind overlay for CV and details, and a 3D garment viewer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
