@@ -1,0 +1,11 @@
+let top = "┌─────────────────────┐";
+let mid = "│ [  SYS.VOID CORE  ] │";
+let bot = "└─┬───────────────────┘";
+console.log(top.length);
+console.log(mid.length);
+console.log(bot.length);
+console.log(top);
+console.log(mid);
+console.log(bot);
+console.log("  │");
+console.log("  ├─ [ UNIV: CREATIVE ]");

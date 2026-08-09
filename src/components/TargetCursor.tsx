@@ -44,7 +44,7 @@ const TargetCursor = ({
   hideDefaultCursor = true,
   hoverDuration = 0.2,
   parallaxOn = true,
-  cursorColor = '#ccff00',
+  cursorColor = '#c4ffff',
   cursorColorOnTarget = '#ffffff'
 }: TargetCursorProps) => {
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -78,8 +78,8 @@ const TargetCursor = ({
 
   const mouseRef = useRef({ x: 0, y: 0 });
   const posRef = useRef({ x: 0, y: 0 });
-  const xSetterRef = useRef<gsap.QuickSetterFunction | null>(null);
-  const ySetterRef = useRef<gsap.QuickSetterFunction | null>(null);
+  const xSetterRef = useRef<any | null>(null);
+  const ySetterRef = useRef<any | null>(null);
 
   useEffect(() => {
     if (cursorRef.current) {

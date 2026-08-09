@@ -60,7 +60,7 @@ export default function CustomCursor() {
       >
         <div 
           className={`w-full h-full relative transition-all duration-200 ${
-            isHovering ? 'scale-125 rotate-90 opacity-100 text-[#ccff00]' : 'scale-100 rotate-0 opacity-70 text-white'
+            isHovering ? 'scale-125 rotate-90 opacity-100 text-[#c4ffff]' : 'scale-100 rotate-0 opacity-70 text-white'
           }`}
         >
           {/* Crosshairs lines */}
@@ -79,7 +79,7 @@ export default function CustomCursor() {
       {/* Inner Dot */}
       <div 
         ref={cursorInnerRef}
-        className={`fixed top-0 left-0 w-1 h-1 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-screen transition-colors ${isHovering ? 'bg-[#ccff00]' : 'bg-white'}`}
+        className={`fixed top-0 left-0 w-1 h-1 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-screen transition-colors ${isHovering ? 'bg-[#c4ffff]' : 'bg-white'}`}
       />
     </>
   );

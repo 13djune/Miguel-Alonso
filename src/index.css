@@ -12,8 +12,8 @@
   }
   .bg-cyber-grid {
     background-image: 
-      linear-gradient(rgba(204, 255, 0, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(204, 255, 0, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(196, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(196, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 }
@@ -33,7 +33,7 @@ a, button, [role="button"], input, select, textarea {
 }
 
 ::selection {
-  background: #ccff00;
+  background: #c4ffff;
   color: #000;
 }
 
@@ -63,9 +63,40 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-t
 }
 
 div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1):hover {
-  background-color: rgba(204, 255, 0, 0.1) !important;
-  border-color: rgba(204, 255, 0, 0.5) !important;
-  box-shadow: 0 0 15px rgba(204, 255, 0, 0.15) !important;
+  background-color: rgba(196, 255, 255, 0.1) !important;
+  border-color: rgba(196, 255, 255, 0.5) !important;
+  box-shadow: 0 0 15px rgba(196, 255, 255, 0.15) !important;
   transform: translateY(-2px) !important;
-  color: #ccff00 !important;
+  color: #c4ffff !important;
+}
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vtc-glitch {
+  0% { transform: skew(0deg); filter: drop-shadow(0 0 5px #c4ffff) hue-rotate(0deg); }
+  20% { transform: skew(-5deg); filter: drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 blue); }
+  21% { transform: skew(0deg); filter: drop-shadow(0 0 5px #c4ffff); }
+  40% { transform: skew(5deg); filter: drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 blue); }
+  41% { transform: skew(0deg); filter: drop-shadow(0 0 5px #c4ffff); }
+  80% { transform: skew(-2deg); filter: drop-shadow(1px 0 0 red) drop-shadow(-1px 0 0 blue); }
+  81% { transform: skew(0deg); filter: drop-shadow(0 0 10px #c4ffff); }
+  100% { transform: skew(0deg); filter: drop-shadow(0 0 15px #c4ffff); }
+}
+
+.vtc-effect {
+  animation: vtc-glitch 3s infinite linear alternate;
 }

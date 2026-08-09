@@ -1,5 +1,5 @@
 .line-sidebar {
-  --accent-color: #ccff00;
+  --accent-color: #c4ffff;
   --text-color: #a3a3a3;
   --marker-color: #404040;
   --marker-length: 60px;
@@ -13,6 +13,9 @@
   position: relative;
   display: flex;
   justify-content: flex-start;
+  height: 100%;
+  flex: 1;
+  min-height: 200px;
 }
 
 .line-sidebar--markers {
@@ -26,6 +29,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--item-gap);
+  height: 100%;
+  flex: 1;
+  justify-content: space-evenly;
 }
 
 .line-sidebar__item {
@@ -47,7 +53,7 @@
   line-height: 1.2;
   color: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 100%), var(--text-color));
   transform: translateX(calc(var(--effect, 0) * var(--max-shift)));
-  text-shadow: calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 5px) rgba(204, 255, 0, 0.4);
+  text-shadow: calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 5px) rgba(196, 255, 255, 0.4);
 }
 
 .line-sidebar__index {
@@ -67,6 +73,7 @@
   transform-origin: left center;
   transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.5));
   box-shadow: 0 0 calc(var(--effect, 0) * 5px) var(--accent-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .line-sidebar--markers .line-sidebar__item:not(:last-child)::after {
@@ -86,9 +93,13 @@
   transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.6));
 }
 
+.line-sidebar__item .line-sidebar__label {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, color 0.3s ease, text-shadow 0.3s ease;
+}
+
 .line-sidebar__item:hover .line-sidebar__label {
   color: var(--accent-color) !important;
-  text-shadow: 0 0 15px rgba(204, 255, 0, 0.8) !important;
+  text-shadow: 0 0 15px rgba(196, 255, 255, 0.8) !important;
 }
 
 .line-sidebar__item:hover .line-sidebar__marker {
@@ -99,4 +110,5 @@
 .line-sidebar__item:active .line-sidebar__label {
   transform: translateX(calc(var(--effect, 0) * var(--max-shift))) scale(0.95);
   opacity: 0.8;
+  text-shadow: 0 0 5px rgba(196, 255, 255, 0.5) !important;
 }

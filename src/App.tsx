@@ -8,11 +8,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
+
 import * as THREE from 'three';
 import gsap from 'gsap';
-import Universe from './components/Universe';
+import Universe, { selectedPlanetWorldPos } from './components/Universe';
 import Overlay from './components/Overlay';
 import ProjectModal from './components/ProjectModal';
+import CollectionsView from './components/CollectionsView';
 import DesignerModal from './components/DesignerModal';
 import { Project } from './types';
 import { LanguageProvider } from './context/LanguageContext';
@@ -20,46 +22,38 @@ import TargetCursor from './components/TargetCursor';
 import LoaderFallback from "./components/LoaderFallback";
 import { Suspense } from "react";
 
+
+function CameraDebug() {
+  const { camera, pointer } = useThree();
+  useFrame(() => {
+    const el = document.getElementById('debug-coords');
+    if (el) {
+      el.innerText = `CAM: X:${camera.position.x.toFixed(2)} Y:${camera.position.y.toFixed(2)} Z:${camera.position.z.toFixed(2)} | PTR: X:${pointer.x.toFixed(2)} Y:${pointer.y.toFixed(2)}`;
+    }
+  });
+  return null;
+}
+
 export const hoverState = { hovered: false };
 
 function CameraController({ selectedProject }: { selectedProject: Project | null }) {
   const { camera, controls } = useThree();
+  const isFollowing = useRef(false);
+  const targetCamPos = useRef(new THREE.Vector3());
+  const targetLookAt = useRef(new THREE.Vector3());
   
   useEffect(() => {
     if (!controls) return;
     const tl = gsap.timeline();
     
     if (selectedProject) {
-      // Planet position relative to its group position [-6, 0, 0]
-      const targetPos = new THREE.Vector3(
-        -6 + selectedProject.position[0],
-        0,
-        selectedProject.position[2]
-      );
-      
-      const camOffset = new THREE.Vector3(0, 0, 5); // Close to the planet
-      const finalCamPos = targetPos.clone().add(camOffset);
-      
-      tl.to(camera.position, {
-        x: finalCamPos.x,
-        y: finalCamPos.y,
-        z: finalCamPos.z,
-        duration: 1.5,
-        ease: 'power3.inOut'
-      }, 0);
-      
-      tl.to((controls as any).target, {
-        x: targetPos.x,
-        y: targetPos.y,
-        z: targetPos.z,
-        duration: 1.5,
-        ease: 'power3.inOut'
-      }, 0);
+      isFollowing.current = true;
     } else {
+      isFollowing.current = false;
       tl.to(camera.position, {
-        x: 0,
-        y: 8,
-        z: 20,
+        x: -6,
+        y: 1.0,
+        z: 5.0,
         duration: 1.5,
         ease: 'power3.inOut'
       }, 0);
@@ -73,147 +67,220 @@ function CameraController({ selectedProject }: { selectedProject: Project | null
       }, 0);
     }
   }, [selectedProject, camera, controls]);
+
+  useFrame(() => {
+    if (isFollowing.current && controls) {
+      const p = selectedPlanetWorldPos.current;
+      targetLookAt.current.copy(p);
+      // We want the camera to look at the planet, but from a comfortable distance and angle.
+      // E.g., slightly above and back.
+      targetCamPos.current.copy(p).add(new THREE.Vector3(-1.5, 0.5, 2.0));
+      
+      camera.position.lerp(targetCamPos.current, 0.03);
+      (controls as any).target.lerp(targetLookAt.current, 0.03);
+    }
+  });
   
   return null;
 }
-function DynamicBloom() {
-  const bloomRef = useRef<any>(null);
-  useFrame(() => {
-
-
-
-    if (bloomRef.current) {
-      const targetIntensity = hoverState.hovered ? 3.0 : 1.5;
-      const targetThreshold = hoverState.hovered ? 0.05 : 0.2;
-      
-      bloomRef.current.intensity = THREE.MathUtils.lerp(bloomRef.current.intensity, targetIntensity, 0.1);
-      if (bloomRef.current.luminanceMaterial) {
-        bloomRef.current.luminanceMaterial.threshold = THREE.MathUtils.lerp(bloomRef.current.luminanceMaterial.threshold, targetThreshold, 0.1);
-      }
-    }
-  });
-
-  return <Bloom ref={bloomRef} luminanceThreshold={0.2} mipmapBlur intensity={1.5} />;
-}
-
-function MovingStars() {
-  const starsRef = useRef<THREE.Group>(null);
-  
-  useFrame(({ clock }) => {
-    if (starsRef.current) {
-      starsRef.current.rotation.y = clock.getElapsedTime() * 0.02;
-      starsRef.current.rotation.x = clock.getElapsedTime() * 0.01;
-    }
-  });
-
-  return (
-    <group ref={starsRef}>
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={2} />
-    </group>
-  );
-}
 
 const PROJECTS: Project[] = [
+  // UNIVERSO 1: CREATIVE
   {
     id: '1',
-    title: 'SYS.VOID',
-    description: 'Protocol 04: Industrial framework meets synthetic materials.',
+    title: '01 SYS.VOID',
+    description: 'An exploration of empty space and negative volumes in modern tailoring.',
     images: [
       'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1550639525-c97d455acf70?auto=format&fit=crop&q=80&w=800',
       'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=800'
     ],
-    position: [7, 3, 2],
-    color: '#ff003c', // Cyber red
-    distort: 0.0,
-    tags: ['INDUSTRIAL', 'SYNTHETIC', 'ARMOR'],
-    tools: ['CLO 3D', 'SUBSTANCE PAINTER'],
+    position: [-8, -4, 0],
+    color: '#ff3399',
+    distort: 0.2,
+    tags: ['AVANT-GARDE', 'MINIMALISM', 'DECONSTRUCTION'],
+    tools: ['CLO 3D', 'MARVELOUS DESIGNER'],
     sections: [
-      { id: 'sec-1', title: '01 CONTEXT', content: 'The Void protocol was designed in response to the increasing need for resilient synthetic materials in high-stress urban environments. With global temperatures and atmospheric density fluctuating, this collection aims to provide a reliable external shell without compromising mobility.' },
-      { id: 'sec-2', title: '02 MATERIALITY', content: 'Utilizing carbon-nanotube woven fabrics integrated with reactive smart polymers that harden upon impact. The inner lining consists of a thermo-regulating mesh that constantly adapts to the wearer\'s body temperature, ensuring survival in extreme conditions.' },
-      { id: 'sec-3', title: '03 SILHOUETTE', content: 'Exaggerated proportions obscure the human form, offering a protective shell that redefines anatomical boundaries. The oversized yoke and elongated sleeves serve as both armor and an architectural statement against the elements.' }
-    ],
-    hotspots: {
-      0: [
-        { x: 30, y: 40, title: 'SYNTHETIC YOKE', description: 'Reinforced shoulder structure providing structural integrity.' },
-        { x: 60, y: 70, title: 'THERMAL VENTING', description: 'Micro-perforations allowing heat dissipation in extreme conditions.' }
-      ],
-      1: [
-        { x: 50, y: 30, title: 'OPTICAL MASK', description: 'Polarized visor integration to shield from harsh UV radiation.' }
-      ]
-    }
+      { id: 'sec-1', title: '01 CONCEPT', content: 'SYS.VOID explores the tension between presence and absence.' },
+      { id: 'sec-2', title: '02 MATERIALITY', content: 'Utilizing next-generation memory polymers and ultra-lightweight organza.' }
+    ]
   },
   {
     id: '2',
-    title: 'NEO-GRAVITY',
-    description: 'Heavy architectural constructions resisting standard atmospheric pressure.',
+    title: '02 NEO-GRAVITY',
+    description: 'A study on weightless forms and suspended silhouettes.',
     images: [
-      'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1571512503254-8c85779ec461?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1492447166138-50c3889fccb1?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800'
     ],
-    position: [-5, -4, -6],
-    color: '#00ff00', // Neon green
-    distort: 0.0,
-    tags: ['ZERO-G', 'COMPRESSION', 'TECHNICAL'],
-    tools: ['MARVELOUS DESIGNER', 'CINEMA 4D'],
+    position: [-5, 4, -5],
+    color: '#00ffcc',
+    distort: 0.4,
+    tags: ['WEIGHTLESS', 'SUSPENDED', 'FUTURISM'],
+    tools: ['CINEMA 4D', 'SUBSTANCE DESIGNER'],
     sections: [
-      { id: 'sec-1', title: '01 GRAVITY SHIELD', content: 'Engineered for environments with non-standard gravitational pull, this collection features weighted hems and rigid structures that prevent the garments from floating or losing shape in zero-G or low-G environments.' },
-      { id: 'sec-2', title: '02 COMPRESSION ZONES', content: 'Strategic compression bands are woven into the torso and extremities to maintain blood circulation when atmospheric pressure drops. The visual language is highly technical, with visible seams indicating the pressure nodes.' },
-      { id: 'sec-3', title: '03 DEPLOYABLE ANCHORS', content: 'The outerwear includes deployable magnetic anchors at the cuffs and collar, allowing the wearer to secure themselves to metallic surfaces, blending survival gear with avant-garde aesthetics.' }
-    ],
-    hotspots: {
-      0: [
-        { x: 45, y: 60, title: 'WEIGHTED HEM', description: 'Lead-lined hem to maintain structure.' }
-      ]
-    }
+      { id: 'sec-1', title: '01 ZERO-G DYNAMICS', content: 'Designed for environments with altered gravitational states.' },
+      { id: 'sec-2', title: '02 ADAPTIVE FIBERS', content: 'Smart textiles embedded with micro-actuators.' }
+    ]
   },
   {
     id: '3',
-    title: 'MONOLITHIC',
-    description: 'Brutalist structures adapted for human anatomical interfacing.',
+    title: '03 AURA-MESH',
+    description: 'Ethereal digital meshes intersecting with human anatomy.',
     images: [
-      'https://images.unsplash.com/photo-1618244972963-dbee1a7edc95?auto=format&fit=crop&q=80&w=800',
       'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1618244972963-dbee1a7edc95?auto=format&fit=crop&q=80&w=800'
     ],
-    position: [-8, 5, 4],
-    color: '#00ccff', // Cyan
-    distort: 0.0,
-    tags: ['BRUTALIST', 'GEOMETRIC', 'MODULAR'],
-    tools: ['BLENDER', 'UNREAL ENGINE'],
+    position: [-10, 2, -2],
+    color: '#9933ff',
+    distort: 0.3,
+    tags: ['ETHEREAL', 'DIGITAL', 'MESH'],
+    tools: ['BLENDER', 'MARVELOUS DESIGNER'],
     sections: [
-      { id: 'sec-1', title: '01 BRUTALIST', content: 'Inspired by raw concrete and monolithic architecture, translated into wearable textile forms. The garments feature stiffened panels that mimic the uncompromising lines of brutalist structures.' },
-      { id: 'sec-2', title: '02 ACOUSTIC DAMPENING', content: 'The dense, multi-layered fabric acts as an acoustic shield, isolating the wearer from the chaotic noise of mega-cities. Each piece functions as a personal sanctuary.' },
-      { id: 'sec-3', title: '03 MODULARITY', content: 'Large geometric blocks can be detached or reconfigured, allowing the silhouette to shift from a towering monolith to a more streamlined, functional uniform.' }
+      { id: 'sec-1', title: '01 DIGITAL AURA', content: 'Translucent meshes acting as a second skin.' }
     ]
   },
   {
     id: '4',
-    title: 'EXO-ARMOR',
+    title: '04 LUMINO-WEAVE',
+    description: 'Biometric responsive light-emitting textiles.',
+    images: [
+      'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=800'
+    ],
+    position: [-6, 6, 2],
+    color: '#ffcc00',
+    distort: 0.5,
+    tags: ['BIOMETRIC', 'LUMINOUS', 'TEXTILE'],
+    tools: ['TOUCHDESIGNER', 'CLO 3D'],
+    sections: [
+      { id: 'sec-1', title: '01 BIO-REACTION', content: 'Fabric illuminates based on heart rate.' }
+    ]
+  },
+  // UNIVERSO 2: INDUSTRY
+  {
+    id: '5',
+    title: '05 MONOLITHIC',
+    description: 'Structural garments inspired by brutalist architecture and geometric volumes.',
+    images: [
+      'https://images.unsplash.com/photo-1618244972963-dbee1a7edc95?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=800'
+    ],
+    position: [8, -3, 2],
+    color: '#ff3333',
+    distort: 0.1,
+    tags: ['BRUTALISM', 'GEOMETRY', 'URBAN'],
+    tools: ['BLENDER', 'UNREAL ENGINE'],
+    sections: [
+      { id: 'sec-1', title: '01 BRUTALIST', content: 'Inspired by raw concrete and monolithic architecture.' }
+    ]
+  },
+  {
+    id: '6',
+    title: '06 EXO-ARMOR',
     description: 'Tactical defense layering with high-tensile carbon polymers.',
     images: [
       'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=800'
     ],
-    position: [6, -6, 9],
-    color: '#ffaa00', // Orange
-    distort: 0.0,
-    tags: ['TACTICAL', 'STEALTH', 'KINETIC'],
+    position: [6, 3, -6],
+    color: '#33ff33',
+    distort: 0.3,
+    tags: ['TACTICAL', 'DEFENSE', 'ARMOR'],
     tools: ['CLO 3D', 'TOUCHDESIGNER'],
     sections: [
-      { id: 'sec-1', title: '01 TACTICAL LAYERING', content: 'A modular defense system composed of high-tensile carbon polymers. Designed for mobility and impact resistance in hostile territories.' },
-      { id: 'sec-2', title: '02 KINETIC ABSORPTION', content: 'The outer shell features hexagonal kinetic absorbers that distribute blunt force across the entire garment, neutralizing impacts.' },
-      { id: 'sec-3', title: '03 STEALTH INTEGRATION', content: 'While visually aggressive, the materials incorporate radar-absorbent threading, making the wearer virtually invisible to standard scanning technologies.' }
+      { id: 'sec-1', title: '01 TACTICAL LAYERING', content: 'A modular defense system composed of high-tensile carbon polymers.' }
+    ]
+  },
+  {
+    id: '7',
+    title: '07 MECHA-WEAR',
+    description: 'Industrial-grade exoskeleton integrated streetwear.',
+    images: [
+      'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1492447166138-50c3889fccb1?auto=format&fit=crop&q=80&w=800'
     ],
+    position: [10, 5, 0],
+    color: '#ff9900',
+    distort: 0.2,
+    tags: ['MECHA', 'INDUSTRIAL', 'STREET'],
+    tools: ['ZBRUSH', 'MAYA'],
+    sections: [
+      { id: 'sec-1', title: '01 EXOSKELETON', content: 'Mechanical supports woven into daily wear.' }
+    ]
+  },
+  {
+    id: '8',
+    title: '08 SYNTH-SKIN',
+    description: 'Synthetic protective layering for extreme environments.',
+    images: [
+      'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=800',
+      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=800'
+    ],
+    position: [5, -6, -3],
+    color: '#33ccff',
+    distort: 0.4,
+    tags: ['SYNTHETIC', 'PROTECTIVE', 'EXTREME'],
+    tools: ['MARVELOUS DESIGNER', 'KEYSHOT'],
+    sections: [
+      { id: 'sec-1', title: '01 ALL-WEATHER', content: 'Adapts to extreme temperatures autonomously.' }
+    ]
   }
 ];
+
+function MovingStars() {
+  const starsRef = useRef<THREE.Group>(null);
+  
+  // Stars are static now as requested
+  useFrame(() => {
+    // No rotation
+  });
+
+  return (
+    <group ref={starsRef}>
+      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+    </group>
+  );
+}
+
+
+function DynamicBloom({ selectedProject }: { selectedProject: Project | null }) {
+  const bloomRef = useRef<any>(null);
+
+  useFrame(({ clock }) => {
+    if (bloomRef.current) {
+      let targetIntensity = 0.6; // Reduced base intensity
+      let targetThreshold = 0.6; // Higher threshold so only very bright things bloom
+      
+      if (selectedProject) {
+        // CRT Flicker effect
+        const flicker = Math.sin(clock.elapsedTime * 60) * 0.15 + Math.sin(clock.elapsedTime * 14) * 0.1 + Math.random() * 0.05;
+        targetIntensity = 0.9 + flicker * 0.5;
+        targetThreshold = 0.8;
+      }
+      
+      bloomRef.current.intensity = THREE.MathUtils.lerp(bloomRef.current.intensity, targetIntensity, 0.2);
+      bloomRef.current.luminanceThreshold = THREE.MathUtils.lerp(bloomRef.current.luminanceThreshold, targetThreshold, 0.2);
+    }
+  });
+
+  return (
+    <Bloom 
+      ref={bloomRef}
+      luminanceThreshold={0.3}
+      luminanceSmoothing={0.9}
+      intensity={1.2}
+      mipmapBlur
+    />
+  );
+}
 
 export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [modalActive, setModalActive] = useState(false);
   const [designerModalActive, setDesignerModalActive] = useState(false);
+  const [collectionsModalActive, setCollectionsModalActive] = useState(false);
+  const [appMode, setAppMode] = useState<'loading' | 'terminal' | 'universe'>('loading');
+  const [activeUniverse, setActiveUniverse] = useState<'all' | 'creative' | 'industry'>('all');
   
   
   
@@ -222,6 +289,7 @@ export default function App() {
   const modalContainerRef = useRef<HTMLDivElement>(null);
 
   const handlePlanetClick = (project: Project) => {
+    setAppMode('universe');
     setModalActive(true);
     setSelectedProject(project);
     
@@ -268,20 +336,21 @@ export default function App() {
     <LanguageProvider>
       <div className="w-full h-screen bg-black overflow-hidden relative font-sans text-white">
 
-        <IntroCurtain />
+        <IntroCurtain onComplete={() => setAppMode('terminal')} />
 
-        <TargetCursor cursorColor="#ccff00" cursorColorOnTarget="#ffffff" />
+        <TargetCursor cursorColor="#c4ffff" cursorColorOnTarget="#ffffff" />
         
+        <div id="debug-coords" className="absolute bottom-4 right-4 text-[10px] font-mono text-[#c4ffff] pointer-events-none z-50 opacity-60 text-right tracking-wider"></div>
         {/* Scanlines Effect */}
-        <div className="scanlines"></div>
+        <div className="scanlines pointer-events-none"></div>
 
         {/* Cyber Brutalist Grid */}
         <div className="absolute inset-0 bg-cyber-grid z-0 pointer-events-none"></div>
 
         {/* 3D Scene Wrapper for Animation */}
-        <div ref={universeContainerRef} className="absolute inset-0 z-0 origin-center will-change-transform">
+        <div ref={universeContainerRef} className={`absolute inset-0 z-0 origin-center will-change-transform transition-opacity duration-1000 ${appMode === 'universe' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <Canvas 
-            camera={{ position: [0, 8, 20], fov: 45 }} 
+            camera={{ position: [-6, 1.0, 5.0], fov: 45 }} 
             style={{ width: '100vw', height: '100vh' }}
             gl={{ antialias: true, powerPreference: 'high-performance' }}
             dpr={[1, 1.5]}
@@ -290,24 +359,26 @@ export default function App() {
             <directionalLight position={[10, 10, 5]} intensity={1} />
             
             <CameraController selectedProject={selectedProject} />
+            <CameraDebug />
             
             <Suspense fallback={<LoaderFallback />}>
               <MovingStars />
               <group position={[-6, 0, 0]}>
-                <Universe projects={PROJECTS} onPlanetClick={handlePlanetClick} />
+                <Universe projects={PROJECTS} onPlanetClick={handlePlanetClick} selectedProject={selectedProject} activeUniverse={activeUniverse} />
               </group>
             </Suspense>
-            
             <EffectComposer>
-              <DynamicBloom />
+              <DynamicBloom selectedProject={selectedProject} />
             </EffectComposer>
+            
+            
             <OrbitControls 
               enablePan={false}
               enableZoom={!modalActive}
-              maxDistance={40}
-              minDistance={3}
+              minDistance={2}
+              maxDistance={16}
               makeDefault
-              autoRotate={!selectedProject}
+              autoRotate={false}
               autoRotateSpeed={0.5}
             />
           </Canvas>
@@ -315,7 +386,9 @@ export default function App() {
 
         {/* Overlay UI */}
         <div className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-1000 ${modalActive ? 'opacity-0' : 'opacity-100'}`}>
-          <Overlay onOpenDesigner={() => setDesignerModalActive(true)} onSelectProject={(index) => handlePlanetClick(PROJECTS[index])} />
+          {appMode !== 'loading' && (
+          <Overlay appMode={appMode} activeUniverse={activeUniverse} onSetUniverse={setActiveUniverse} projects={PROJECTS} selectedProject={selectedProject} onEnterUniverse={() => setAppMode('universe')} onOpenDesigner={() => setDesignerModalActive(true)} onSelectProject={(index) => handlePlanetClick(PROJECTS[index])} onOpenCollections={() => setCollectionsModalActive(true)} />
+          )}
         </div>
 
         {/* Project Modal */}
@@ -341,6 +414,18 @@ export default function App() {
         {/* Designer Modal */}
         {designerModalActive && (
           <DesignerModal onClose={() => setDesignerModalActive(false)} />
+        )}
+
+        {/* Collections Modal */}
+        {collectionsModalActive && (
+          <CollectionsView 
+            projects={PROJECTS}
+            onClose={() => setCollectionsModalActive(false)}
+            onSelectProject={(project) => {
+              setCollectionsModalActive(false);
+              handlePlanetClick(project);
+            }}
+          />
         )}
       </div>
     </LanguageProvider>
