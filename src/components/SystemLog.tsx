@@ -45,7 +45,7 @@ export default function SystemLog() {
   }, [language]);
 
   return (
-    <div className="fixed bottom-12 md:bottom-24 left-4 md:left-12 z-50 pointer-events-none text-[8px] md:text-[10px] max-w-[250px] md:max-w-[400px] font-mono text-[#c4ffff] opacity-70 flex flex-col gap-1 max-w-none overflow-hidden">
+    <div className="fixed bottom-12 md:bottom-24 left-4 md:left-12 z-50 pointer-events-none text-[8px] md:text-[10px] max-w-[250px] md:max-w-[400px] font-mono text-[#ffffff] opacity-70 flex flex-col gap-1 max-w-none overflow-hidden">
       {logs.map((log, index) => (
         <div key={index} className="animate-fade-in text-shadow-sm">
           <span className="opacity-50 mr-2">{'>'}</span> {log}

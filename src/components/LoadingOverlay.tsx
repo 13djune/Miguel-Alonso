@@ -39,11 +39,11 @@ export default function LoadingOverlay({ onComplete }: { onComplete: () => void 
         <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white" />
         <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white" />
         
-        <h2 className="text-xl font-bold tracking-widest text-red-500 uppercase animate-pulse">
+        <h2 className="text-xl font-bold tracking-widest text-white uppercase animate-pulse">
           {t('loading.init')}
         </h2>
         
-        <div className="space-y-2 text-sm text-gray-400">
+        <div className="space-y-2 text-sm text-white">
           <div className="flex justify-between">
             <span>{t('loading.assets')}</span>
             <span>{Math.round(progress)}%</span>
@@ -60,7 +60,7 @@ export default function LoadingOverlay({ onComplete }: { onComplete: () => void 
         <div className="mt-4 flex flex-col gap-1 text-xs opacity-50">
           <span className={stage >= 1 ? 'text-white' : ''}>&gt; ESTABLISHING_ORBITS... {stage >= 1 ? '[OK]' : ''}</span>
           <span className={stage >= 2 ? 'text-white' : ''}>&gt; CALIBRATING_PHYSICS... {stage >= 2 ? '[OK]' : ''}</span>
-          <span className={stage >= 3 ? 'text-green-500 opacity-100 font-bold' : ''}>
+          <span className={stage >= 3 ? 'text-white opacity-100 font-bold' : ''}>
             {stage >= 3 ? `> ${t('loading.complete')}` : ''}
           </span>
         </div>

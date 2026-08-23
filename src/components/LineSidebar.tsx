@@ -31,8 +31,8 @@ interface LineSidebarProps {
 
 const LineSidebar = ({
   items = [],
-  accentColor = '#c4ffff',
-  textColor = '#a3a3a3',
+  accentColor = '#ffffff',
+  textColor = '#ffffff',
   markerColor = '#404040',
   showIndex = true,
   showMarker = true,

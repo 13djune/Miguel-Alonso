@@ -12,9 +12,17 @@
   }
   .bg-cyber-grid {
     background-image: 
-      linear-gradient(rgba(196, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(196, 255, 255, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
+  }
+  .tv-dot-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 3px 3px;
+    pointer-events: none;
+    z-index: 100;
   }
 }
 
@@ -25,11 +33,11 @@ body {
   background-color: #070707;
   color: #fff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  cursor: none;
+  
 }
 
 a, button, [role="button"], input, select, textarea {
-  cursor: none !important;
+  
 }
 
 ::selection {
@@ -63,11 +71,11 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-t
 }
 
 div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1):hover {
-  background-color: rgba(196, 255, 255, 0.1) !important;
-  border-color: rgba(196, 255, 255, 0.5) !important;
-  box-shadow: 0 0 15px rgba(196, 255, 255, 0.15) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15) !important;
   transform: translateY(-2px) !important;
-  color: #c4ffff !important;
+  color: #ffffff !important;
 }
 @layer utilities {
   .animate-fade-in {
@@ -87,16 +95,117 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-t
 }
 
 @keyframes vtc-glitch {
-  0% { transform: skew(0deg); filter: drop-shadow(0 0 5px #c4ffff) hue-rotate(0deg); }
+  0% { transform: skew(0deg); filter: drop-shadow(0 0 5px #ffffff) hue-rotate(0deg); }
   20% { transform: skew(-5deg); filter: drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 blue); }
-  21% { transform: skew(0deg); filter: drop-shadow(0 0 5px #c4ffff); }
+  21% { transform: skew(0deg); filter: drop-shadow(0 0 5px #ffffff); }
   40% { transform: skew(5deg); filter: drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 blue); }
-  41% { transform: skew(0deg); filter: drop-shadow(0 0 5px #c4ffff); }
+  41% { transform: skew(0deg); filter: drop-shadow(0 0 5px #ffffff); }
   80% { transform: skew(-2deg); filter: drop-shadow(1px 0 0 red) drop-shadow(-1px 0 0 blue); }
-  81% { transform: skew(0deg); filter: drop-shadow(0 0 10px #c4ffff); }
-  100% { transform: skew(0deg); filter: drop-shadow(0 0 15px #c4ffff); }
+  81% { transform: skew(0deg); filter: drop-shadow(0 0 10px #ffffff); }
+  100% { transform: skew(0deg); filter: drop-shadow(0 0 15px #ffffff); }
 }
 
 .vtc-effect {
   animation: vtc-glitch 3s infinite linear alternate;
+}
+
+
+
+/* 
+ * 2. CAPA DE TEXTURA CRT (Scanlines restauradas al nivel sutil)
+ */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none;
+  
+  /* Scanlines menos intensas (como en el paso anterior) */
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.12) 50%
+  );
+  background-size: 100% 4px;
+  
+  /* Animación parpadeo */
+  animation: crt-scanlines 12s linear infinite;
+}
+
+/*
+ * 3. ABERRACIÓN CROMÁTICA SUTIL
+ */
+@keyframes crt-scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+
+/*
+ * 1. CAPA DE CURVATURA TRINITRON (Arriba a abajo)
+ * Simula la geometría cilíndrica vertical de los monitores CRT clásicos Sony.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999998;
+  pointer-events: none; /* REGLA DE ORO: No bloquea clicks */
+
+  /* REEMPLAZO DE BOX-SHADOW POR GRADIENTE PARA RENDIMIENTO EXTREMO (0 lag en repaints) */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.2) 3%,
+    rgba(255, 255, 255, 0.02) 5%,
+    transparent 10%,
+    transparent 90%,
+    rgba(255, 255, 255, 0.01) 95%,
+    rgba(0, 0, 0, 0.2) 97%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+/*
+ * 2. CAPA DE TEXTURA CRT (Scanlines + Reflejo sutil)
+ */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  pointer-events: none;
+
+  /* Scanlines menos agresivos */
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.12) 50%
+  );
+  background-size: 100% 4px;
+  
+  /* Animación parpadeo */
+  animation: crt-scanlines 12s linear infinite;
+}
+
+/*
+ * 3. ABERRACIÓN CROMÁTICA SUTIL
+ */
+body {
+  position: relative;
+  text-shadow: 
+    2px 0 1px rgba(255, 0, 0, 0.5), 
+    -2px 0 1px rgba(0, 255, 255, 0.5) !important;
+}
+
+@keyframes crt-scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
 }

@@ -42,7 +42,7 @@ export default function AsciiImage({ src, charWidth = 6, charHeight = 10, classN
        ctx.fillStyle = 'black';
        ctx.fillRect(0, 0, canvas.width, canvas.height);
        
-       ctx.fillStyle = '#c4ffff';
+       ctx.fillStyle = '#ffffff';
        // We use charHeight as the font size, typically monospaced fonts work well this way
        ctx.font = `bold ${charHeight}px monospace`;
        ctx.textBaseline = 'top';
@@ -184,13 +184,13 @@ export default function AsciiImage({ src, charWidth = 6, charHeight = 10, classN
       <canvas 
         ref={canvasRef} 
         className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
-        style={{ filter: "drop-shadow(0 0 1px rgba(196,255,255,0.3))" }}
+        style={{ filter: "drop-shadow(0 0 1px rgba(255,255,255,0.3))" }}
       />
       
       <img 
         src={src} 
         alt="Original" 
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`} 
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 grayscale mix-blend-screen ${isHovered ? 'opacity-100' : 'opacity-0'}`} 
       />
     </div>
   );
