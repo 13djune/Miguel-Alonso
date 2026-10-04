@@ -60,8 +60,10 @@ export default function GarmentViewer({ modelUrl }: GarmentViewerProps) {
         makeDefault
         autoRotate
         autoRotateSpeed={0.5}
-        minDistance={4}
-        maxDistance={12}
+        minDistance={1.2}
+        maxDistance={15}
+        enableZoom={true}
+        zoomSpeed={1.2}
         enablePan={false}
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI / 1.5}

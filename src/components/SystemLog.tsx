@@ -16,8 +16,8 @@ const LOG_MESSAGES_ES = [
   'CALIBRANDO VÉRTICES [OK]',
   'SINCRONIZANDO DATOS ORBITALES...',
   'ESTABLECIENDO CONEXIÓN CON MAIN.SYS',
-  'CARGANDO ASSETS [98%]',
-  'PROTOCOLO NEO-GRAVITY ACTIVO',
+  'CARGANDO RECURSOS [98%]',
+  'PROTOCOLO NEO-GRAVEDAD ACTIVO',
   'ESPERANDO ENTRADA DE USUARIO...'
 ];
 
@@ -44,14 +44,17 @@ export default function SystemLog() {
     return () => clearInterval(interval);
   }, [language]);
 
+  // Keep the latest 4 log entries so it remains active and compact on both mobile and desktop
+  const displayedLogs = logs.slice(-4);
+
   return (
-    <div className="fixed bottom-12 md:bottom-24 left-4 md:left-12 z-50 pointer-events-none text-[8px] md:text-[10px] max-w-[250px] md:max-w-[400px] font-mono text-[#ffffff] opacity-70 flex flex-col gap-1 max-w-none overflow-hidden">
-      {logs.map((log, index) => (
-        <div key={index} className="animate-fade-in text-shadow-sm">
-          <span className="opacity-50 mr-2">{'>'}</span> {log}
+    <div className="flex fixed bottom-11 sm:bottom-12 md:bottom-14 left-2.5 sm:left-4 md:left-8 z-30 pointer-events-none text-[8px] sm:text-[9px] md:text-[10px] max-w-[240px] sm:max-w-[320px] md:max-w-[420px] font-mono text-[#ffffff] opacity-80 flex-col gap-0.5 overflow-hidden justify-end">
+      {displayedLogs.map((log, index) => (
+        <div key={index} className="animate-fade-in text-shadow-sm truncate">
+          <span className="opacity-50 mr-1.5">{'>'}</span> {log}
         </div>
       ))}
-      <div className="animate-pulse opacity-50 mt-1">_</div>
+      <div className="animate-pulse opacity-50">_</div>
     </div>
   );
 }

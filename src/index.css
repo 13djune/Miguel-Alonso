@@ -64,19 +64,72 @@ a, button, [role="button"], input, select, textarea {
   opacity: 0.5;
 }
 
-/* Focus mode element interaction */
+/* Focus mode element interaction with circular pulse feedback */
+body.hide-cursor,
+body.hide-cursor * {
+  cursor: none !important;
+}
+
 div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1) {
   cursor: crosshair;
   transition: all 0.3s ease;
+  position: relative;
 }
 
-div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1):hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15) !important;
-  transform: translateY(-2px) !important;
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1):hover,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(4) > div:nth-of-type(1):active {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #c4ffff !important;
   color: #ffffff !important;
+  animation: circularPulse 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite !important;
 }
+
+@keyframes circularPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(196, 255, 255, 0.7), inset 0 0 4px rgba(196, 255, 255, 0.5);
+  }
+  60% {
+    box-shadow: 0 0 0 10px rgba(196, 255, 255, 0), inset 0 0 8px rgba(196, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(196, 255, 255, 0), inset 0 0 0 rgba(196, 255, 255, 0);
+  }
+}
+
+.pulse-tactile {
+  transition: all 0.2s ease;
+}
+.pulse-tactile:hover, .pulse-tactile:active {
+  animation: circularPulse 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+/* Focus mode: ASCII tree terminal container without button styles */
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Focus mode: Position terminal modal cleanly within visible bounds */
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-type(1) > main:nth-of-type(1) > div:nth-of-type(1) {
+  transform: none;
+  margin: auto;
+  max-height: calc(100vh - 110px);
+}
+
+/* Zero scroll on sys.nav */
+#sys-nav-modal, #sys-nav-modal * {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overscroll-behavior: contain !important;
+}
+#sys-nav-modal::-webkit-scrollbar,
+#sys-nav-modal *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 @layer utilities {
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
@@ -95,18 +148,50 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-t
 }
 
 @keyframes vtc-glitch {
-  0% { transform: skew(0deg); filter: drop-shadow(0 0 5px #ffffff) hue-rotate(0deg); }
-  20% { transform: skew(-5deg); filter: drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 blue); }
-  21% { transform: skew(0deg); filter: drop-shadow(0 0 5px #ffffff); }
-  40% { transform: skew(5deg); filter: drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 blue); }
-  41% { transform: skew(0deg); filter: drop-shadow(0 0 5px #ffffff); }
-  80% { transform: skew(-2deg); filter: drop-shadow(1px 0 0 red) drop-shadow(-1px 0 0 blue); }
-  81% { transform: skew(0deg); filter: drop-shadow(0 0 10px #ffffff); }
-  100% { transform: skew(0deg); filter: drop-shadow(0 0 15px #ffffff); }
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.75));
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  25% {
+    filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 2px rgba(196, 255, 255, 0.8));
+    transform: scale(1.01);
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+    transform: scale(0.99);
+    opacity: 0.88;
+  }
+  75% {
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  92% {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.75));
+    transform: none;
+  }
+  93% {
+    filter: drop-shadow(1px 0 0 rgba(196, 255, 255, 0.9)) drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.6));
+    transform: translate(-1px, 0.5px);
+  }
+  94% {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.75));
+    transform: none;
+  }
+  96% {
+    filter: drop-shadow(-1px 0 0 rgba(196, 255, 255, 0.85));
+    transform: translate(1px, -0.5px);
+  }
+  97% {
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.85));
+    transform: none;
+  }
 }
 
 .vtc-effect {
-  animation: vtc-glitch 3s infinite linear alternate;
+  animation: vtc-glitch 4s infinite ease-in-out;
 }
 
 

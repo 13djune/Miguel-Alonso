@@ -49,6 +49,7 @@
   position: relative;
   display: inline-flex;
   align-items: baseline;
+  white-space: nowrap;
   font-size: var(--font-size);
   line-height: 1.2;
   color: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 100%), var(--text-color));

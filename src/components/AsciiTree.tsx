@@ -3,71 +3,295 @@ import { useState } from 'react';
 
 interface AsciiTreeProps {
   appMode?: "loading" | "terminal" | "universe";
+  activeUniverse?: 'all' | 'creative' | 'industry';
   onSelectProject?: (index: number) => void;
   onSetUniverse?: (universe: 'all' | 'creative' | 'industry') => void;
   onEnterUniverse?: () => void;
 }
 
-const Clickable = ({ text, onClick, color = "#ffffff" }: { text: string, onClick: () => void, color?: string }) => {
+const Clickable = ({
+  text,
+  onClick,
+  color = "#ffffff",
+  className = "",
+  title,
+}: {
+  text: string;
+  onClick: () => void;
+  color?: string;
+  className?: string;
+  title?: string;
+}) => {
   const [hovered, setHovered] = useState(false);
+  const [active, setActive] = useState(false);
   return (
-    <span 
-      className="cursor-pointer transition-colors inline-block whitespace-pre" 
+    <span
+      title={title}
+      className={`cursor-crosshair transition-colors duration-150 inline select-none whitespace-pre ${className}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      style={{
-        backgroundColor: hovered ? color : 'transparent',
-        color: hovered ? '#000' : 'inherit'
+      onMouseDown={() => setActive(true)}
+      onMouseUp={() => setActive(false)}
+      onTouchStart={() => setActive(true)}
+      onTouchEnd={() => setActive(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
       }}
-    >{text}</span>
+      style={{
+        backgroundColor: active || hovered
+          ? color === '#ffffff'
+            ? '#ffffff'
+            : '#c4ffff'
+          : 'transparent',
+        color: active || hovered ? '#000000' : 'inherit',
+        boxShadow: active || hovered ? '0 0 10px rgba(196, 255, 255, 0.7)' : 'none',
+      }}
+    >
+      {text}
+    </span>
   );
 };
 
-export default function AsciiTree({ appMode, onSelectProject, onSetUniverse, onEnterUniverse }: AsciiTreeProps) {
+export default function AsciiTree({
+  appMode,
+  activeUniverse = 'all',
+  onSelectProject,
+  onSetUniverse,
+  onEnterUniverse,
+}: AsciiTreeProps) {
   const { language } = useLanguage();
   const isES = language === 'es';
-  
+
+  // Clicking NÚCLEO goes directly to the 2 systems in 3D
   const handleNucleo = () => {
     if (onSetUniverse) onSetUniverse('all');
     if (onEnterUniverse) onEnterUniverse();
   };
-  
+
+  // Clicking CREATIVO goes directly to the creative universe in 3D
   const handleCreative = () => {
     if (onSetUniverse) onSetUniverse('creative');
     if (onEnterUniverse) onEnterUniverse();
   };
-  
+
+  // Clicking INDUSTRIA goes directly to the industry universe in 3D
   const handleIndustry = () => {
     if (onSetUniverse) onSetUniverse('industry');
     if (onEnterUniverse) onEnterUniverse();
   };
-  
+
+  // Clicking a project selects it and enters 3D universe directly
   const handleProject = (idx: number) => {
-    if (onSelectProject) onSelectProject(idx);
+    if (onSetUniverse) {
+      onSetUniverse(idx < 4 ? 'creative' : 'industry');
+    }
     if (onEnterUniverse) onEnterUniverse();
+    if (onSelectProject) onSelectProject(idx);
   };
 
+  const isUniverseMode = appMode === 'universe';
+
+  const creativeProjects = [
+    { id: 0, num: '01', title: 'REGNUM' },
+    { id: 1, num: '02', title: 'P3RMFRST' },
+    { id: 2, num: '03', title: 'AURA-MESH' },
+    { id: 3, num: '04', title: 'LUMINO-WEAVE' },
+  ];
+
+  const industryProjects = [
+    { id: 4, num: '05', title: 'LOOK-BOOK' },
+    { id: 5, num: '06', title: isES ? 'PANTALONES' : 'TROUSERS' },
+    { id: 6, num: '07', title: 'OUTERWEAR' },
+    { id: 7, num: '08', title: isES ? 'ACCESORIOS' : 'ACCESSORIES' },
+  ];
+
+  // 1. MOBILE / DROPDOWN VERTICAL SCHEMATIC
   const verticalTree = (
-    <div className={`font-mono font-light text-[7px] sm:text-[9px] md:text-[11px] xl:text-[13px] leading-tight text-white opacity-90 whitespace-pre pointer-events-auto overflow-x-auto scrollbar-hide flex justify-center w-full max-w-full ${appMode === 'terminal' ? 'md:hidden' : ''}`}>
-      <div className="flex flex-col min-w-max pb-4">
-        <span>{"┌─────────────────────┐"}</span>
-        <span>{"│ "}{isES ? <Clickable text="[ SYS.VOID NÚCLEO ]" onClick={handleNucleo} color="#ffffff" /> : <Clickable text="[  SYS.VOID CORE  ]" onClick={handleNucleo} color="#ffffff" />}{" │"}</span>
-        <span>{"└─┬───────────────────┘"}</span>
-        <span>{"  │"}</span>
-        <span>{"  ├─ "}{isES ? <Clickable text="[ UNIV: CREATIVO ]" onClick={handleCreative} color="#c4ffff" /> : <Clickable text="[ UNIV: CREATIVE ]" onClick={handleCreative} color="#c4ffff" />}</span>
-        <span>{"  │"}</span>
-        <span>{"  │  ├─ "}&gt;<Clickable text="SYS.VOID" onClick={() => handleProject(0)} color="#c4ffff" />&lt;</span>
-        <span>{"  │  ├─ "}&gt;<Clickable text="NEO-GRAVITY" onClick={() => handleProject(1)} color="#c4ffff" />&lt;</span>
-        <span>{"  │  ├─ "}&gt;<Clickable text="AURA-MESH" onClick={() => handleProject(2)} color="#c4ffff" />&lt;</span>
-        <span>{"  │  └─ "}&gt;<Clickable text="LUMINO-WEAVE" onClick={() => handleProject(3)} color="#c4ffff" />&lt;</span>
-        <span>{"  │"}</span>
-        <span>{"  └─ "}{isES ? <Clickable text="[ UNIV: INDUSTRIA]" onClick={handleIndustry} color="#c4ffff" /> : <Clickable text="[ UNIV: INDUSTRY ]" onClick={handleIndustry} color="#c4ffff" />}</span>
-        <span>{"     "}</span>
-        <span>{"     ├─ "}&gt;<Clickable text="MONOLITHIC" onClick={() => handleProject(4)} color="#c4ffff" />&lt;</span>
-        <span>{"     ├─ "}&gt;<Clickable text="EXO-ARMOR" onClick={() => handleProject(5)} color="#c4ffff" />&lt;</span>
-        <span>{"     ├─ "}&gt;<Clickable text="MECHA-WEAR" onClick={() => handleProject(6)} color="#c4ffff" />&lt;</span>
-        <span>{"     └─ "}&gt;<Clickable text="SYNTH-SKIN" onClick={() => handleProject(7)} color="#c4ffff" />&lt;</span>
+    <div
+      className={`font-mono text-white opacity-95 whitespace-pre pointer-events-auto overflow-hidden flex flex-col items-center w-full select-none ${
+        isUniverseMode
+          ? 'text-[10px] sm:text-[11px] leading-[1.35]'
+          : 'text-xs leading-normal sm:leading-relaxed md:hidden'
+      }`}
+    >
+      {/* Root Node: Core */}
+      <div className="flex flex-col items-center text-center">
+        <span>{"┌───────────────────────┐"}</span>
+        <span>
+          {"│  "}
+          <Clickable
+            text={isES ? "[ SYS.VOID NÚCLEO ]" : "[  SYS.VOID CORE  ]"}
+            onClick={handleNucleo}
+            color="#ffffff"
+            className="font-bold tracking-wider"
+            title={isES ? "Acceder a ambos sistemas" : "Access both systems"}
+          />
+          {"  │"}
+        </span>
+        <span>{"└───────────┬───────────┘"}</span>
+        <span className="text-white/70">{"            │"}</span>
+      </div>
+
+      {/* Vertical Branches */}
+      <div className="flex flex-col w-full max-w-[340px] px-2 sm:px-4">
+        {/* Creative Branch */}
+        <div className="flex items-center">
+          <span className="text-[#c4ffff] font-bold select-none whitespace-pre">{"  ├──► "}</span>
+          <Clickable
+            text={isES ? "[ UNIV: CREATIVO ]" : "[ UNIV: CREATIVE ]"}
+            onClick={handleCreative}
+            color="#c4ffff"
+            className="font-bold tracking-wider text-xs text-[#c4ffff]"
+            title={isES ? "Acceder al sistema creativo" : "Access creative system"}
+          />
+        </div>
+        <span className="text-white/60 whitespace-pre">{"  │    │"}</span>
+
+        {creativeProjects.map((p, idx) => (
+          <div key={p.id} className="flex items-center">
+            <span className="text-[#c4ffff] font-bold select-none whitespace-pre">
+              {idx === creativeProjects.length - 1 ? "  │    └──► " : "  │    ├──► "}
+            </span>
+            <span className="text-white/50 text-[10px] select-none mr-1.5">{p.num} //</span>
+            <Clickable
+              text={p.title}
+              onClick={() => handleProject(p.id)}
+              color="#c4ffff"
+              className="font-medium hover:font-bold"
+              title={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+            />
+          </div>
+        ))}
+
+        {/* Stem between universes */}
+        <span className="text-white/60 whitespace-pre">{"  │"}</span>
+
+        {/* Industry Branch */}
+        <div className="flex items-center">
+          <span className="text-[#c4ffff] font-bold select-none whitespace-pre">{"  └──► "}</span>
+          <Clickable
+            text={isES ? "[ UNIV: INDUSTRIA ]" : "[ UNIV: INDUSTRY ]"}
+            onClick={handleIndustry}
+            color="#c4ffff"
+            className="font-bold tracking-wider text-xs text-[#c4ffff]"
+            title={isES ? "Acceder al sistema industria" : "Access industry system"}
+          />
+        </div>
+        <span className="text-white/60 whitespace-pre">{"       │"}</span>
+
+        {industryProjects.map((p, idx) => (
+          <div key={p.id} className="flex items-center">
+            <span className="text-[#c4ffff] font-bold select-none whitespace-pre">
+              {idx === industryProjects.length - 1 ? "       └──► " : "       ├──► "}
+            </span>
+            <span className="text-white/50 text-[10px] select-none mr-1.5">{p.num} //</span>
+            <Clickable
+              text={p.title}
+              onClick={() => handleProject(p.id)}
+              color="#c4ffff"
+              className="font-medium hover:font-bold"
+              title={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // 2. DESKTOP HORIZONTAL SCHEMATIC (Shown ONLY on desktop in terminal mode)
+  const desktopHorizontalTree = (
+    <div className="hidden md:flex font-mono text-xs md:text-[13px] leading-relaxed text-white opacity-95 pointer-events-auto flex-col items-center w-full select-none py-2">
+      {/* Centered Root Core Node */}
+      <div className="flex flex-col items-center text-center">
+        <span>{"┌───────────────────────┐"}</span>
+        <span>
+          {"│  "}
+          <Clickable
+            text={isES ? "[ SYS.VOID NÚCLEO ]" : "[  SYS.VOID CORE  ]"}
+            onClick={handleNucleo}
+            color="#ffffff"
+            className="font-bold tracking-wider text-sm text-white"
+            title={isES ? "Acceder a ambos sistemas en 3D" : "Access both 3D systems"}
+          />
+          {"  │"}
+        </span>
+        <span>{"└───────────┬───────────┘"}</span>
+        <span className="text-white/70">{"            │"}</span>
+      </div>
+
+      {/* Horizontal Branching Connector */}
+      <div className="w-full max-w-[540px] lg:max-w-[580px] flex flex-col items-center">
+        <div className="w-full flex items-center justify-between px-10 lg:px-12 text-white/60 select-none">
+          <span>{"┌────────────────"}</span>
+          <span>{"┴"}</span>
+          <span>{"────────────────┐"}</span>
+        </div>
+        <div className="w-full flex items-center justify-between px-10 lg:px-12 text-[#c4ffff] font-bold select-none">
+          <span>{"▼"}</span>
+          <span>{"▼"}</span>
+        </div>
+      </div>
+
+      {/* Dual Column Layout: Left Creative & Right Industry (No box borders, clean schematic) */}
+      <div className="grid grid-cols-2 gap-8 lg:gap-12 w-full max-w-[580px] lg:max-w-[620px] mt-1 px-4">
+        {/* Left Column: Creative Universe */}
+        <div className="flex flex-col">
+          <div className="pb-1">
+            <Clickable
+              text={isES ? "[ UNIV: CREATIVO ]" : "[ UNIV: CREATIVE ]"}
+              onClick={handleCreative}
+              color="#c4ffff"
+              className="font-bold tracking-wider text-xs md:text-sm text-[#c4ffff]"
+              title={isES ? "Acceder al sistema creativo en 3D" : "Access creative system in 3D"}
+            />
+          </div>
+          <span className="text-white/60 pl-1 whitespace-pre">{"│"}</span>
+          {creativeProjects.map((p, idx) => (
+            <div key={p.id} className="flex items-center pl-1 whitespace-nowrap">
+              <span className="text-[#c4ffff] font-bold select-none mr-1.5 whitespace-pre">
+                {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
+              </span>
+              <span className="text-white/50 text-[11px] select-none mr-1.5">{p.num} //</span>
+              <Clickable
+                text={p.title}
+                onClick={() => handleProject(p.id)}
+                color="#c4ffff"
+                className="font-medium hover:font-bold"
+                title={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Right Column: Industry Universe */}
+        <div className="flex flex-col">
+          <div className="pb-1">
+            <Clickable
+              text={isES ? "[ UNIV: INDUSTRIA ]" : "[ UNIV: INDUSTRY ]"}
+              onClick={handleIndustry}
+              color="#c4ffff"
+              className="font-bold tracking-wider text-xs md:text-sm text-[#c4ffff]"
+              title={isES ? "Acceder al sistema industria en 3D" : "Access industry system in 3D"}
+            />
+          </div>
+          <span className="text-white/60 pl-1 whitespace-pre">{"│"}</span>
+          {industryProjects.map((p, idx) => (
+            <div key={p.id} className="flex items-center pl-1 whitespace-nowrap">
+              <span className="text-[#c4ffff] font-bold select-none mr-1.5 whitespace-pre">
+                {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
+              </span>
+              <span className="text-white/50 text-[11px] select-none mr-1.5">{p.num} //</span>
+              <Clickable
+                text={p.title}
+                onClick={() => handleProject(p.id)}
+                color="#c4ffff"
+                className="font-medium hover:font-bold"
+                title={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -76,78 +300,7 @@ export default function AsciiTree({ appMode, onSelectProject, onSetUniverse, onE
     return (
       <>
         {verticalTree}
-        <div className="hidden md:flex font-mono font-light text-[8px] sm:text-[10px] md:text-[12px] xl:text-[14px] leading-tight text-white opacity-90 pointer-events-auto overflow-y-auto overflow-x-auto scrollbar-hide justify-center w-full max-h-[60vh] md:max-h-[75vh]">
-          <div className="flex flex-col items-center w-full max-w-[1200px] pb-4 px-2 md:px-8">
-            <div className="text-center whitespace-pre relative pb-4 z-10">
-              <span>{"┌─────────────────────┐\n"}</span>
-              <span>{"│ "}{isES ? <Clickable text="[ SYS.VOID NÚCLEO ]" onClick={handleNucleo} color="#ffffff" /> : <Clickable text="[  SYS.VOID CORE  ]" onClick={handleNucleo} color="#ffffff" />}{" │\n"}</span>
-              <span>{"└──────────┬──────────┘\n"}</span>
-              <div className="absolute bottom-0 left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
-            </div>
-            
-            <div className="flex flex-col xl:flex-row w-full justify-center gap-8 xl:gap-16 relative">
-              <div className="hidden xl:block absolute top-0 left-1/4 right-1/4 border-t border-white"></div>
-              <div className="hidden xl:block absolute top-0 left-1/4 w-px h-4 bg-white"></div>
-              <div className="hidden xl:block absolute top-0 right-1/4 w-px h-4 bg-white"></div>
-              
-              {/* Creative Universe */}
-              <div className="flex flex-col items-center flex-1 xl:mt-4">
-                <div className="text-center whitespace-pre relative pb-4">
-                  <span>{"┌──────────────────────┐\n"}</span>
-                  <span>{"│  "}{isES ? <Clickable text="[ UNIV: CREATIVO ]" onClick={handleCreative} color="#c4ffff" /> : <Clickable text="[ UNIV: CREATIVE ]" onClick={handleCreative} color="#c4ffff" />}{"  │\n"}</span>
-                  <span>{"└──────────┬───────────┘\n"}</span>
-                  <div className="absolute bottom-0 left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
-                </div>
-                
-                <div className="relative w-full mt-2">
-                  <div className="absolute top-0 left-[12.5%] right-[12.5%] md:left-[12.5%] md:right-[12.5%] border-t border-white"></div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-2 text-center pt-4">
-                    {[
-                      { id: 0, text: 'SYS.VOID', color: '#c4ffff' },
-                      { id: 1, text: 'NEO-GRAV', color: '#c4ffff' },
-                      { id: 2, text: 'AURA-MSH', color: '#c4ffff' },
-                      { id: 3, text: 'LUMINO-W', color: '#c4ffff' }
-                    ].map((p, i) => (
-                      <div key={p.id} className="relative flex flex-col items-center">
-                        <div className="hidden md:block absolute top-[-1rem] left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
-                        <div className="hidden md:block absolute top-[-0.25rem] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px]">▼</div>
-                        <span className="whitespace-nowrap px-1">&gt;<Clickable text={p.text} onClick={() => handleProject(p.id)} color={p.color} />&lt;</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Industry Universe */}
-              <div className="flex flex-col items-center flex-1 xl:mt-4">
-                <div className="text-center whitespace-pre relative pb-4">
-                  <span>{"┌──────────────────────┐\n"}</span>
-                  <span>{"│  "}{isES ? <Clickable text="[ UNIV: INDUSTRIA]" onClick={handleIndustry} color="#c4ffff" /> : <Clickable text="[ UNIV: INDUSTRY ]" onClick={handleIndustry} color="#c4ffff" />}{"  │\n"}</span>
-                  <span>{"└──────────┬───────────┘\n"}</span>
-                  <div className="absolute bottom-0 left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
-                </div>
-                
-                <div className="relative w-full mt-2">
-                  <div className="absolute top-0 left-[12.5%] right-[12.5%] md:left-[12.5%] md:right-[12.5%] border-t border-white"></div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-2 text-center pt-4">
-                    {[
-                      { id: 4, text: 'MONOLITH', color: '#c4ffff' },
-                      { id: 5, text: 'EXO-ARMR', color: '#c4ffff' },
-                      { id: 6, text: 'MECHA-WR', color: '#c4ffff' },
-                      { id: 7, text: 'SYNTH-SK', color: '#c4ffff' }
-                    ].map((p, i) => (
-                      <div key={p.id} className="relative flex flex-col items-center">
-                        <div className="hidden md:block absolute top-[-1rem] left-1/2 w-px h-4 bg-white -translate-x-1/2"></div>
-                        <div className="hidden md:block absolute top-[-0.25rem] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px]">▼</div>
-                        <span className="whitespace-nowrap px-1">&gt;<Clickable text={p.text} onClick={() => handleProject(p.id)} color={p.color} />&lt;</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {desktopHorizontalTree}
       </>
     );
   }
