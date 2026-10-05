@@ -701,7 +701,17 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     <img
                       src={project.images[0]}
                       alt={project.title}
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-500 grayscale group-hover:grayscale-0 group-hover:scale-105"
+                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.dataset.triedFallback) return;
+                        target.dataset.triedFallback = 'true';
+                        if (project.title.includes('REGNUM') || project.id === '1') {
+                          target.src = '/assets/img/REGNUM/regnum_1.png';
+                        } else if (project.title.includes('P3RMFRST') || project.id === '2') {
+                          target.src = '/assets/img/P3RMFRST/p3rmfrst_1.png';
+                        }
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
                   </div>

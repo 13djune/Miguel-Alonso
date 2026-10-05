@@ -192,6 +192,58 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-t
 
 .vtc-effect {
   animation: vtc-glitch 4s infinite ease-in-out;
+  transition: filter 0.8s ease-out, opacity 0.8s ease-out;
+}
+
+@keyframes vtc-boot-flicker {
+  0% {
+    opacity: calc(0.22 + var(--boot-norm, 0) * 0.73);
+    filter: drop-shadow(0 0 calc(1.5px + var(--boot-norm, 0) * 8px) rgba(255, 255, 255, calc(0.18 + var(--boot-norm, 0) * 0.65)))
+            drop-shadow(calc((1 - var(--boot-norm, 0)) * -1.5px) 0 0 rgba(196, 255, 255, calc(0.15 + var(--boot-norm, 0) * 0.65)));
+    transform: translate(calc((1 - var(--boot-norm, 0)) * -1.2px), calc((1 - var(--boot-norm, 0)) * 0.4px)) scale(calc(0.98 + var(--boot-norm, 0) * 0.02));
+  }
+  16% {
+    opacity: calc(0.1 + var(--boot-norm, 0) * 0.85);
+    filter: drop-shadow(0 0 calc(0.8px + var(--boot-norm, 0) * 6px) rgba(255, 255, 255, calc(0.12 + var(--boot-norm, 0) * 0.7)))
+            drop-shadow(calc((1 - var(--boot-norm, 0)) * 1.8px) calc((1 - var(--boot-norm, 0)) * -0.5px) 0 rgba(196, 255, 255, calc(0.1 + var(--boot-norm, 0) * 0.7)));
+    transform: translate(calc((1 - var(--boot-norm, 0)) * 1.4px), calc((1 - var(--boot-norm, 0)) * -0.8px));
+  }
+  33% {
+    opacity: calc(0.42 + var(--boot-norm, 0) * 0.55);
+    filter: drop-shadow(0 0 calc(2.5px + var(--boot-norm, 0) * 11px) rgba(255, 255, 255, calc(0.26 + var(--boot-norm, 0) * 0.7)))
+            drop-shadow(calc((1 - var(--boot-norm, 0)) * -0.6px) 0 0 rgba(196, 255, 255, calc(0.18 + var(--boot-norm, 0) * 0.62)));
+    transform: translate(calc((1 - var(--boot-norm, 0)) * -0.6px), calc((1 - var(--boot-norm, 0)) * -0.4px));
+  }
+  50% {
+    opacity: calc(0.16 + var(--boot-norm, 0) * 0.78);
+    filter: drop-shadow(0 0 calc(1.2px + var(--boot-norm, 0) * 7px) rgba(255, 255, 255, calc(0.15 + var(--boot-norm, 0) * 0.68)))
+            drop-shadow(calc((1 - var(--boot-norm, 0)) * 1px) 0 0 rgba(196, 255, 255, calc(0.12 + var(--boot-norm, 0) * 0.68)));
+    transform: translate(calc((1 - var(--boot-norm, 0)) * 0.9px), calc((1 - var(--boot-norm, 0)) * 0.6px));
+  }
+  68% {
+    opacity: calc(0.48 + var(--boot-norm, 0) * 0.5);
+    filter: drop-shadow(0 0 calc(3px + var(--boot-norm, 0) * 12px) rgba(255, 255, 255, calc(0.3 + var(--boot-norm, 0) * 0.65)))
+            drop-shadow(0 0 calc(var(--boot-norm, 0) * 2px) rgba(196, 255, 255, calc(0.2 + var(--boot-norm, 0) * 0.6)));
+    transform: translate(calc((1 - var(--boot-norm, 0)) * -1px), 0);
+  }
+  84% {
+    opacity: calc(0.24 + var(--boot-norm, 0) * 0.74);
+    filter: drop-shadow(0 0 calc(1.8px + var(--boot-norm, 0) * 8px) rgba(255, 255, 255, calc(0.2 + var(--boot-norm, 0) * 0.65)))
+            drop-shadow(calc((1 - var(--boot-norm, 0)) * -0.5px) calc((1 - var(--boot-norm, 0)) * 0.5px) 0 rgba(196, 255, 255, calc(0.1 + var(--boot-norm, 0) * 0.7)));
+    transform: translate(0, calc((1 - var(--boot-norm, 0)) * 0.5px));
+  }
+  100% {
+    opacity: calc(0.3 + var(--boot-norm, 0) * 0.65);
+    filter: drop-shadow(0 0 calc(2px + var(--boot-norm, 0) * 9px) rgba(255, 255, 255, calc(0.22 + var(--boot-norm, 0) * 0.65)))
+            drop-shadow(calc((1 - var(--boot-norm, 0)) * 0.5px) 0 0 rgba(196, 255, 255, calc(0.15 + var(--boot-norm, 0) * 0.65)));
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.vtc-booting {
+  animation: vtc-boot-flicker var(--boot-duration, 0.09s) infinite ease-in-out;
+  transition: opacity 0.15s ease-out;
+  will-change: filter, opacity, transform;
 }
 
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
-import { X, ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Info, ZoomIn, Maximize2 } from "lucide-react";
 import { Project } from "../types";
 import GarmentViewer from "./GarmentViewer";
 import { useLanguage } from "../context/LanguageContext";
@@ -38,6 +38,110 @@ export default function ProjectModal({
   );
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+
+  // Interactive Zoom & Pan state for the Popup Lightbox
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const panStartRef = useRef({ x: 0, y: 0 });
+
+  const resetZoom = () => {
+    setZoomLevel(1);
+    setPanOffset({ x: 0, y: 0 });
+  };
+
+  const handleZoomIn = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setZoomLevel((prev) => Math.min(prev + 0.5, 4));
+  };
+
+  const handleZoomOut = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setZoomLevel((prev) => {
+      const next = Math.max(prev - 0.5, 1);
+      if (next === 1) setPanOffset({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+    if (e.deltaY < 0) {
+      setZoomLevel((prev) => Math.min(prev + 0.25, 4));
+    } else {
+      setZoomLevel((prev) => {
+        const next = Math.max(prev - 0.25, 1);
+        if (next === 1) setPanOffset({ x: 0, y: 0 });
+        return next;
+      });
+    }
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (zoomLevel === 1) {
+      setZoomLevel(2.5);
+    } else {
+      resetZoom();
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomLevel <= 1) return;
+    e.preventDefault();
+    setIsPanning(true);
+    panStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isPanning || zoomLevel <= 1) return;
+    e.preventDefault();
+    setPanOffset({
+      x: e.clientX - panStartRef.current.x,
+      y: e.clientY - panStartRef.current.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
+  // Reset zoom whenever user changes image
+  useEffect(() => {
+    resetZoom();
+  }, [selectedImageIndex]);
+
+  // Keyboard navigation & zoom in popup
+  useEffect(() => {
+    if (selectedImageIndex === null) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeGallery();
+      } else if (e.key === "ArrowRight") {
+        setSelectedImageIndex((prev) =>
+          prev !== null ? (prev + 1) % project.images.length : 0
+        );
+      } else if (e.key === "ArrowLeft") {
+        setSelectedImageIndex((prev) =>
+          prev !== null ? (prev - 1 + project.images.length) % project.images.length : 0
+        );
+      } else if (e.key === "+" || e.key === "=") {
+        setZoomLevel((prev) => Math.min(prev + 0.5, 4));
+      } else if (e.key === "-") {
+        setZoomLevel((prev) => {
+          const next = Math.max(prev - 0.5, 1);
+          if (next === 1) setPanOffset({ x: 0, y: 0 });
+          return next;
+        });
+      } else if (e.key === "0") {
+        resetZoom();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedImageIndex, project.images.length]);
+
   const { t, language } = useLanguage();
   const isES = language === 'es';
   const sections =
@@ -48,6 +152,8 @@ export default function ProjectModal({
     setActiveSectionIndex(0);
     setSelectedImageIndex(null);
     setActiveHotspot(null);
+    setActiveHeroIndex(0);
+    resetZoom();
   }, [project.id]);
   const currentSection = sections[activeSectionIndex] || sections[0];
   useEffect(() => {
@@ -94,6 +200,16 @@ export default function ProjectModal({
           project.images.length,
       );
     }
+  };
+
+  const nextHeroLook = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveHeroIndex((prev) => (prev + 1) % project.images.length);
+  };
+
+  const prevHeroLook = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveHeroIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
   };
   return (
     <div
@@ -328,29 +444,68 @@ export default function ProjectModal({
               <div className="border border-white/30 bg-black/60 p-2.5 sm:p-3 flex justify-between items-center mb-3">
                 <span className="font-mono text-[9px] sm:text-[10px] text-[#c4ffff] uppercase tracking-widest flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
-                  <span>{isES ? "// REGISTRO FOTOGRÁFICO Y RENDERIZADO" : "// PHOTOGRAPHIC ARCHIVE & RENDERS"}</span>
+                  <span>{isES ? "// REGISTRO FOTOGRÁFICO Y RENDERIZADO COMPLETO" : "// COMPLETE PHOTOGRAPHIC & RENDER ARCHIVE"}</span>
                 </span>
                 <span className="font-mono text-[8px] sm:text-[9px] text-white/50">
                   [{project.images.length} {isES ? "ARCHIVOS" : "FILES"}]
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-3 md:gap-6">
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
                 {project.images.map((img, idx) => (
                   <div
                     key={idx}
-                    onClick={() => openGallery(idx)}
-                    className={`border border-white bg-black/80 p-1 md:p-2 cursor-crosshair group relative overflow-hidden shadow-[4px_4px_0px_rgba(255, 255, 255,0.05)] ${idx === 0 ? "col-span-2 aspect-video" : "aspect-square"}`}
+                    onClick={() => {
+                      setActiveHeroIndex(idx);
+                      openGallery(idx);
+                    }}
+                    className={`border transition-all cursor-crosshair group relative overflow-hidden bg-black/90 p-1.5 sm:p-2 ${
+                      activeHeroIndex === idx
+                        ? "border-[#c4ffff] shadow-[0_0_12px_rgba(196,255,255,0.4)]"
+                        : "border-white/50 hover:border-white"
+                    } ${idx === 0 ? "col-span-2 aspect-video" : "aspect-[3/4]"}`}
                   >
-                    <div className="w-full h-full relative overflow-hidden bg-black/50">
-                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center ">
-                        <span className="font-mono text-[10px] md:text-xs font-bold text-white bg-black border border-white px-3 py-1.5 uppercase tracking-widest">
-                          {t("modal.expand")}
+                    <div className="w-full h-full relative overflow-hidden bg-black/80 flex items-center justify-center">
+                      {/* Top-left: Look index badge */}
+                      <div className="absolute top-2 left-2 z-20 font-mono text-[8px] sm:text-[9px] bg-black/90 text-[#c4ffff] border border-[#c4ffff]/60 px-1.5 py-0.5 uppercase tracking-wider font-bold shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
+                        LOOK {(idx + 1).toString().padStart(2, '0')}
+                      </div>
+
+                      {/* Top-right: Subtle expand / corner indicator */}
+                      <div className="absolute top-2 right-2 z-20 bg-black/80 border border-white/40 group-hover:border-[#c4ffff] text-white/70 group-hover:text-[#c4ffff] p-1 transition-all pointer-events-none shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
+                        <Maximize2 size={11} />
+                      </div>
+
+                      {/* Bottom-right: Subtle 'click-to-zoom' / 'pinch-to-zoom' indicator badge */}
+                      <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-black/85 border border-white/40 group-hover:border-[#c4ffff] px-1.5 sm:px-2 py-0.5 text-white/80 group-hover:text-[#c4ffff] transition-all shadow-[2px_2px_0px_rgba(0,0,0,0.8)] backdrop-blur-sm pointer-events-none">
+                        <ZoomIn size={11} className="text-[#c4ffff] shrink-0 animate-pulse" />
+                        <span className="font-mono text-[7.5px] sm:text-[8.5px] uppercase tracking-wider font-bold">
+                          {isES ? "CLICK // ZOOM" : "CLICK // ZOOM"}
                         </span>
                       </div>
+
+                      {/* Hover overlay hint */}
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
+                        <span className="font-mono text-[9px] sm:text-[10px] md:text-xs font-bold text-white bg-black/95 border border-[#c4ffff] text-[#c4ffff] px-3 py-1.5 uppercase tracking-widest shadow-[0_0_12px_rgba(196,255,255,0.6)] flex items-center gap-1.5">
+                          <ZoomIn size={12} />
+                          <span>{t("modal.expand")} [ZOOM]</span>
+                        </span>
+                      </div>
+
                       <img
                         src={img}
-                        alt={`${project.title} - view ${idx}`}
-                        className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                        alt={`${project.title} - look ${idx + 1}`}
+                        className="w-full h-full object-contain sm:object-cover opacity-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.dataset.triedFallback) return;
+                          target.dataset.triedFallback = "true";
+                          const num = idx + 1;
+                          if (project.title.includes('REGNUM') || project.id === '1') {
+                            target.src = `/assets/img/REGNUM/regnum_${num}.png`;
+                          } else if (project.title.includes('P3RMFRST') || project.id === '2') {
+                            target.src = `/assets/img/P3RMFRST/p3rmfrst_${num}.png`;
+                          }
+                        }}
                       />
                       {/* Hotspots mini view */}
                       {project.hotspots &&
@@ -358,7 +513,7 @@ export default function ProjectModal({
                         project.hotspots[idx].map((hotspot, hIdx) => (
                           <div
                             key={hIdx}
-                            className="absolute z-20 w-3 h-3 md:w-4 md:h-4 border border-white bg-black/80 shadow-[0_0_10px_rgba(255, 255, 255,0.5)]"
+                            className="absolute z-20 w-3 h-3 md:w-4 md:h-4 border border-[#c4ffff] bg-black/80 shadow-[0_0_10px_rgba(196,255,255,0.8)]"
                             style={{
                               top: `${hotspot.y}%`,
                               left: `${hotspot.x}%`,
@@ -374,58 +529,143 @@ export default function ProjectModal({
           )}
         </div>
       </div>{" "}
-      {/* Fullscreen Image Gallery */}{" "}
+      {/* High-Tech Interactive Zoom & Pan Lightbox Popup */}
       {selectedImageIndex !== null &&
         createPortal(
           <div
-            className="fixed inset-0 z-[100] bg-[#070707]/95 flex flex-col justify-center items-center "
+            className="fixed inset-0 z-[100] bg-[#050505]/98 flex flex-col justify-between overflow-hidden select-none animate-fadeIn"
             onClick={closeGallery}
           >
-            {" "}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2ZmMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20 pointer-events-none"></div>{" "}
-            <div className="absolute top-2 sm:top-4 md:top-8 right-2 sm:right-4 md:right-8 z-[110]">
-              <StarBorder
-                as="button"
-                color="#ffffff"
-                speed="3s"
-                className="p-0"
-              >
-                <div
-                  onClick={closeGallery}
-                  className="font-mono text-[10px] sm:text-xs text-black bg-white px-2.5 sm:px-4 py-1 sm:py-2 uppercase font-bold hover:bg-white transition-colors cursor-crosshair whitespace-nowrap"
-                >
-                  {t("modal.close.view")}
-                </div>
-              </StarBorder>
-            </div>
-            <div className="absolute left-1.5 sm:left-4 md:left-12 top-1/2 -translate-y-1/2 z-[110]">
-              <StarBorder
-                as="button"
-                color="#ffffff"
-                speed="3s"
-                className="p-0"
-              >
-                <div
-                  onClick={prevImage}
-                  className="bg-black p-1 sm:p-2 md:p-4 text-white hover:bg-[#c4ffff] hover:text-black transition-colors cursor-crosshair"
-                >
-                  <ChevronLeft size={20} className="sm:w-7 sm:h-7 md:w-8 md:h-8" />
-                </div>
-              </StarBorder>
-            </div>
+            {/* Ambient Background Grid & Scanlines */}
+            <div className="absolute inset-0 bg-cyber-grid opacity-15 pointer-events-none" />
+            <div className="scanlines pointer-events-none" />
+
+            {/* Top Tactical Control Header */}
             <div
-              className="w-full max-w-5xl px-8 sm:px-14 md:px-16 max-h-[80vh] flex items-center justify-center relative z-[105]"
+              className="relative z-[120] w-full bg-black/90 border-b border-white/30 px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.8)]"
               onClick={(e) => e.stopPropagation()}
             >
-              {" "}
-              <div className="relative inline-block max-w-full max-h-[80vh]">
-                {" "}
+              {/* Left: Look Identifier */}
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <span className="w-2 h-2 bg-[#c4ffff] animate-pulse"></span>
+                <span className="font-mono text-[9px] sm:text-xs font-bold text-white uppercase tracking-widest">
+                  {isES
+                    ? `LOOKBOOK HD // LOOK ${(selectedImageIndex + 1).toString().padStart(2, '0')} / ${project.images.length.toString().padStart(2, '0')}`
+                    : `HD LOOKBOOK // LOOK ${(selectedImageIndex + 1).toString().padStart(2, '0')} / ${project.images.length.toString().padStart(2, '0')}`}
+                </span>
+                <span className="hidden md:inline font-mono text-[9px] text-[#c4ffff]/80 border border-[#c4ffff]/30 px-1.5 py-0.5 uppercase">
+                  {project.title}
+                </span>
+              </div>
+
+              {/* Center: Zoom Controls Toolbar */}
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white/[0.05] border border-white/30 px-2 py-1">
+                <button
+                  type="button"
+                  onClick={handleZoomOut}
+                  disabled={zoomLevel <= 1}
+                  title={isES ? "Alejar zoom (-)" : "Zoom out (-)"}
+                  className="font-mono text-xs sm:text-sm px-2 py-0.5 text-white hover:text-[#c4ffff] disabled:opacity-30 disabled:hover:text-white cursor-crosshair font-bold transition-colors"
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  onClick={resetZoom}
+                  title={isES ? "Restablecer zoom 100% (0)" : "Reset zoom 100% (0)"}
+                  className="font-mono text-[9px] sm:text-[10px] px-2 py-0.5 bg-black border border-white/40 text-[#c4ffff] font-bold tracking-wider hover:bg-white hover:text-black transition-colors"
+                >
+                  {Math.round(zoomLevel * 100)}%
+                </button>
+                <button
+                  type="button"
+                  onClick={handleZoomIn}
+                  disabled={zoomLevel >= 4}
+                  title={isES ? "Acercar zoom (+)" : "Zoom in (+)"}
+                  className="font-mono text-xs sm:text-sm px-2 py-0.5 text-white hover:text-[#c4ffff] disabled:opacity-30 disabled:hover:text-white cursor-crosshair font-bold transition-colors"
+                >
+                  +
+                </button>
+                <span className="hidden lg:inline-block font-mono text-[8px] text-white/40 border-l border-white/20 pl-2 ml-1">
+                  {isES ? "RUEDA / DOBLE CLICK / ARRASTRAR" : "WHEEL / DOUBLE CLICK / DRAG"}
+                </span>
+              </div>
+
+              {/* Right: Close Button */}
+              <div className="shrink-0">
+                <StarBorder as="button" color="#ffffff" speed="3s" className="p-0">
+                  <div
+                    onClick={closeGallery}
+                    className="font-mono text-[10px] sm:text-xs text-black bg-white px-3 sm:px-4 py-1 sm:py-1.5 uppercase font-bold hover:bg-[#c4ffff] transition-colors cursor-crosshair flex items-center gap-1.5"
+                  >
+                    <span>{isES ? "CERRAR" : "CLOSE"}</span>
+                    <span>✕</span>
+                  </div>
+                </StarBorder>
+              </div>
+            </div>
+
+            {/* Central Interactive Zoom Viewport */}
+            <div
+              className={`relative flex-1 w-full h-full flex items-center justify-center overflow-hidden ${
+                zoomLevel > 1 ? (isPanning ? "cursor-grabbing" : "cursor-grab") : "cursor-zoom-in"
+              }`}
+              onWheel={handleWheel}
+              onDoubleClick={handleDoubleClick}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Previous / Next Arrow Controls */}
+              {project.images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    aria-label="Previous look"
+                    className="cursor-target absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/85 border border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] shadow-[0_0_15px_rgba(0,0,0,0.8)] cursor-crosshair"
+                  >
+                    &lt;
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextImage}
+                    aria-label="Next look"
+                    className="cursor-target absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/85 border border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] shadow-[0_0_15px_rgba(0,0,0,0.8)] cursor-crosshair"
+                  >
+                    &gt;
+                  </button>
+                </>
+              )}
+
+              {/* Scalable and Pannable Image Container */}
+              <div
+                className="relative inline-block max-w-[90vw] max-h-[72vh] flex items-center justify-center will-change-transform"
+                style={{
+                  transform: `scale(${zoomLevel}) translate(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px)`,
+                  transition: isPanning ? "none" : "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+              >
                 <img
                   src={project.images[selectedImageIndex]}
-                  alt="Expanded view"
-                  className="max-w-full max-h-[80vh] object-contain border border-white shadow-[0_0_30px_rgba(255, 255, 255,0.1)]"
-                />{" "}
-                {/* Hotspots overlay */}{" "}
+                  alt={`${project.title} - Look ${selectedImageIndex + 1}`}
+                  className="max-w-[90vw] max-h-[72vh] object-contain border border-white/60 shadow-[0_0_50px_rgba(0,0,0,0.95)] pointer-events-none select-none"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.dataset.triedFallback) return;
+                    target.dataset.triedFallback = "true";
+                    const num = selectedImageIndex + 1;
+                    if (project.title.includes('REGNUM') || project.id === '1') {
+                      target.src = `/assets/img/REGNUM/regnum_${num}.png`;
+                    } else if (project.title.includes('P3RMFRST') || project.id === '2') {
+                      target.src = `/assets/img/P3RMFRST/p3rmfrst_${num}.png`;
+                    }
+                  }}
+                />
+
+                {/* Hotspots overlay */}
                 {project.hotspots &&
                   project.hotspots[selectedImageIndex] &&
                   project.hotspots[selectedImageIndex].map((hotspot, hIdx) => {
@@ -434,7 +674,7 @@ export default function ProjectModal({
                     return (
                       <div
                         key={hIdx}
-                        className="absolute z-20"
+                        className="absolute z-20 pointer-events-auto"
                         style={{
                           top: `${hotspot.y}%`,
                           left: `${hotspot.x}%`,
@@ -445,69 +685,93 @@ export default function ProjectModal({
                           setActiveHotspot(isActive ? null : hotspotId);
                         }}
                       >
-                        {" "}
                         <div className="relative group cursor-crosshair">
-                          {" "}
                           <div
-                            className={`w-6 h-6 border-2 ${isActive ? "border-white bg-white/20" : "border-white bg-black/60"} rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(255, 255, 255,0.5)] transition-colors`}
+                            className={`w-6 h-6 border-2 ${
+                              isActive ? "border-[#c4ffff] bg-[#c4ffff]/30" : "border-white bg-black/70"
+                            } rounded-full flex items-center justify-center shadow-[0_0_12px_rgba(196,255,255,0.7)] transition-colors`}
                           >
-                            {" "}
-                            <span
-                              className={`w-2 h-2 ${isActive ? "bg-white" : "bg-white"} rounded-full animate-ping`}
-                            ></span>{" "}
-                          </div>{" "}
+                            <span className="w-2 h-2 bg-[#c4ffff] rounded-full animate-ping"></span>
+                          </div>
                           {isActive && (
                             <div
-                              className="absolute top-1/2 left-8 -translate-y-1/2 w-64 bg-black/90 border border-white p-4 shadow-2xl pointer-events-auto"
+                              className="absolute top-1/2 left-8 -translate-y-1/2 w-64 bg-black/95 border border-[#c4ffff] p-3 shadow-2xl pointer-events-auto z-30"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {" "}
-                              <div className="absolute top-0 right-0 w-2 h-2 border-b border-l border-white"></div>{" "}
-                              <div className="absolute bottom-0 left-0 w-2 h-2 border-t border-r border-white"></div>{" "}
-                              <button
-                                className="absolute top-1 right-1 text-white hover:text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setActiveHotspot(null);
-                                }}
-                              >
-                                {" "}
-                                <X size={12} />{" "}
-                              </button>{" "}
-                              <h4 className="font-mono text-xs font-bold text-white uppercase mb-2 border-b border-white pb-2 pr-4">
-                                {hotspot.title}
-                              </h4>{" "}
-                              <p className="font-mono text-[10px] text-white leading-relaxed">
+                              <div className="flex justify-between items-center mb-1.5 border-b border-white/30 pb-1">
+                                <h4 className="font-mono text-xs font-bold text-[#c4ffff] uppercase pr-2">
+                                  {hotspot.title}
+                                </h4>
+                                <button
+                                  type="button"
+                                  className="text-white/60 hover:text-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveHotspot(null);
+                                  }}
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                              <p className="font-mono text-[10px] text-white/90 leading-relaxed">
                                 {hotspot.description}
-                              </p>{" "}
+                              </p>
                             </div>
-                          )}{" "}
-                        </div>{" "}
+                          )}
+                        </div>
                       </div>
                     );
-                  })}{" "}
-              </div>{" "}
-              <div className="absolute bottom-[-3rem] left-0 w-full text-center font-mono text-[10px] text-white bg-white/10 border border-white py-1 inline-block mx-auto max-w-fit px-4">
-                {" "}
-                <span className="animate-pulse mr-2">_</span> IMG_
-                {selectedImageIndex + 1} {/* {project.images.length} */}{" "}
-              </div>{" "}
-            </div>{" "}
-            <div className="absolute right-1.5 sm:right-4 md:right-12 top-1/2 -translate-y-1/2 z-[110]">
-              <StarBorder
-                as="button"
-                color="#ffffff"
-                speed="3s"
-                className="p-0"
-              >
-                <div
-                  onClick={nextImage}
-                  className="bg-black p-1 sm:p-2 md:p-4 text-white hover:bg-[#c4ffff] hover:text-black transition-colors cursor-crosshair"
-                >
-                  <ChevronRight size={20} className="sm:w-7 sm:h-7 md:w-8 md:h-8" />
-                </div>
-              </StarBorder>
-            </div>{" "}
+                  })}
+              </div>
+            </div>
+
+            {/* Bottom Thumbnails Strip Bar */}
+            <div
+              className="relative z-[120] w-full bg-black/95 border-t border-white/30 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 overflow-x-auto shadow-[0_-4px_20px_rgba(0,0,0,0.8)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-2">
+                {project.images.map((img, idx) => {
+                  const isActive = selectedImageIndex === idx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedImageIndex(idx)}
+                      className={`relative w-10 h-10 sm:w-12 sm:h-12 border transition-all shrink-0 cursor-crosshair overflow-hidden bg-black/80 ${
+                        isActive
+                          ? "border-[#c4ffff] shadow-[0_0_10px_#c4ffff] scale-105"
+                          : "border-white/30 hover:border-white opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Look ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.dataset.triedFallback) return;
+                          target.dataset.triedFallback = "true";
+                          const num = idx + 1;
+                          if (project.title.includes('REGNUM') || project.id === '1') {
+                            target.src = `/assets/img/REGNUM/regnum_${num}.png`;
+                          } else if (project.title.includes('P3RMFRST') || project.id === '2') {
+                            target.src = `/assets/img/P3RMFRST/p3rmfrst_${num}.png`;
+                          }
+                        }}
+                      />
+                      <span className="absolute bottom-0 right-0 bg-black/80 text-[7px] font-mono text-white px-1">
+                        {(idx + 1).toString().padStart(2, '0')}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="font-mono text-[9px] text-[#c4ffff] uppercase tracking-wider shrink-0 hidden sm:block">
+                [ {selectedImageIndex + 1} / {project.images.length} ARCHIVOS ]
+              </div>
+            </div>
           </div>,
           document.body,
         )}{" "}

@@ -1,4 +1,18 @@
 import { Project } from '../types';
+import regnum5 from '../assets/img/REGNUM/regnum_1.png';
+import regnum4 from '../assets/img/REGNUM/regnum_2.png';
+import regnum7 from '../assets/img/REGNUM/regnum_3.png';
+import regnum3 from '../assets/img/REGNUM/regnum_4.png';
+import regnum1 from '../assets/img/REGNUM/regnum_5.png';
+import regnum6 from '../assets/img/REGNUM/regnum_6.png';
+import regnum2 from '../assets/img/REGNUM/regnum_7.png';
+import regnum8 from '../assets/img/REGNUM/regnum_8.png';
+
+import p3rmfrst1 from '../assets/img/P3RMFRST/p3rmfrst_1.png';
+import p3rmfrst3 from '../assets/img/P3RMFRST/p3rmfrst_2.png';
+import p3rmfrst4 from '../assets/img/P3RMFRST/p3rmfrst_3.png';
+import p3rmfrst2 from '../assets/img/P3RMFRST/p3rmfrst_4.png';
+import p3rmfrst5 from '../assets/img/P3RMFRST/p3rmfrst_5.png';
 
 export const CREATIVE_PROJECTS: Project[] = [
   // 01 REGNUM (Planet 1)
@@ -8,14 +22,14 @@ export const CREATIVE_PROJECTS: Project[] = [
     description:
       "Siluetas escultóricas en canvas pesado y lona técnica estructurada. Una exploración de proporciones de armadura medieval fusionadas con sastrería brutalista, ojales metálicos sobredimensionados y drapeados arquitectónicos con marcado claroscuro.",
     images: [
-      "/src/assets/img/REGNUM/Regnum_1.PNG",
-      "/src/assets/img/REGNUM/Regnum_2.PNG",
-      "/src/assets/img/REGNUM/Regnum_3.PNG",
-      "/src/assets/img/REGNUM/Regnum_4.PNG",
-      "/src/assets/img/REGNUM/Regnum_5.PNG",
-      "/src/assets/img/REGNUM/Regnum_6.PNG",
-      "/src/assets/img/REGNUM/Regnum_7.PNG",
-      "/src/assets/img/REGNUM/Regnum_8.PNG",
+      regnum1,
+      regnum2,
+      regnum3,
+      regnum4,
+      regnum5,
+      regnum6,
+      regnum7,
+      regnum8,
     ],
     position: [-8, -4, 0],
     color: "#ff3399",
@@ -67,11 +81,11 @@ export const CREATIVE_PROJECTS: Project[] = [
     description:
       "Indumentaria expedicionaria subcero bajo estética brutalista. Abrigos gabardina envolventes con cuello pasamontañas sobredimensionado, guantes de piel táctil reforzados y membranas termoselladas concebidas para condiciones extremas de permafrost.",
     images: [
-      "/src/assets/img/P3RMFRST/P3RMFRST_1.PNG",
-      "/src/assets/img/P3RMFRST/P3RMFRST_2.PNG",
-      "/src/assets/img/P3RMFRST/P3RMFRST_3.PNG",
-      "/src/assets/img/P3RMFRST/P3RMFRST_4.PNG",
-      "/src/assets/img/P3RMFRST/P3RMFRST_5.PNG",
+      p3rmfrst1,
+      p3rmfrst2,
+      p3rmfrst3,
+      p3rmfrst4,
+      p3rmfrst5,
     ],
     position: [-5, 4, -5],
     color: "#00ffcc",
@@ -113,10 +127,10 @@ export const CREATIVE_PROJECTS: Project[] = [
     }
   },
 
-  // 03 AURA-MESH (Planet 3)
+  // 03 ALPHEGOR 0.1 (Planet 3)
   {
     id: "3",
-    title: "03 AURA-MESH",
+    title: "03 ALPHEGOR 0.1",
     description:
       "Mallas digitales etéreas que intersectan con la anatomía humana. Un estudio sobre siluetas traslúcidas que reaccionan a la luz volumétrica creando una segunda piel bio-computacional.",
     images: [
@@ -152,10 +166,10 @@ export const CREATIVE_PROJECTS: Project[] = [
     ],
   },
 
-  // 04 LUMINO-WEAVE (Planet 4)
+  // 04 ALPHEGOR 0.2 (Planet 4)
   {
     id: "4",
-    title: "04 LUMINO-WEAVE",
+    title: "04 ALPHEGOR 0.2",
     description:
       "Textiles biométricos inteligentes con emisión de luz adaptativa. Circuitos flexibles y filamentos electroluminiscentes entretejidos que traducen parámetros fisiológicos en pulsaciones luminosas dinámicas.",
     images: [
