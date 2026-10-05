@@ -12,10 +12,10 @@ const translations = {
   es: {
     'overlay.title': 'MIGUEL ALONSO',
     'overlay.subtitle': 'INGENIERO_MODA // DIR_01',
-    'overlay.nav.collections': 'SYS_COLECCIONES',
+    'overlay.nav.collections': 'PROY3CTOS',
     'overlay.nav.concept': 'LOG_CONCEPTOS',
     'overlay.nav.archives': 'ARCHIVO_DATOS',
-    'overlay.nav.universe': 'MAPA_UNIVERSO',
+    'overlay.nav.universe': 'MAPA_CODEX',
     'overlay.designer.title': 'EL_DISEÑADOR',
     'overlay.designer.body': '> UBICACIÓN: MADRID\n> FOCO: SILUETAS ARQUITECTÓNICAS\n> ESTADO: ACTIVO\n\nFusionando brutalismo industrial con marcos anatómicos. Explorando la integridad estructural en entornos de alta gravedad.',
     'overlay.exp.title': 'LOG_EXPERIENCIA',
@@ -59,10 +59,10 @@ const translations = {
   en: {
     'overlay.title': 'MIGUEL ALONSO',
     'overlay.subtitle': 'FASHION_ENGINEER // DIR_01',
-    'overlay.nav.collections': 'SYS_COLLECTIONS',
+    'overlay.nav.collections': 'PROY3CTOS',
     'overlay.nav.concept': 'CONCEPT_LOGS',
     'overlay.nav.archives': 'DATA_ARCHIVES',
-    'overlay.nav.universe': 'UNIVERSE_MAP',
+    'overlay.nav.universe': 'CODEX_MAP',
     'overlay.designer.title': 'THE_DESIGNER',
     'overlay.designer.body': '> LOCATION: MADRID\n> FOCUS: ARCHITECTURAL SILHOUETTES\n> STATUS: ACTIVE\n\nMerging industrial brutalism with anatomical frameworks. Exploring structural integrity in high-gravity environments.',
     'overlay.exp.title': 'LOG_EXPERIENCE',
@@ -108,7 +108,7 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('es');
+  const [language, setLanguage] = useState<Language>('en');
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'es' ? 'en' : 'es');

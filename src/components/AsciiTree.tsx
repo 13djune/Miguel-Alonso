@@ -95,8 +95,8 @@ export default function AsciiTree({
   const creativeProjects = [
     { id: 0, num: '01', title: 'REGNUM' },
     { id: 1, num: '02', title: 'P3RMFRST' },
-    { id: 2, num: '03', title: 'AURA-MESH' },
-    { id: 3, num: '04', title: 'LUMINO-WEAVE' },
+    { id: 2, num: '03', title: 'ALPHEGOR 0.1' },
+    { id: 3, num: '04', title: 'ALPHEGOR 0.2' },
   ];
 
   const industryProjects = [

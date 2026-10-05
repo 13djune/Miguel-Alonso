@@ -76,7 +76,7 @@ export default function Overlay({
             <span className="sm:hidden">{language === 'es' ? 'OBJETIVO' : 'TARGET'}</span>
           </div>
 
-          {/* Unified single [ MAPA_UNIVERSO ] button with centered dropdown */}
+          {/* Unified single [ MAPA_CODEX ] button with centered dropdown */}
           <div className="relative">
             <button
               onClick={() => {
@@ -90,7 +90,7 @@ export default function Overlay({
                   ? 'bg-[#c4ffff] text-black shadow-[0_0_15px_rgba(196,255,255,0.5)]'
                   : 'bg-black text-white hover:bg-white hover:text-black'
               }`}
-              title={isSidebarOpen ? "Cerrar Mapa" : "Abrir Mapa Universo"}
+              title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir Mapa Codex" : "Open Codex Map")}
             >
               <span className="hidden sm:inline">
                 [ {isSidebarOpen
@@ -100,7 +100,7 @@ export default function Overlay({
               <span className="sm:hidden">
                 [ {isSidebarOpen
                   ? (language === 'es' ? 'CERRAR' : 'CLOSE')
-                  : (language === 'es' ? 'MAPA' : 'MAP')} ]
+                  : 'CODEX'} ]
               </span>
               <span className="text-[9px] sm:text-[10px]">
                 {isSidebarOpen ? '▲' : '▼'}
@@ -116,7 +116,7 @@ export default function Overlay({
                 <div className="border-b border-white pb-1.5 flex justify-between items-center w-full">
                   <div className="font-mono text-xs sm:text-sm text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
                     <span className="w-2 h-2 bg-[#c4ffff] animate-pulse shrink-0"></span>
-                    <span className="truncate whitespace-nowrap">[ {language === 'es' ? 'MAPA_UNIVERSO // SYS.NAV' : 'UNIVERSE_MAP // SYS.NAV'} ]</span>
+                    <span className="truncate whitespace-nowrap">[ {language === 'es' ? 'MAPA_CODEX // SYS.NAV' : 'CODEX_MAP // SYS.NAV'} ]</span>
                   </div>
                   <button
                     onClick={() => setIsSidebarOpen(false)}
@@ -177,43 +177,43 @@ export default function Overlay({
             )}
           </div>
 
-          {/* Collections Link - strictly kept inline with no wrap */}
+          {/* PROY3CTOS Button - strictly identical box styling as MAPA_UNIVERSO on the left */}
           <a
             href="#"
+            role="button"
             onClick={(e) => {
               e.preventDefault();
               onOpenCollections?.();
             }}
-            className="cursor-target hover:text-[#c4ffff] hover:bg-[#c4ffff]/10 px-1.5 sm:px-2.5 py-1 sm:py-1.5 border border-transparent hover:border-[#ffffff]/50 transition-all whitespace-nowrap text-white text-[10px] sm:text-xs font-mono uppercase tracking-wider shrink-0 pulse-tactile"
+            className="cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 border border-white transition-colors whitespace-nowrap shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.15)] pulse-tactile bg-black text-white hover:bg-white hover:text-black"
+            title="PROY3CTOS"
           >
-            <span className="hidden sm:inline">[ {t('overlay.nav.collections')} ]</span>
-            <span className="sm:hidden">[ {language === 'es' ? 'COLECCIONES' : 'COLLECTIONS'} ]</span>
+            <span>[ PROY3CTOS ]</span>
           </a>
         </div>
 
-        {/* Center: System Mode Indicator (Universe Mode) */}
-        {appMode === 'universe' && (
-          <div className="hidden lg:flex items-center gap-2 font-mono text-[10px] sm:text-xs tracking-widest uppercase text-white/90 bg-white/10 px-2.5 py-1 border border-white/30 shrink-0">
-            <Compass size={12} className="text-[#c4ffff] animate-spin" style={{ animationDuration: '12s' }} />
-            <span>
-              SYS: {activeUniverse === 'all'
-                ? (language === 'es' ? 'SYS.TODOS' : 'SYS.ALL')
-                : activeUniverse === 'creative'
-                  ? (language === 'es' ? 'CREATIVO.SYS' : 'CREATIVE.SYS')
-                  : (language === 'es' ? 'INDUSTRIA.SYS' : 'INDUSTRY.SYS')}
-            </span>
-          </div>
-        )}
+        {/* Right: System Mode Indicator (Universe Mode) placed right next to Language Switcher */}
+        <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto shrink-0">
+          {appMode === 'universe' && (
+            <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-xs tracking-widest uppercase text-white/90 bg-white/10 px-2 sm:px-2.5 py-1 sm:py-1.5 border border-white/40 shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+              <Compass size={12} className="text-[#c4ffff] animate-spin shrink-0" style={{ animationDuration: '12s' }} />
+              <span className="whitespace-nowrap">
+                SYS: {activeUniverse === 'all'
+                  ? (language === 'es' ? 'SYS.TODOS' : 'SYS.ALL')
+                  : activeUniverse === 'creative'
+                    ? (language === 'es' ? 'CREATIVO.SYS' : 'CREATIVE.SYS')
+                    : (language === 'es' ? 'INDUSTRIA.SYS' : 'INDUSTRY.SYS')}
+              </span>
+            </div>
+          )}
 
-        {/* Right: Language Switcher (swapped from bottom bar to header) */}
-        <div className="flex items-center pointer-events-auto shrink-0">
           <StarBorder
             as="button"
             onClick={toggleLanguage}
             color="#c4ffff"
             speed="3s"
             className="cursor-crosshair p-0 pointer-events-auto shrink-0"
-            title={language === 'es' ? 'Cambiar a Inglés' : 'Cambiar a Español'}
+            title={language === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'}
           >
             <div className="font-mono text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 text-white hover:bg-white hover:text-black transition-colors uppercase bg-black border border-white/60 hover:border-white whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.15)] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
