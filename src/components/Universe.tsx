@@ -307,7 +307,8 @@ function ProjectNode({
         {" "}
         <div
           ref={targetRef}
-          className="font-mono whitespace-nowrap opacity-90 transition-opacity duration-300 pointer-events-none"
+          className="font-mono whitespace-nowrap opacity-90 transition-opacity duration-300 pointer-events-none cursor-target"
+          data-interactive="true"
           style={{ color: "#ffffff" }}
         >
           {" "}

@@ -116,6 +116,33 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-t
   max-height: calc(100vh - 110px);
 }
 
+/* Focus mode: Profile radar chart styling - unselectable, no cursor highlight except vertex dots on hover */
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1),
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) text {
+  pointer-events: none !important;
+  user-select: none !important;
+  cursor: default !important;
+}
+
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) .recharts-polar-grid,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) .recharts-polar-angle-axis,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) .recharts-polar-radius-axis,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) polygon.recharts-radar-polygon,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) polygon {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) .radar-vertex-group,
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > svg:nth-of-type(1) .radar-vertex-hitbox {
+  pointer-events: all !important;
+}
+
 /* Zero scroll on sys.nav */
 #sys-nav-modal, #sys-nav-modal * {
   overflow: hidden !important;

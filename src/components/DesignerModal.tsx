@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ExternalLink, Instagram, Linkedin, Mail } from 'lucide-react';
 import {
@@ -16,6 +16,83 @@ import { useLanguage } from '../context/LanguageContext';
 import StarBorder from './StarBorder';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import AsciiImage from './AsciiImage';
+
+interface RadarVertexDotProps {
+  cx?: number;
+  cy?: number;
+  value?: number;
+  index?: number;
+}
+
+function RadarVertexDot({ cx, cy, value, index }: RadarVertexDotProps) {
+  const [hovered, setHovered] = useState(false);
+
+  if (typeof cx !== 'number' || typeof cy !== 'number' || isNaN(cx) || isNaN(cy)) {
+    return null;
+  }
+
+  return (
+    <g
+      key={`vertex-dot-${index}`}
+      className="radar-vertex-group"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ pointerEvents: 'all', cursor: 'crosshair' }}
+    >
+      {/* Invisible hover hitbox covering vertex area */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={14}
+        fill="transparent"
+        className="radar-vertex-hitbox"
+        style={{ pointerEvents: 'all', cursor: 'crosshair' }}
+      />
+      {/* Vertex dot - ONLY visible when hovering over the vertex */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={hovered ? 4.5 : 0}
+        fill="#c4ffff"
+        stroke="#ffffff"
+        strokeWidth={1.5}
+        className="transition-all duration-150"
+        style={{
+          opacity: hovered ? 1 : 0,
+          pointerEvents: 'none',
+          filter: hovered ? 'drop-shadow(0 0 6px rgba(196, 255, 255, 0.95))' : 'none',
+        }}
+      />
+      {/* Mini score HUD pill that appears with the vertex dot */}
+      {hovered && (
+        <g style={{ pointerEvents: 'none', userSelect: 'none' }}>
+          <rect
+            x={cx - 16}
+            y={cy - 22}
+            width={32}
+            height={15}
+            fill="#000000"
+            stroke="#c4ffff"
+            strokeWidth={1}
+            rx={1}
+          />
+          <text
+            x={cx}
+            y={cy - 11}
+            textAnchor="middle"
+            fill="#c4ffff"
+            fontSize={9}
+            fontFamily="monospace"
+            fontWeight="bold"
+            style={{ pointerEvents: 'none', userSelect: 'none' }}
+          >
+            {typeof value === 'number' ? value.toFixed(1) : value}
+          </text>
+        </g>
+      )}
+    </g>
+  );
+}
 
 interface DesignerModalProps {
   onClose: () => void;
@@ -146,25 +223,41 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
           </div>
 
           {/* Skills Radar */}
-          <div className="lg:col-span-1 bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content flex flex-col min-w-0">
-            <div className="flex justify-between items-center mb-4 sm:mb-6 border-b border-white pb-3 sm:pb-4">
-              <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate">
+          <div className="lg:col-span-1 bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content flex flex-col min-w-0 select-none">
+            <div className="flex justify-between items-center mb-4 sm:mb-6 border-b border-white pb-3 sm:pb-4 select-none">
+              <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate select-none">
                 <SkillsIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
                 <span className="truncate">{t('skills.title')}</span>
               </h3>
             </div>
-            <div className="flex-1 w-full flex items-center justify-center min-h-[260px] sm:min-h-[300px] md:min-h-[340px]">
+            <div className="flex-1 w-full flex items-center justify-center min-h-[260px] sm:min-h-[300px] md:min-h-[340px] select-none">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart
                   cx="50%"
                   cy="50%"
                   outerRadius="65%"
                   data={skillsData}
+                  className="select-none"
                 >
-                  <PolarGrid stroke="#ffffff" strokeOpacity={0.3} />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#ffffff', fontSize: 9, fontFamily: 'monospace' }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 5]} tickCount={6} tick={false} axisLine={false} />
-                  <Radar name="Skills" dataKey="A" stroke="#ffffff" strokeWidth={2} fill="#ffffff" fillOpacity={0.2} />
+                  <PolarGrid stroke="#ffffff" strokeOpacity={0.3} style={{ pointerEvents: 'none', userSelect: 'none' }} />
+                  <PolarAngleAxis
+                    dataKey="subject"
+                    tick={{ fill: '#ffffff', fontSize: 9, fontFamily: 'monospace' }}
+                    style={{ pointerEvents: 'none', userSelect: 'none' }}
+                  />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} tickCount={6} tick={false} axisLine={false} style={{ pointerEvents: 'none', userSelect: 'none' }} />
+                  <Radar
+                    name="Skills"
+                    dataKey="A"
+                    stroke="#ffffff"
+                    strokeWidth={2}
+                    fill="#ffffff"
+                    fillOpacity={0.2}
+                    isAnimationActive={false}
+                    dot={(dotProps: any) => (
+                      <RadarVertexDot key={`radar-vertex-${dotProps.index}`} {...dotProps} />
+                    )}
+                  />
                 </RadarChart>
               </ResponsiveContainer>
             </div>

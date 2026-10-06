@@ -7,6 +7,46 @@
     <meta name="description" content="An immersive 3D fashion design portfolio featuring interactive planets, an HTML/Tailwind overlay for CV and details, and a 3D garment viewer." />
     <meta property="og:title" content="Remix Miguel Alonso - Fashion Designer Portfolio" />
     <meta property="og:description" content="An immersive 3D fashion design portfolio featuring interactive planets, an HTML/Tailwind overlay for CV and details, and a 3D garment viewer." />
+    <script>
+      (function() {
+        if (typeof Node !== 'undefined' && Node.prototype) {
+          var origRemove = Node.prototype.removeChild;
+          Node.prototype.removeChild = function(child) {
+            if (child && child.parentNode !== this) {
+              if (child.parentNode) {
+                return origRemove.call(child.parentNode, child);
+              }
+              return child;
+            }
+            return origRemove.call(this, child);
+          };
+
+          var origInsert = Node.prototype.insertBefore;
+          Node.prototype.insertBefore = function(newNode, refNode) {
+            if (refNode && refNode.parentNode !== this) {
+              if (refNode.parentNode) {
+                return origInsert.call(refNode.parentNode, newNode, refNode);
+              }
+              return this.appendChild(newNode);
+            }
+            return origInsert.call(this, newNode, refNode);
+          };
+        }
+
+        window.addEventListener('error', function(event) {
+          var msg = (event && (event.message || (event.error && event.error.message))) || '';
+          if (
+            msg.indexOf('removeChild') !== -1 ||
+            msg.indexOf('The node to be removed is not a child of this node') !== -1 ||
+            msg.indexOf('NotFoundError') !== -1
+          ) {
+            if (event.preventDefault) event.preventDefault();
+            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

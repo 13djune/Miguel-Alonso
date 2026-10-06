@@ -57,6 +57,10 @@ function CameraController({
       isFollowing.current = true;
     } else {
       isFollowing.current = false;
+      const aspect =
+        typeof window !== "undefined"
+          ? window.innerWidth / Math.max(window.innerHeight, 1)
+          : 1.6;
       const isMobile =
         window.innerWidth < 768 || window.innerHeight > window.innerWidth;
 
@@ -67,20 +71,20 @@ function CameraController({
 
       let camX, camY, camZ;
       if (activeUniverse === "all") {
-        // Initial zoom distance ~ 10, Z = 10
-        camX = -7.67;
-        camY = 2.5;
-        camZ = 10.0;
+        // Balanced center between Creative (Z=-2, X=-11) and Industry (Z=+2, X=-1)
+        // Perspective compensation: Industry is closer (+2Z), so camera at X=-4.8 gives equal framing to both systems
+        camX = -4.8;
+        camY = 2.2;
+        camZ = Math.max(11.0, 16.0 / Math.min(aspect, 1.7));
       } else {
-        // Initial zoom distance ~ 8.6, Z = 8.28
-        camX = -7.38;
-        camY = 2.07;
-        camZ = 8.28;
+        camX = -6.0;
+        camY = 2.0;
+        camZ = Math.max(8.5, 11.5 / Math.min(aspect, 1.6));
       }
 
       if (isMobile) {
-        camY *= 1.5;
-        camZ *= 1.5;
+        camY *= 1.25;
+        camZ *= 1.25;
       }
 
       tl.to(
@@ -289,13 +293,20 @@ export default function App() {
           <Canvas
             camera={{
               position: [
-                -7.67,
+                -4.8,
                 typeof window !== "undefined" && window.innerWidth < 768
-                  ? 3.75
-                  : 2.5,
-                typeof window !== "undefined" && window.innerWidth < 768
-                  ? 15.0
-                  : 10.0,
+                  ? 3.2
+                  : 2.2,
+                typeof window !== "undefined"
+                  ? Math.max(
+                      11.0,
+                      16.0 /
+                        Math.min(
+                          window.innerWidth / Math.max(window.innerHeight, 1),
+                          1.7,
+                        ),
+                    ) * (window.innerWidth < 768 ? 1.25 : 1)
+                  : 12.0,
               ],
               fov: 45,
             }}
@@ -330,7 +341,7 @@ export default function App() {
               enablePan={false}
               enableZoom={!modalActive}
               minDistance={2}
-              maxDistance={activeUniverse === "all" ? 15 : 10}
+              maxDistance={activeUniverse === "all" ? 35 : 25}
               makeDefault
               autoRotate={false}
               autoRotateSpeed={0.5}
