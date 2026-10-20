@@ -7,6 +7,7 @@ interface AsciiTreeProps {
   onSelectProject?: (index: number) => void;
   onSetUniverse?: (universe: 'all' | 'creative' | 'industry') => void;
   onEnterUniverse?: () => void;
+  onOpenDesigner?: () => void;
 }
 
 const Clickable = ({
@@ -102,15 +103,123 @@ const ProjectItem = ({
   );
 };
 
+/**
+ * MainMenuButton: High-impact cyber-brutalist ASCII-framed button.
+ * Used for both [ SYS.VOID CORE ] and [ PERFIL // VER PERFIL ] to ensure
+ * they share the exact same structural design, typography, borders, and tactile interactions.
+ */
+const MainMenuButton = ({
+  title,
+  actionLabel,
+  icon,
+  onClick,
+  isOpen,
+  tooltip,
+}: {
+  title: string;
+  actionLabel?: string;
+  icon: string;
+  onClick: () => void;
+  isOpen?: boolean;
+  tooltip?: string;
+}) => {
+  const [hovered, setHovered] = useState(false);
+  const [active, setActive] = useState(false);
+  const isLit = hovered || active || isOpen;
+
+  return (
+    <button
+      type="button"
+      title={tooltip}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onMouseDown={() => setActive(true)}
+      onMouseUp={() => setActive(false)}
+      onTouchStart={() => setActive(true)}
+      onTouchEnd={() => setActive(false)}
+      className="cursor-crosshair w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] select-none transition-all duration-200 flex flex-col items-center group font-mono pulse-tactile text-left"
+    >
+      {/* Top ASCII border line with corners */}
+      <div
+        className={`w-full flex items-center justify-between transition-colors duration-150 text-[10px] sm:text-xs select-none ${
+          isLit ? 'text-white' : 'text-white/60'
+        }`}
+      >
+        <span>┌</span>
+        <span className="flex-1 border-t border-current mx-0.5 opacity-70"></span>
+        <span>┐</span>
+      </div>
+
+      {/* Center content row with side vertical borders */}
+      <div
+        className={`w-full flex items-center justify-between px-2.5 sm:px-3.5 py-1.5 sm:py-2 transition-all duration-200 border-x select-none ${
+          isLit
+            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(196,255,255,0.7)]'
+            : 'bg-black/90 text-white border-white/70 group-hover:border-white'
+        }`}
+      >
+        <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+          <span
+            className={`w-1.5 h-1.5 sm:w-2 sm:h-2 shrink-0 transition-colors ${
+              isLit ? 'bg-black' : 'bg-[#c4ffff] animate-pulse'
+            }`}
+          />
+          <span className="font-bold text-[11px] sm:text-xs md:text-[13px] tracking-wider uppercase truncate">
+            {title}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          {actionLabel && (
+            <span
+              className={`text-[8px] sm:text-[9px] tracking-wider uppercase hidden sm:inline transition-colors font-semibold ${
+                isLit ? 'text-black/80' : 'text-white/50'
+              }`}
+            >
+              {actionLabel}
+            </span>
+          )}
+          <span
+            className={`font-mono text-[10px] sm:text-xs font-bold px-1.5 py-0.5 border transition-all ${
+              isLit
+                ? 'border-black text-black bg-black/10'
+                : 'border-white/50 text-[#c4ffff] bg-white/5 group-hover:border-white'
+            }`}
+          >
+            {icon}
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom ASCII border line with corners */}
+      <div
+        className={`w-full flex items-center justify-between transition-colors duration-150 text-[10px] sm:text-xs select-none ${
+          isLit ? 'text-white' : 'text-white/60'
+        }`}
+      >
+        <span>└</span>
+        <span className="flex-1 border-b border-current mx-0.5 opacity-70"></span>
+        <span>┘</span>
+      </div>
+    </button>
+  );
+};
+
 export default function AsciiTree({
   appMode,
   activeUniverse = 'all',
   onSelectProject,
   onSetUniverse,
   onEnterUniverse,
+  onOpenDesigner,
 }: AsciiTreeProps) {
   const { language } = useLanguage();
   const isES = language === 'es';
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Clicking NÚCLEO goes directly to the 2 systems in 3D
   const handleNucleo = () => {
@@ -155,13 +264,13 @@ export default function AsciiTree({
     { id: 7, num: '08', title: isES ? 'ACCESORIOS' : 'ACCESSORIES' },
   ];
 
-  // 1. MOBILE / DROPDOWN VERTICAL SCHEMATIC
-  const verticalTree = (
+  // 1. CODEX MAP MODE (Used inside the header dropdown when appMode === 'universe')
+  const codexMapTree = (
     <div
       className={`font-mono text-white opacity-95 whitespace-pre pointer-events-auto overflow-hidden flex flex-col items-center w-full select-none ${
         isUniverseMode
           ? 'text-[10px] sm:text-[11px] leading-[1.35]'
-          : 'text-xs leading-normal sm:leading-relaxed md:hidden'
+          : 'text-xs leading-normal sm:leading-relaxed'
       }`}
     >
       {/* Root Node: Core / System Title */}
@@ -202,7 +311,6 @@ export default function AsciiTree({
 
       {/* Vertical Branches */}
       <div className="flex flex-col w-full max-w-[340px] px-2 sm:px-4">
-        {/* If ALL: Show both systems with full branches */}
         {activeUniverse === 'all' && (
           <>
             {/* Creative Branch */}
@@ -232,7 +340,6 @@ export default function AsciiTree({
               </div>
             ))}
 
-            {/* Stem between universes */}
             <span className="text-white/60 whitespace-pre">{"  │"}</span>
 
             {/* Industry Branch */}
@@ -264,7 +371,6 @@ export default function AsciiTree({
           </>
         )}
 
-        {/* If CREATIVE ONLY: Show ONLY creative projects */}
         {activeUniverse === 'creative' && (
           <>
             {creativeProjects.map((p, idx) => (
@@ -283,7 +389,6 @@ export default function AsciiTree({
           </>
         )}
 
-        {/* If INDUSTRY ONLY: Show ONLY industry projects */}
         {activeUniverse === 'industry' && (
           <>
             {industryProjects.map((p, idx) => (
@@ -305,77 +410,157 @@ export default function AsciiTree({
     </div>
   );
 
-  // 2. DESKTOP HORIZONTAL SCHEMATIC (Shown ONLY on desktop in terminal mode)
-  const desktopHorizontalTree = (
-    <div className="hidden md:flex font-mono text-xs md:text-[13px] leading-relaxed text-white opacity-95 pointer-events-auto flex-col items-center w-full select-none py-2">
-      {/* Centered Root Core Node */}
-      <div className="flex flex-col items-center text-center">
-        <span>{"┌───────────────────────┐"}</span>
-        <span>
-          {"│  "}
-          <Clickable
-            text={
-              activeUniverse === 'all'
-                ? (isES ? "[ SYS.VOID NÚCLEO ]" : "[  SYS.VOID CORE  ]")
-                : activeUniverse === 'creative'
-                  ? (isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]")
-                  : (isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]")
-            }
-            onClick={
-              activeUniverse === 'all'
-                ? handleNucleo
-                : activeUniverse === 'creative'
-                  ? handleCreative
-                  : handleIndustry
-            }
-            color={activeUniverse === 'all' ? "#ffffff" : "#c4ffff"}
-            className="font-bold tracking-wider text-sm text-white"
-            title={
-              activeUniverse === 'all'
-                ? (isES ? "Acceder a ambos sistemas en 3D" : "Access both 3D systems")
-                : activeUniverse === 'creative'
-                  ? (isES ? "Sistema creativo en 3D" : "Creative system in 3D")
-                  : (isES ? "Sistema industria en 3D" : "Industry system in 3D")
-            }
-          />
-          {"  │"}
-        </span>
-        <span>{"└───────────┬───────────┘"}</span>
-        <span className="text-white/70">{"            │"}</span>
-      </div>
-
-      {activeUniverse === 'all' && (
-        <>
-          {/* Horizontal Branching Connector */}
-          <div className="w-full max-w-[540px] lg:max-w-[580px] flex flex-col items-center">
-            <div className="w-full flex items-center justify-between px-10 lg:px-12 text-white/60 select-none">
-              <span>{"┌────────────────"}</span>
-              <span>{"┴"}</span>
-              <span>{"────────────────┐"}</span>
-            </div>
-            <div className="w-full flex items-center justify-between px-10 lg:px-12 text-[#c4ffff] font-bold select-none">
-              <span>{"▼"}</span>
-              <span>{"▼"}</span>
-            </div>
+  // 2. TERMINAL SCREEN: Intuitive Portfolio Hub
+  // Features SYS.VOID CORE, an expanding dropdown that displaces the PERFIL button downwards,
+  // with identical button design for SYS.VOID and PERFIL.
+  if (appMode === 'terminal') {
+    return (
+      <div className="w-full flex flex-col items-center select-none py-0.5">
+        {/* Terminal Header Info */}
+        <div className="w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] flex items-center justify-between border-b border-white/30 pb-1 mb-2 font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-white/80">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+            <span className="font-bold text-white">[ SYS.TERMINAL // CORE ]</span>
           </div>
+          <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-white/60">
+            <span>DIR: 01</span>
+            <span>//</span>
+            <span className="text-[#c4ffff] font-bold">ONLINE</span>
+          </div>
+        </div>
 
-          {/* Dual Column Layout: Left Creative & Right Industry */}
-          <div className="grid grid-cols-2 gap-8 lg:gap-12 w-full max-w-[580px] lg:max-w-[620px] mt-1 px-4">
-            {/* Left Column: Creative Universe */}
-            <div className="flex flex-col">
-              <div className="pb-1">
+        {/* Central Vertical Stack: SYS.VOID CORE -> Dropdown (displaces down) -> PERFIL */}
+        <div className="w-full flex flex-col items-center">
+          {/* 1. Primary Button: SYS.VOID CORE */}
+          <MainMenuButton
+            title={isES ? '[ SYS.VOID NÚCLEO ]' : '[ SYS.VOID CORE ]'}
+            actionLabel={isES ? (isDropdownOpen ? 'CERRAR' : 'DESPLEGAR') : (isDropdownOpen ? 'CLOSE' : 'EXPAND')}
+            icon={isDropdownOpen ? '▲' : '▼'}
+            isOpen={isDropdownOpen}
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            tooltip={isES ? 'Desplegar navegación del universo 3D' : 'Expand 3D universe navigation'}
+          />
+
+          {/* 2. Collapsible Dropdown: Unfolds downwards, smoothly displacing the button below */}
+          <div
+            className={`w-full overflow-hidden transition-all duration-400 ease-in-out flex flex-col items-center ${
+              isDropdownOpen
+                ? 'max-h-[500px] opacity-100 my-1 scale-100'
+                : 'max-h-0 opacity-0 my-0 scale-95 pointer-events-none'
+            }`}
+          >
+            {/* Top stem from SYS.VOID CORE */}
+            <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
+              <span>│</span>
+              <span className="text-[#c4ffff] font-bold">▼</span>
+            </div>
+
+            {/* Quick Explore 3D Portfolio Button */}
+            <button
+              type="button"
+              onClick={handleNucleo}
+              className="font-mono text-[10px] sm:text-xs font-bold tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 border border-[#c4ffff] bg-black/90 text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black transition-all cursor-crosshair shadow-[0_0_10px_rgba(196,255,255,0.25)] hover:shadow-[0_0_15px_rgba(196,255,255,0.6)] uppercase flex items-center justify-center gap-1.5 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] pulse-tactile my-0.5"
+              title={isES ? "Acceder al portfolio en 3D" : "Access 3D portfolio"}
+            >
+              <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-ping"></span>
+              <span>{isES ? '[ ✦ EXPLORAR TODO EL PORTFOLIO 3D ]' : '[ ✦ EXPLORE FULL 3D PORTFOLIO ]'}</span>
+            </button>
+            <span className="text-[8px] sm:text-[9px] font-mono text-white/60 bg-black/60 px-2 py-0.5 tracking-wider uppercase text-center mb-0.5 select-none border border-white/10">
+              {isES ? '> ACCESO DIRECTO // NAVEGACIÓN LIBRE' : '> DIRECT ACCESS // FREE NAVIGATION'}
+            </span>
+
+            {/* Desktop Branching (Side-by-side columns) */}
+            <div className="hidden md:flex flex-col items-center w-full max-w-[440px]">
+              <div className="w-full flex flex-col items-center select-none leading-none my-0.5">
+                <span className="text-white/60 font-mono text-[10px]">{"│"}</span>
+                <div className="w-full flex items-center justify-between px-8 text-white/60 font-mono text-[10px]">
+                  <span>{"┌────────────────"}</span>
+                  <span>{"┴"}</span>
+                  <span>{"────────────────┐"}</span>
+                </div>
+                <div className="w-full flex items-center justify-between px-8 text-[#c4ffff] font-bold font-mono text-[10px]">
+                  <span>{"▼"}</span>
+                  <span>{"▼"}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5 w-full px-1 font-mono text-[10px] sm:text-[11px]">
+                {/* Left: Creative */}
+                <div className="flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+                  <div className="flex items-center justify-between border-b border-white/20 pb-0.5 mb-1">
+                    <Clickable
+                      text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
+                      onClick={handleCreative}
+                      color="#c4ffff"
+                      className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+                      title={isES ? "Acceder al sistema creativo en 3D" : "Access creative system in 3D"}
+                    />
+                    <span className="text-[8px] text-white/50 uppercase">
+                      {isES ? 'MODA' : 'FASHION'}
+                    </span>
+                  </div>
+                  {creativeProjects.map((p, idx) => (
+                    <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
+                      <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
+                        {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
+                      </span>
+                      <ProjectItem
+                        num={p.num}
+                        title={p.title}
+                        onClick={() => handleProject(p.id)}
+                        tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Right: Industry */}
+                <div className="flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
+                  <div className="flex items-center justify-between border-b border-white/20 pb-0.5 mb-1">
+                    <Clickable
+                      text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
+                      onClick={handleIndustry}
+                      color="#c4ffff"
+                      className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+                      title={isES ? "Acceder al sistema industria en 3D" : "Access industry system in 3D"}
+                    />
+                    <span className="text-[8px] text-white/50 uppercase">
+                      {isES ? 'CAD/TECH' : 'CAD/TECH'}
+                    </span>
+                  </div>
+                  {industryProjects.map((p, idx) => (
+                    <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
+                      <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
+                        {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
+                      </span>
+                      <ProjectItem
+                        num={p.num}
+                        title={p.title}
+                        onClick={() => handleProject(p.id)}
+                        tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Branching (Stacked lists) */}
+            <div className="md:hidden flex flex-col w-full max-w-[320px] px-2 py-1.5 bg-black/90 backdrop-blur-md border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)] font-mono text-[10px] sm:text-[11px] mt-0.5 select-none">
+              {/* Creative branch */}
+              <div className="flex items-center mt-0.5">
+                <span className="text-[#c4ffff] font-bold mr-1">├──►</span>
                 <Clickable
                   text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
                   onClick={handleCreative}
                   color="#c4ffff"
-                  className="font-bold tracking-wider text-xs md:text-sm text-[#c4ffff]"
-                  title={isES ? "Acceder al sistema creativo en 3D" : "Access creative system in 3D"}
+                  className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+                  title={isES ? "Acceder al sistema creativo" : "Access creative system"}
                 />
               </div>
-              <span className="text-white/60 pl-1 whitespace-pre">{"│"}</span>
               {creativeProjects.map((p, idx) => (
-                <div key={p.id} className="flex items-center pl-1 whitespace-nowrap">
-                  <span className="text-[#c4ffff] font-bold select-none mr-1.5 whitespace-pre">
+                <div key={p.id} className="flex items-center pl-3 py-0.25">
+                  <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
                     {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
                   </span>
                   <ProjectItem
@@ -386,23 +571,21 @@ export default function AsciiTree({
                   />
                 </div>
               ))}
-            </div>
 
-            {/* Right Column: Industry Universe */}
-            <div className="flex flex-col">
-              <div className="pb-1">
+              {/* Industry branch */}
+              <div className="flex items-center mt-1">
+                <span className="text-[#c4ffff] font-bold mr-1">└──►</span>
                 <Clickable
                   text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
                   onClick={handleIndustry}
                   color="#c4ffff"
-                  className="font-bold tracking-wider text-xs md:text-sm text-[#c4ffff]"
-                  title={isES ? "Acceder al sistema industria en 3D" : "Access industry system in 3D"}
+                  className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+                  title={isES ? "Acceder al sistema industria" : "Access industry system"}
                 />
               </div>
-              <span className="text-white/60 pl-1 whitespace-pre">{"│"}</span>
               {industryProjects.map((p, idx) => (
-                <div key={p.id} className="flex items-center pl-1 whitespace-nowrap">
-                  <span className="text-[#c4ffff] font-bold select-none mr-1.5 whitespace-pre">
+                <div key={p.id} className="flex items-center pl-3 py-0.25">
+                  <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
                     {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
                   </span>
                   <ProjectItem
@@ -414,62 +597,42 @@ export default function AsciiTree({
                 </div>
               ))}
             </div>
-          </div>
-        </>
-      )}
 
-      {activeUniverse === 'creative' && (
-        <div className="flex flex-col items-center mt-1">
-          <span className="text-[#c4ffff] font-bold select-none">{"▼"}</span>
-          <div className="flex flex-col mt-1 px-4">
-            {creativeProjects.map((p, idx) => (
-              <div key={p.id} className="flex items-center pl-1 whitespace-nowrap">
-                <span className="text-[#c4ffff] font-bold select-none mr-1.5 whitespace-pre">
-                  {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
-                </span>
-                <ProjectItem
-                  num={p.num}
-                  title={p.title}
-                  onClick={() => handleProject(p.id)}
-                  tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                />
-              </div>
-            ))}
+            {/* Stem connecting downwards to the displaced Profile button */}
+            <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
+              <span>│</span>
+              <span className="text-[#c4ffff] font-bold">▼</span>
+            </div>
           </div>
+
+          {/* Stem when closed */}
+          {!isDropdownOpen && (
+            <div className="flex flex-col items-center text-white/50 font-mono text-[10px] select-none my-1">
+              <span>│</span>
+            </div>
+          )}
+
+          {/* 3. Secondary Button: PERFIL (Same design as SYS.VOID CORE, displaced downwards when dropdown expands) */}
+          <MainMenuButton
+            title={isES ? '[ PERFIL // VER PERFIL ]' : '[ PROFILE // VIEW PROFILE ]'}
+            actionLabel={isES ? 'EL_DISEÑADOR' : 'THE_DESIGNER'}
+            icon="→"
+            onClick={() => {
+              if (onOpenDesigner) onOpenDesigner();
+            }}
+            tooltip={isES ? 'Abrir perfil del diseñador Miguel Alonso' : 'Open designer profile for Miguel Alonso'}
+          />
         </div>
-      )}
 
-      {activeUniverse === 'industry' && (
-        <div className="flex flex-col items-center mt-1">
-          <span className="text-[#c4ffff] font-bold select-none">{"▼"}</span>
-          <div className="flex flex-col mt-1 px-4">
-            {industryProjects.map((p, idx) => (
-              <div key={p.id} className="flex items-center pl-1 whitespace-nowrap">
-                <span className="text-[#c4ffff] font-bold select-none mr-1.5 whitespace-pre">
-                  {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
-                </span>
-                <ProjectItem
-                  num={p.num}
-                  title={p.title}
-                  onClick={() => handleProject(p.id)}
-                  tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                />
-              </div>
-            ))}
-          </div>
+        {/* Bottom Helper Hint */}
+        <div className="mt-2 pt-1 border-t border-white/20 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] text-center font-mono text-[8px] sm:text-[9px] text-white/50 tracking-wider uppercase select-none">
+          {isES
+            ? '> CLICK EN SYS.VOID PARA DESPLEGAR PROYECTOS // PERFIL PARA DATOS'
+            : '> CLICK SYS.VOID TO EXPAND PROJECTS // PROFILE FOR DETAILS'}
         </div>
-      )}
-    </div>
-  );
-
-  if (appMode === 'terminal') {
-    return (
-      <>
-        {verticalTree}
-        {desktopHorizontalTree}
-      </>
+      </div>
     );
   }
 
-  return verticalTree;
+  return codexMapTree;
 }

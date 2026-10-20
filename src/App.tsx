@@ -1,10 +1,4 @@
-import IntroCurtain from "./components/IntroCurtain";
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
@@ -18,11 +12,13 @@ import CollectionsView from "./components/CollectionsView";
 import DesignerModal from "./components/DesignerModal";
 import { Project } from "./types";
 import { LanguageProvider } from "./context/LanguageContext";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import TargetCursor from "./components/TargetCursor";
 import LoaderFallback from "./components/LoaderFallback";
 import { Suspense } from "react";
 import { INDUSTRY_PROJECTS } from "./data/industryProjects";
 import { CREATIVE_PROJECTS } from "./data/creativeProjects";
+import IntroCurtain from "./components/IntroCurtain";
 
 function CameraDebug() {
   const { camera, pointer } = useThree();
@@ -134,13 +130,8 @@ const PROJECTS: Project[] = [
   ...INDUSTRY_PROJECTS,
 ];
 
-function MovingStars() {
+function MovingStars({ isLight = false }: { isLight?: boolean }) {
   const starsRef = useRef<THREE.Group>(null);
-
-  // Stars are static now as requested
-  useFrame(() => {
-    // No rotation
-  });
 
   return (
     <group ref={starsRef}>
@@ -203,7 +194,8 @@ function DynamicBloom({
   );
 }
 
-export default function App() {
+function AppContent() {
+  const { theme, toggleTheme, isLight } = useTheme();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [modalActive, setModalActive] = useState(false);
   const [designerModalActive, setDesignerModalActive] = useState(false);
@@ -277,9 +269,11 @@ export default function App() {
   };
 
   return (
-    <LanguageProvider>
-      <div className="w-full h-[100dvh] min-h-screen bg-black overflow-hidden relative font-sans text-white select-none">
-        <IntroCurtain onComplete={() => setAppMode("terminal")} />
+    <>
+      <div
+        className="w-full h-[100dvh] min-h-screen bg-black text-white overflow-hidden relative font-sans select-none"
+      >
+      <IntroCurtain onComplete={() => setAppMode("terminal")} isLight={false} />
 
         {/* Cyber Brutalist Grid */}
         <div className="absolute inset-0 bg-cyber-grid z-0 pointer-events-none"></div>
@@ -324,7 +318,7 @@ export default function App() {
             <CameraDebug />
 
             <Suspense fallback={<LoaderFallback />}>
-              <MovingStars />
+              <MovingStars isLight={isLight} />
               <group position={[-6, 0, 0]}>
                 <Universe
                   projects={PROJECTS}
@@ -332,6 +326,7 @@ export default function App() {
                   selectedProject={selectedProject}
                   activeUniverse={activeUniverse}
                   appMode={appMode}
+                  isLight={isLight}
                 />
               </group>
             </Suspense>
@@ -364,6 +359,9 @@ export default function App() {
               onOpenDesigner={() => setDesignerModalActive(true)}
               onSelectProject={(index) => handlePlanetClick(PROJECTS[index])}
               onOpenCollections={() => setCollectionsModalActive(true)}
+              isLight={isLight}
+              theme={theme}
+              onToggleTheme={toggleTheme}
             />
           )}
         </div>
@@ -385,6 +383,7 @@ export default function App() {
                   (p) => p.id === selectedProject.id,
                 )}
                 totalProjects={PROJECTS.length}
+                isLight={isLight}
               />
             )}
           </div>
@@ -392,7 +391,10 @@ export default function App() {
 
         {/* Designer Modal */}
         {designerModalActive && (
-          <DesignerModal onClose={() => setDesignerModalActive(false)} />
+          <DesignerModal
+            onClose={() => setDesignerModalActive(false)}
+            isLight={isLight}
+          />
         )}
 
         {/* Collections Modal */}
@@ -404,10 +406,25 @@ export default function App() {
               setCollectionsModalActive(false);
               handlePlanetClick(project);
             }}
+            isLight={isLight}
           />
         )}
       </div>
-      <TargetCursor appMode={appMode} />
-    </LanguageProvider>
+      <TargetCursor
+        appMode={appMode}
+        cursorColor="#ffffff"
+        cursorColorOnTarget="#c4ffff"
+      />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

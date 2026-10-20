@@ -81,6 +81,7 @@ export const CREATIVE_PROJECTS: Project[] = [
     description:
       "Indumentaria expedicionaria subcero bajo estética brutalista. Abrigos gabardina envolventes con cuello pasamontañas sobredimensionado, guantes de piel táctil reforzados y membranas termoselladas concebidas para condiciones extremas de permafrost.",
     images: [
+      "/assets/aistudio/LOOK_COMPLETO_920c88d9.png",
       p3rmfrst1,
       p3rmfrst2,
       p3rmfrst3,

@@ -33,7 +33,7 @@ body {
   background-color: #070707;
   color: #fff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a, button, [role="button"], input, select, textarea {
@@ -373,3 +373,4 @@ body {
   0% { background-position: 0 0; }
   100% { background-position: 0 100vh; }
 }
+

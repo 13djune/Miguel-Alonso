@@ -30,8 +30,21 @@ interface UniverseProps {
   selectedProject?: Project | null;
   activeUniverse?: "all" | "creative" | "industry";
   appMode?: "loading" | "terminal" | "universe";
+  isLight?: boolean;
 }
-function PointGlow({ radius, count = 2000, color = "#ffffff", size = 0.04 }) {
+function PointGlow({
+  radius,
+  count = 2000,
+  color = "#ffffff",
+  size = 0.04,
+  isLight = false,
+}: {
+  radius: number;
+  count?: number;
+  color?: string;
+  size?: number;
+  isLight?: boolean;
+}) {
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -48,25 +61,23 @@ function PointGlow({ radius, count = 2000, color = "#ffffff", size = 0.04 }) {
   }, [radius, count]);
   return (
     <points>
-      {" "}
       <bufferGeometry>
-        {" "}
         <bufferAttribute
           attach="attributes-position"
           array={positions}
           count={count}
           itemSize={3}
-        />{" "}
-      </bufferGeometry>{" "}
+        />
+      </bufferGeometry>
       <pointsMaterial
-        color={color}
+        color={isLight ? (color === "#ffffff" ? "#12121c" : color) : color}
         size={size}
         transparent
-        opacity={0.6}
+        opacity={isLight ? 0.75 : 0.6}
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
         sizeAttenuation={true}
-      />{" "}
+      />
     </points>
   );
 }
@@ -77,6 +88,15 @@ function DottedRing({
   animate = false,
   speed = 0.2,
   color = "#ffffff",
+  isLight = false,
+}: {
+  radius: number;
+  segments?: number;
+  opacity?: number;
+  animate?: boolean;
+  speed?: number;
+  color?: string;
+  isLight?: boolean;
 }) {
   const positions = useMemo(() => {
     const pos = new Float32Array((segments + 1) * 3);
@@ -96,26 +116,24 @@ function DottedRing({
   });
   return (
     <group ref={ref}>
-      {" "}
       <points>
-        {" "}
         <bufferGeometry>
-          {" "}
           <bufferAttribute
             attach="attributes-position"
             array={positions}
             count={segments + 1}
             itemSize={3}
-          />{" "}
-        </bufferGeometry>{" "}
+          />
+        </bufferGeometry>
         <pointsMaterial
-          color={color}
-          size={0.03}
+          color={isLight ? (color === "#ffffff" ? "#1a1a26" : color) : color}
+          size={isLight ? 0.04 : 0.03}
           transparent
-          opacity={opacity}
+          opacity={isLight ? Math.min(1, opacity * 1.5) : opacity}
           sizeAttenuation={true}
-        />{" "}
-      </points>{" "}
+          blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
+        />
+      </points>
     </group>
   );
 }
@@ -127,6 +145,7 @@ function ProjectNode({
   selectedProjectId,
   onHoverChange,
   appMode,
+  isLight = false,
 }: {
   project: Project;
   onClick: () => void;
@@ -135,6 +154,7 @@ function ProjectNode({
   selectedProjectId?: string;
   onHoverChange?: (hovered: boolean) => void;
   appMode?: "loading" | "terminal" | "universe";
+  isLight?: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const glowMeshRef = useRef<THREE.Group>(null);
@@ -256,44 +276,52 @@ function ProjectNode({
           {" "}
           <sphereGeometry args={[0.6, 16, 16]} />{" "}
         </mesh>{" "}
-        {/* Core & Glow */}{" "}
+        {/* Core & Glow */}
         <group ref={glowMeshRef}>
-          {" "}
           <PointGlow
             radius={0.8}
             count={400}
-            color="#ffffff"
+            color={isLight ? "#1a1a28" : "#ffffff"}
             size={0.03}
-          />{" "}
-          <PointGlow radius={0.2} count={150} color="#ffffff" size={0.04} />{" "}
+            isLight={isLight}
+          />
+          <PointGlow
+            radius={0.2}
+            count={150}
+            color={isLight ? "#111118" : "#ffffff"}
+            size={0.04}
+            isLight={isLight}
+          />
           <DottedRing
             radius={0.25}
             segments={80}
             opacity={0.6}
             animate={true}
             speed={0.5}
-            color="#ffffff"
-          />{" "}
-        </group>{" "}
-        {/* Concentric rings to make it look like schematic */}{" "}
+            color={isLight ? "#181824" : "#ffffff"}
+            isLight={isLight}
+          />
+        </group>
+        {/* Concentric rings to make it look like schematic */}
         <group rotation={[Math.PI / 2, 0, 0]}>
-          {" "}
           <DottedRing
             radius={0.2}
             opacity={0.6}
             animate={true}
             speed={0.5}
-            color="#ffffff"
-          />{" "}
+            color={isLight ? "#181824" : "#ffffff"}
+            isLight={isLight}
+          />
           <DottedRing
             radius={0.35}
             opacity={0.4}
             animate={true}
             speed={-0.3}
-            color="#ffffff"
-          />{" "}
-        </group>{" "}
-      </group>{" "}
+            color={isLight ? "#2a2a38" : "#ffffff"}
+            isLight={isLight}
+          />
+        </group>
+      </group>
       <Html
         position={[0.4, 0.4, 0]}
         center
@@ -304,31 +332,35 @@ function ProjectNode({
           transition: "opacity 0.2s",
         }}
       >
-        {" "}
         <div
           ref={targetRef}
-          className="font-mono whitespace-nowrap opacity-90 transition-opacity duration-300 pointer-events-none cursor-target"
+          className="font-mono whitespace-nowrap opacity-95 transition-opacity duration-300 pointer-events-none cursor-target"
           data-interactive="true"
-          style={{ color: "#ffffff" }}
+          style={{ color: isLight ? "#000000" : "#ffffff" }}
         >
-          {" "}
           <div className="flex flex-col text-[8px] md:text-[10px] tracking-widest relative">
-            {" "}
             {isSelected && (
               <div
                 className="absolute -inset-4 border border-dashed animate-[spin_10s_linear_infinite]"
-                style={{ borderColor: "#c4ffff", opacity: 0.5 }}
+                style={{ borderColor: isLight ? "#0055ff" : "#c4ffff", opacity: 0.7 }}
               />
-            )}{" "}
-            {/* Corner brackets removed */}{" "}
+            )}
             <span
-              className={`px-1 transition-colors ${hovered ? "bg-[#c4ffff] text-black font-bold" : "bg-black/50"}`}
+              className={`px-1 transition-colors border ${
+                hovered
+                  ? isLight
+                    ? "bg-[#0055ff] text-white border-[#0055ff] font-bold shadow-[0_0_8px_rgba(0,85,255,0.4)]"
+                    : "bg-[#c4ffff] text-black border-[#c4ffff] font-bold"
+                  : isLight
+                    ? "bg-white text-black border-black/80 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                    : "bg-black/60 text-white border-white/30"
+              }`}
             >
               [ {project.title.replace(/^[0-9]+ /, "")} ]
-            </span>{" "}
-          </div>{" "}
-        </div>{" "}
-      </Html>{" "}
+            </span>
+          </div>
+        </div>
+      </Html>
     </group>
   );
 }
@@ -340,6 +372,7 @@ interface PlanetTrailProps {
   isSelected?: boolean;
   isHovered?: boolean;
   dimmed?: boolean;
+  isLight?: boolean;
 }
 
 function PlanetTrail({
@@ -350,6 +383,7 @@ function PlanetTrail({
   isSelected,
   isHovered,
   dimmed,
+  isLight = false,
 }: PlanetTrailProps) {
   const lineGeoRef = useRef<THREE.BufferGeometry>(null);
   const lineGeo2Ref = useRef<THREE.BufferGeometry>(null);
@@ -415,10 +449,10 @@ function PlanetTrail({
 
     const trailArc = baseArc * (isHovered ? 1.25 : 1.0);
 
-    // Color tones: Electric cyan #c4ffff when active/hovered, fading to crisp white
-    const headR = isHovered || isSelected ? 0.77 : 0.95;
-    const headG = isHovered || isSelected ? 1.0 : 0.98;
-    const headB = 1.0;
+    // Color tones: Electric cobalt in light mode, cyan #c4ffff in dark mode
+    const headR = isLight ? (isHovered || isSelected ? 0.0 : 0.08) : (isHovered || isSelected ? 0.77 : 0.95);
+    const headG = isLight ? (isHovered || isSelected ? 0.33 : 0.28) : (isHovered || isSelected ? 1.0 : 0.98);
+    const headB = isLight ? (isHovered || isSelected ? 1.0 : 0.9) : 1.0;
 
     // 1. Continuous trailing geometric line ribbon (Core Line)
     if (lineGeoRef.current) {
@@ -465,8 +499,8 @@ function PlanetTrail({
         posArr2[i * 3 + 2] = pz;
 
         const fade = Math.pow(1.0 - p, 1.5) * 0.75 * effectiveOpacity;
-        colArr2[i * 3] = 0.77 * fade;
-        colArr2[i * 3 + 1] = 1.0 * fade;
+        colArr2[i * 3] = (isLight ? 0.0 : 0.77) * fade;
+        colArr2[i * 3 + 1] = (isLight ? 0.35 : 1.0) * fade;
         colArr2[i * 3 + 2] = 1.0 * fade;
       }
       posAttr2.needsUpdate = true;
@@ -574,7 +608,7 @@ function PlanetTrail({
           vertexColors
           transparent
           opacity={0.9}
-          blending={THREE.AdditiveBlending}
+          blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
           depthWrite={false}
         />
       </line>
@@ -599,7 +633,7 @@ function PlanetTrail({
           vertexColors
           transparent
           opacity={0.65}
-          blending={THREE.AdditiveBlending}
+          blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
           depthWrite={false}
         />
       </line>
@@ -626,7 +660,7 @@ function PlanetTrail({
           transparent
           opacity={0.95}
           sizeAttenuation={true}
-          blending={THREE.AdditiveBlending}
+          blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
           depthWrite={false}
         />
       </points>
@@ -651,7 +685,7 @@ function PlanetTrail({
           vertexColors
           transparent
           opacity={0.7}
-          blending={THREE.AdditiveBlending}
+          blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
           depthWrite={false}
         />
       </lineSegments>
@@ -668,6 +702,7 @@ function OrbitGroup({
   isFocused,
   selectedProjectId,
   appMode,
+  isLight = false,
 }: {
   index: number;
   project: Project;
@@ -677,6 +712,7 @@ function OrbitGroup({
   isFocused?: boolean;
   selectedProjectId?: string;
   appMode?: "loading" | "terminal" | "universe";
+  isLight?: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const animGroupRef = useRef<THREE.Group>(null);
@@ -714,13 +750,13 @@ function OrbitGroup({
     if (pointsMatRef.current) {
       pointsMatRef.current.opacity = 0;
       gsap.to(pointsMatRef.current, {
-        opacity: 0.4,
+        opacity: isLight ? 0.5 : 0.4,
         duration: 0.8,
         delay: 0.1 + (index % 4) * 0.16 + (index >= 4 ? 0.3 : 0),
         ease: "power2.out",
       });
     }
-  }, [index]);
+  }, [index, isLight]);
 
   const tiltX = (index % 2 === 0 ? 1 : -1) * (Math.PI / 8 + index * 0.1);
   const tiltZ = (index % 3 === 0 ? 1 : -1) * (Math.PI / 12 + index * 0.05);
@@ -747,6 +783,7 @@ function OrbitGroup({
         isSelected={isSelected}
         isHovered={isHovered}
         dimmed={!!(selectedProjectId && !isSelected)}
+        isLight={isLight}
       />
 
       <points>
@@ -760,11 +797,12 @@ function OrbitGroup({
         </bufferGeometry>
         <pointsMaterial
           ref={pointsMatRef}
-          color="#ffffff"
-          size={0.04}
+          color={isLight ? "#2a2b38" : "#ffffff"}
+          size={isLight ? 0.045 : 0.04}
           transparent
-          opacity={0.4}
+          opacity={isLight ? 0.5 : 0.4}
           sizeAttenuation={true}
+          blending={isLight ? THREE.NormalBlending : THREE.AdditiveBlending}
         />
       </points>
       <group ref={groupRef}>
@@ -777,13 +815,14 @@ function OrbitGroup({
             selectedProjectId={selectedProjectId}
             onHoverChange={setIsHovered}
             appMode={appMode}
+            isLight={isLight}
           />
         </group>
       </group>
     </group>
   );
 }
-function CentralCore() {
+function CentralCore({ isLight = false }: { isLight?: boolean }) {
   const coreGroup = useRef<THREE.Group>(null);
   useEffect(() => {
     if (coreGroup.current) {
@@ -802,25 +841,27 @@ function CentralCore() {
     <group>
       <pointLight
         position={[0, 0, 0]}
-        intensity={2}
-        color="#ffffff"
+        intensity={isLight ? 1.2 : 2}
+        color={isLight ? "#0055ff" : "#ffffff"}
         distance={30}
         decay={2}
       />
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={isLight ? 0.8 : 0.5} />
       <group ref={coreGroup}>
         <group>
           <PointGlow
             radius={1.5}
             count={800}
-            color="#ffffff"
+            color={isLight ? "#1a1a26" : "#ffffff"}
             size={0.03}
+            isLight={isLight}
           />
           <PointGlow
             radius={0.3}
             count={200}
-            color="#ffffff"
+            color={isLight ? "#111118" : "#ffffff"}
             size={0.05}
+            isLight={isLight}
           />
         </group>
         <group rotation={[Math.PI / 2, 0, 0]}>
@@ -829,21 +870,24 @@ function CentralCore() {
             opacity={0.8}
             animate={true}
             speed={0.4}
-            color="#ffffff"
+            color={isLight ? "#161622" : "#ffffff"}
+            isLight={isLight}
           />
           <DottedRing
             radius={0.6}
             opacity={0.5}
             animate={true}
             speed={-0.2}
-            color="#ffffff"
+            color={isLight ? "#242434" : "#ffffff"}
+            isLight={isLight}
           />
           <DottedRing
             radius={0.8}
             opacity={0.3}
             animate={true}
             speed={0.1}
-            color="#ffffff"
+            color={isLight ? "#323246" : "#ffffff"}
+            isLight={isLight}
           />
         </group>
       </group>
@@ -856,6 +900,7 @@ export default function Universe({
   selectedProject,
   activeUniverse = "all",
   appMode,
+  isLight = false,
 }: UniverseProps) {
   const radii = [1.0, 1.4, 1.8, 2.2];
   const creativeProjects = projects.slice(0, 4);
@@ -865,7 +910,7 @@ export default function Universe({
       {activeUniverse === "all" && (
         <>
           <group position={[-5, 0, -2]}>
-            <CentralCore />
+            <CentralCore isLight={isLight} />
             <Html
               position={[0, 1.4, 0]}
               center
@@ -876,9 +921,19 @@ export default function Universe({
                 transition: "opacity 0.2s",
               }}
             >
-              <div className="font-mono text-white text-[9px] md:text-[11px] tracking-widest uppercase opacity-95 whitespace-nowrap bg-black/90 px-2.5 py-1.5 border border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)] flex flex-col items-center select-none pointer-events-none">
-                <span className="font-bold text-[#c4ffff] whitespace-nowrap">[ CREATIVE.SYS ]</span>
-                <span className="text-[7px] md:text-[8px] text-white/80 tracking-wider whitespace-nowrap">COORD: [-05.38, +00.42, -02.15] // 05.81 AU</span>
+              <div
+                className={`font-mono text-[9px] md:text-[11px] tracking-widest uppercase opacity-95 whitespace-nowrap px-2.5 py-1.5 border flex flex-col items-center select-none pointer-events-none ${
+                  isLight
+                    ? "bg-white/95 text-black border-black/80 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                    : "bg-black/90 text-white border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+                }`}
+              >
+                <span className={`font-bold whitespace-nowrap ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`}>
+                  [ CREATIVE.SYS ]
+                </span>
+                <span className={`text-[7px] md:text-[8px] tracking-wider whitespace-nowrap ${isLight ? "text-black/70" : "text-white/80"}`}>
+                  COORD: [-05.38, +00.42, -02.15] // 05.81 AU
+                </span>
               </div>
             </Html>
             {creativeProjects.map((project, idx) => (
@@ -892,11 +947,12 @@ export default function Universe({
                 isFocused={selectedProject?.id === project.id}
                 selectedProjectId={selectedProject?.id}
                 appMode={appMode}
+                isLight={isLight}
               />
             ))}
           </group>
           <group position={[5, 0, 2]}>
-            <CentralCore />
+            <CentralCore isLight={isLight} />
             <Html
               position={[0, 1.4, 0]}
               center
@@ -907,9 +963,19 @@ export default function Universe({
                 transition: "opacity 0.2s",
               }}
             >
-              <div className="font-mono text-white text-[9px] md:text-[11px] tracking-widest uppercase opacity-95 whitespace-nowrap bg-black/90 px-2.5 py-1.5 border border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)] flex flex-col items-center select-none pointer-events-none">
-                <span className="font-bold text-[#c4ffff] whitespace-nowrap">[ INDUSTRY.SYS ]</span>
-                <span className="text-[7px] md:text-[8px] text-white/80 tracking-wider whitespace-nowrap">COORD: [+05.41, -00.37, +02.08] // 05.80 AU</span>
+              <div
+                className={`font-mono text-[9px] md:text-[11px] tracking-widest uppercase opacity-95 whitespace-nowrap px-2.5 py-1.5 border flex flex-col items-center select-none pointer-events-none ${
+                  isLight
+                    ? "bg-white/95 text-black border-black/80 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                    : "bg-black/90 text-white border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+                }`}
+              >
+                <span className={`font-bold whitespace-nowrap ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`}>
+                  [ INDUSTRY.SYS ]
+                </span>
+                <span className={`text-[7px] md:text-[8px] tracking-wider whitespace-nowrap ${isLight ? "text-black/70" : "text-white/80"}`}>
+                  COORD: [+05.41, -00.37, +02.08] // 05.80 AU
+                </span>
               </div>
             </Html>
             {industryProjects.map((project, idx) => (
@@ -923,6 +989,7 @@ export default function Universe({
                 isFocused={selectedProject?.id === project.id}
                 selectedProjectId={selectedProject?.id}
                 appMode={appMode}
+                isLight={isLight}
               />
             ))}
           </group>
@@ -930,7 +997,7 @@ export default function Universe({
       )}
       {activeUniverse !== "all" && (
         <group position={[0, 0, 0]}>
-          <CentralCore />
+          <CentralCore isLight={isLight} />
           <Html
             position={[0, 1.4, 0]}
             center
@@ -941,11 +1008,17 @@ export default function Universe({
               transition: "opacity 0.2s",
             }}
           >
-            <div className="font-mono text-white text-[9px] md:text-[11px] tracking-widest uppercase opacity-95 whitespace-nowrap bg-black/90 px-2.5 py-1.5 border border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)] flex flex-col items-center select-none pointer-events-none">
-              <span className="font-bold text-[#c4ffff] whitespace-nowrap">
+            <div
+              className={`font-mono text-[9px] md:text-[11px] tracking-widest uppercase opacity-95 whitespace-nowrap px-2.5 py-1.5 border flex flex-col items-center select-none pointer-events-none ${
+                isLight
+                  ? "bg-white/95 text-black border-black/80 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                  : "bg-black/90 text-white border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+              }`}
+            >
+              <span className={`font-bold whitespace-nowrap ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`}>
                 {activeUniverse === 'creative' ? '[ CREATIVE.SYS ]' : '[ INDUSTRY.SYS ]'}
               </span>
-              <span className="text-[7px] md:text-[8px] text-white/80 tracking-wider whitespace-nowrap">
+              <span className={`text-[7px] md:text-[8px] tracking-wider whitespace-nowrap ${isLight ? "text-black/70" : "text-white/80"}`}>
                 {activeUniverse === 'creative'
                   ? 'COORD: [-05.38, +00.42, -02.15] // SECTOR_CR'
                   : 'COORD: [+05.41, -00.37, +02.08] // SECTOR_IN'}
@@ -966,6 +1039,7 @@ export default function Universe({
               isFocused={selectedProject?.id === project.id}
               selectedProjectId={selectedProject?.id}
               appMode={appMode}
+              isLight={isLight}
             />
           ))}
         </group>

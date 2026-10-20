@@ -14,6 +14,7 @@ interface ProjectModalProps {
   onPrevProject?: () => void;
   currentProjectIndex?: number;
   totalProjects?: number;
+  isLight?: boolean;
 }
 export default function ProjectModal({
   project,
@@ -22,6 +23,7 @@ export default function ProjectModal({
   onPrevProject,
   currentProjectIndex = 0,
   totalProjects = 1,
+  isLight = false,
 }: ProjectModalProps) {
   const isIndustry = Boolean(project.garments && project.garments.length > 0);
   const [show3D, setShow3D] = useState(false);
@@ -214,14 +216,19 @@ export default function ProjectModal({
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 bg-[#070707]/50 flex flex-col z-50 overflow-y-auto scroll-smooth"
+      className={`absolute inset-0 flex flex-col z-50 overflow-y-auto scroll-smooth ${
+        isLight ? "bg-white/95 text-black" : "bg-[#070707]/50 text-white"
+      }`}
     >
-      {" "}
-      <div className="absolute inset-0 bg-cyber-grid opacity-20 pointer-events-none" />{" "}
-      <div className="scanlines" />{" "}
-      <header className="sticky top-0 z-[100] bg-[#070707]/90 pt-2 sm:pt-4 md:pt-8 flex justify-between items-center border-b border-white pb-2 sm:pb-4 shrink-0 px-2 sm:px-4 md:px-8 gap-1.5 sm:gap-4 overflow-hidden">
-        <div className="font-mono text-[8px] sm:text-[10px] text-white uppercase bg-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 border border-white flex items-center gap-1 sm:gap-2 truncate shrink-0">
-          <span className="w-1.5 h-1.5 bg-white animate-pulse shrink-0"></span>
+      <div className={`absolute inset-0 bg-cyber-grid pointer-events-none ${isLight ? "opacity-30" : "opacity-20"}`} />
+      <div className="scanlines" />
+      <header className={`sticky top-0 z-[100] pt-2 sm:pt-4 md:pt-8 flex justify-between items-center border-b pb-2 sm:pb-4 shrink-0 px-2 sm:px-4 md:px-8 gap-1.5 sm:gap-4 overflow-hidden backdrop-blur-md ${
+        isLight ? "bg-white/95 border-black text-black" : "bg-[#070707]/90 border-white text-white"
+      }`}>
+        <div className={`font-mono text-[8px] sm:text-[10px] uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 border flex items-center gap-1 sm:gap-2 truncate shrink-0 ${
+          isLight ? "text-black bg-black/5 border-black" : "text-white bg-white/10 border-white"
+        }`}>
+          <span className={`w-1.5 h-1.5 ${isLight ? "bg-black" : "bg-white"} animate-pulse shrink-0`}></span>
           <span className="hidden sm:inline truncate">{t("modal.sys.viewer")}</span>
           <span className="sm:hidden">{language === 'es' ? 'VISOR' : 'VIEWER'}</span>
         </div>
@@ -229,49 +236,47 @@ export default function ProjectModal({
           {onPrevProject && onNextProject && (
             <div
               tabIndex={-1}
-              className="flex items-center gap-1 sm:gap-3 font-mono text-[9px] sm:text-xs text-white bg-black/50 border border-white px-1.5 sm:px-3 py-0.5 sm:py-1 shadow-[2px_2px_0px_rgba(255,255,255,0.2)] outline-none focus:outline-none select-none cursor-default"
+              className={`flex items-center gap-1 sm:gap-3 font-mono text-[9px] sm:text-xs border px-1.5 sm:px-3 py-0.5 sm:py-1 outline-none focus:outline-none select-none cursor-default ${
+                isLight 
+                  ? "text-black bg-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]" 
+                  : "text-white bg-black/50 border-white shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
+              }`}
             >
               <button
                 type="button"
                 onClick={onPrevProject}
                 aria-label="Previous project"
-                className="cursor-target bg-white/10 hover:bg-[#c4ffff] hover:text-black border border-white transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_10px_rgba(255,255,255,0.4)] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none focus:ring-1 focus:ring-[#c4ffff]"
-                style={{ textShadow: "0 0 8px rgba(255, 255, 255,0)" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.textShadow = "0 0 8px #ffffff")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.textShadow =
-                    "0 0 8px rgba(255, 255, 255,0)")
-                }
+                className={`cursor-target border transition-all duration-[400ms] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none ${
+                  isLight
+                    ? "bg-black/5 hover:bg-black hover:text-white border-black text-black"
+                    : "bg-white/10 hover:bg-[#c4ffff] hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                }`}
               >
                 &lt;
               </button>
-              <span className="whitespace-nowrap px-0.5 select-none pointer-events-none">
+              <span className="whitespace-nowrap px-0.5 select-none pointer-events-none font-bold">
                 {currentProjectIndex + 1} / {totalProjects}
               </span>
               <button
                 type="button"
                 onClick={onNextProject}
                 aria-label="Next project"
-                className="cursor-target bg-white/10 hover:bg-[#c4ffff] hover:text-black border border-white transition-all duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_10px_rgba(255,255,255,0.4)] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none focus:ring-1 focus:ring-[#c4ffff]"
-                style={{ textShadow: "0 0 8px rgba(255, 255, 255,0)" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.textShadow = "0 0 8px #ffffff")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.textShadow =
-                    "0 0 8px rgba(255, 255, 255,0)")
-                }
+                className={`cursor-target border transition-all duration-[400ms] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none ${
+                  isLight
+                    ? "bg-black/5 hover:bg-black hover:text-white border-black text-black"
+                    : "bg-white/10 hover:bg-[#c4ffff] hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                }`}
               >
                 &gt;
               </button>
             </div>
           )}
-          <StarBorder as="button" color="#ffffff" speed="3s" className="p-0 shrink-0">
+          <StarBorder as="button" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="p-0 shrink-0">
             <div
               onClick={handleClose}
-              className="font-mono text-[9px] sm:text-xs text-black bg-white px-2.5 sm:px-4 py-1 sm:py-2 uppercase font-bold hover:bg-white transition-colors cursor-crosshair flex items-center whitespace-nowrap"
+              className={`font-mono text-[9px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-2 uppercase font-bold transition-colors cursor-crosshair flex items-center whitespace-nowrap ${
+                isLight ? "text-white bg-black hover:bg-[#0055ff]" : "text-black bg-white hover:bg-white"
+              }`}
             >
               <span className="hidden sm:inline">{t("modal.terminate")}</span>
               <span className="sm:hidden">{language === 'es' ? 'SALIR' : 'EXIT'}</span>
@@ -287,21 +292,37 @@ export default function ProjectModal({
         {!isIndustry && (
           <div className="w-full lg:w-[450px] xl:w-[500px] shrink-0 relative lg:sticky lg:top-28 xl:top-32 self-start h-[42vh] sm:h-[50vh] lg:h-[75vh] min-h-[280px] max-h-[800px] z-20 order-1 lg:order-2 shadow-lg lg:shadow-none">
             <div className="w-full h-full">
-              <div className="modal-content relative w-full h-full border border-white bg-black/90 flex flex-col shadow-[4px_4px_0px_rgba(255,255,255,0.15)] lg:shadow-[8px_8px_0px_rgba(255,255,255,0.15)] overflow-hidden">
-                <div className="absolute top-0 left-0 z-20 bg-white text-black font-mono text-[9px] sm:text-[10px] md:text-xs font-bold px-3 sm:px-4 py-1.5 uppercase tracking-widest">
-                  {t("modal.3d.mode")}
+              <div className={`modal-content relative w-full h-full border flex flex-col overflow-hidden ${
+                isLight 
+                  ? "border-black bg-white text-black shadow-[4px_4px_0px_rgba(0,0,0,0.8)] lg:shadow-[8px_8px_0px_rgba(0,0,0,0.8)]"
+                  : "border-white bg-black/90 text-white shadow-[4px_4px_0px_rgba(255,255,255,0.15)] lg:shadow-[8px_8px_0px_rgba(255,255,255,0.15)]"
+              }`}>
+                <div className={`absolute top-0 left-0 z-20 font-mono text-[9px] sm:text-[10px] md:text-xs font-bold px-3 sm:px-4 py-1.5 uppercase tracking-widest ${
+                  isLight ? "bg-black text-white" : "bg-white text-black"
+                }`}>
+                  {project.id === "2" || project.title?.includes("P3RMFRST")
+                    ? (language === 'es' ? 'VISOR 3D // CLOUD POINT' : '3D VIEWER // POINT CLOUD')
+                    : t("modal.3d.mode")}
                 </div>
-                <div className="absolute inset-0 pt-8 pb-8 sm:pt-10 sm:pb-10 cursor-crosshair transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] group">
+                <div className="absolute inset-0 pt-8 pb-8 sm:pt-10 sm:pb-10 cursor-crosshair transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group">
                   {show3D ? (
-                    <GarmentViewer modelUrl={project.modelUrl} />
+                    <GarmentViewer
+                      modelUrl={project.modelUrl}
+                      projectId={project.id}
+                      projectTitle={project.title}
+                    />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-mono text-[10px] text-white animate-pulse">
+                    <div className={`w-full h-full flex items-center justify-center font-mono text-[10px] animate-pulse ${
+                      isLight ? "text-black" : "text-white"
+                    }`}>
                       {language === 'es' ? 'CARGANDO MODELO 3D...' : 'LOADING 3D MODEL...'}
                     </div>
                   )}
                 </div>
-                <div className="absolute bottom-0 right-0 z-20 bg-black/90 border-t border-l border-white text-white font-mono text-[8px] sm:text-[9px] md:text-[10px] px-2.5 py-1 sm:px-3 sm:py-1.5 uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-white animate-pulse"></span>
+                <div className={`absolute bottom-0 right-0 z-20 border-t border-l font-mono text-[8px] sm:text-[9px] md:text-[10px] px-2.5 py-1 sm:px-3 sm:py-1.5 uppercase tracking-widest flex items-center gap-2 ${
+                  isLight ? "bg-white border-black text-black" : "bg-black/90 border-white text-white"
+                }`}>
+                  <span className={`w-1.5 h-1.5 ${isLight ? "bg-black" : "bg-white"} animate-pulse`}></span>
                   {t("modal.3d.controls")}
                 </div>
               </div>
@@ -311,33 +332,47 @@ export default function ProjectModal({
 
         {/* Left Col: Info & Gallery (Takes full width in Industry projects) */}
         <div className={`flex flex-col w-full ${!isIndustry ? 'lg:flex-1 min-w-0' : ''} space-y-6 md:space-y-8 modal-content order-2 lg:order-1`}>
-          <div className="border border-white p-3 sm:p-6 md:p-8 bg-black/85 relative shadow-[4px_4px_0px_rgba(255,255,255,0.08)]">
-            <div className="absolute top-0 right-0 w-3.5 h-3.5 border-b-2 border-l-2 border-white"></div>
-            <div className="absolute bottom-0 left-0 w-3.5 h-3.5 border-t-2 border-r-2 border-white"></div>
+          <div className={`border p-3 sm:p-6 md:p-8 relative ${
+            isLight
+              ? "border-black bg-white text-black shadow-[4px_4px_0px_rgba(0,0,0,0.9)]"
+              : "border-white bg-black/85 text-white shadow-[4px_4px_0px_rgba(255,255,255,0.08)]"
+          }`}>
+            <div className={`absolute top-0 right-0 w-3.5 h-3.5 border-b-2 border-l-2 ${isLight ? "border-black" : "border-white"}`}></div>
+            <div className={`absolute bottom-0 left-0 w-3.5 h-3.5 border-t-2 border-r-2 ${isLight ? "border-black" : "border-white"}`}></div>
             
             {/* Category / System pill */}
-            <div className="font-mono text-[9px] sm:text-[10px] text-[#c4ffff] uppercase tracking-widest mb-3 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+            <div className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2 font-bold ${
+              isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
               <span>{isIndustry ? (isES ? "// SISTEMA INDUSTRIA // CATÁLOGO TÉCNICO" : "// INDUSTRY SYSTEM // TECHNICAL CATALOG") : (isES ? "// SISTEMA CREATIVO // ARCHIVO EXPERIMENTAL" : "// CREATIVE SYSTEM // EXPERIMENTAL ARCHIVE")}</span>
             </div>
 
             <h2
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase mb-4 sm:mb-6 tracking-tighter drop-shadow-sm break-words"
-              style={{ color: "#ffffff", textShadow: `0 0 20px rgba(255,255,255,0.3)` }}
+              className={`text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase mb-4 sm:mb-6 tracking-tighter break-words ${
+                isLight ? "text-black" : "text-white drop-shadow-sm"
+              }`}
+              style={{ color: isLight ? "#000000" : "#ffffff", textShadow: isLight ? "none" : `0 0 20px rgba(255,255,255,0.3)` }}
             >
               {project.title}
             </h2>
 
             {/* Prominent Project Description Block */}
             {project.description && (
-              <div className="border-l-2 border-[#c4ffff] bg-white/[0.03] p-3.5 sm:p-5 mb-6 relative">
-                <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-[#c4ffff] mb-2 flex items-center justify-between">
+              <div className={`border-l-2 p-3.5 sm:p-5 mb-6 relative ${
+                isLight ? "border-[#0055ff] bg-black/[0.03] text-black" : "border-[#c4ffff] bg-white/[0.03] text-white"
+              }`}>
+                <div className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-2 flex items-center justify-between font-bold ${
+                  isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                }`}>
                   <span className="flex items-center gap-1.5 font-bold">
                     <span>{isES ? "// MANIFIESTO CONCEPTUAL & SILUETA" : "// CONCEPT STATEMENT & SILHOUETTE"}</span>
                   </span>
-                  <span className="text-white/40 text-[8px] font-mono">[SYS.MEM]</span>
+                  <span className={`text-[8px] font-mono ${isLight ? "text-black/40" : "text-white/40"}`}>[SYS.MEM]</span>
                 </div>
-                <p className="font-mono text-xs sm:text-sm md:text-[15px] text-white/95 leading-relaxed md:leading-loose">
+                <p className={`font-mono text-xs sm:text-sm md:text-[15px] leading-relaxed md:leading-loose ${
+                  isLight ? "text-black font-medium" : "text-white/95"
+                }`}>
                   {project.description}
                 </p>
               </div>
@@ -346,16 +381,20 @@ export default function ProjectModal({
             {/* Tech Specs & Tools Grid (Hide generic tags if industry project has dedicated tag filter below) */}
             <div className={`grid ${project.garments && project.garments.length > 0 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'} gap-3 sm:gap-4 mb-6`}>
               {(!project.garments || project.garments.length === 0) && (
-                <div className="border border-white/40 bg-black/60 p-3 sm:p-4">
-                  <h4 className="font-mono text-[9px] sm:text-[10px] text-[#c4ffff] uppercase tracking-widest mb-2.5 border-b border-white/20 pb-1.5 flex items-center justify-between">
+                <div className={`border p-3 sm:p-4 ${isLight ? "border-black/30 bg-black/[0.02] text-black" : "border-white/40 bg-black/60 text-white"}`}>
+                  <h4 className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-2.5 border-b pb-1.5 flex items-center justify-between font-bold ${
+                    isLight ? "text-[#0055ff] border-black/15" : "text-[#c4ffff] border-white/20"
+                  }`}>
                     <span>{isES ? "// ESPECIFICACIONES & TAGS" : "// SPECIFICATIONS & TAGS"}</span>
-                    <span className="text-[8px] text-white/40 font-mono">[TAGS]</span>
+                    <span className={`text-[8px] font-mono ${isLight ? "text-black/40" : "text-white/40"}`}>[TAGS]</span>
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
                     {project.tags?.map((tag, i) => (
                       <span
                         key={`tag-${i}`}
-                        className="font-mono text-[9px] sm:text-[10px] text-white/90 border border-white/30 px-2 py-0.5 sm:py-1 uppercase tracking-wider bg-white/[0.04]"
+                        className={`font-mono text-[9px] sm:text-[10px] border px-2 py-0.5 sm:py-1 uppercase tracking-wider ${
+                          isLight ? "text-black border-black/30 bg-black/5" : "text-white/90 border-white/30 bg-white/[0.04]"
+                        }`}
                       >
                         {tag}
                       </span>
@@ -363,16 +402,20 @@ export default function ProjectModal({
                   </div>
                 </div>
               )}
-              <div className="border border-white/40 bg-black/60 p-3 sm:p-4">
-                <h4 className="font-mono text-[9px] sm:text-[10px] text-[#c4ffff] uppercase tracking-widest mb-2.5 border-b border-white/20 pb-1.5 flex items-center justify-between">
+              <div className={`border p-3 sm:p-4 ${isLight ? "border-black/30 bg-black/[0.02] text-black" : "border-white/40 bg-black/60 text-white"}`}>
+                <h4 className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-2.5 border-b pb-1.5 flex items-center justify-between font-bold ${
+                  isLight ? "text-[#0055ff] border-black/15" : "text-[#c4ffff] border-white/20"
+                }`}>
                   <span>{isES ? "// SOFTWARE & MÉTODOS 3D" : "// 3D PIPELINE & TOOLING"}</span>
-                  <span className="text-[8px] text-white/40 font-mono">[PIPELINE]</span>
+                  <span className={`text-[8px] font-mono ${isLight ? "text-black/40" : "text-white/40"}`}>[PIPELINE]</span>
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {project.tools?.map((tool, i) => (
                     <span
                       key={`tool-${i}`}
-                      className="font-mono text-[9px] sm:text-[10px] text-white/90 border border-white/30 px-2 py-0.5 sm:py-1 uppercase tracking-wider bg-white/[0.04]"
+                      className={`font-mono text-[9px] sm:text-[10px] border px-2 py-0.5 sm:py-1 uppercase tracking-wider ${
+                        isLight ? "text-black border-black/30 bg-black/5" : "text-white/90 border-white/30 bg-white/[0.04]"
+                      }`}
                     >
                       {tool}
                     </span>
@@ -383,15 +426,19 @@ export default function ProjectModal({
 
             {/* Modular Structural Sections */}
             {sections && sections.length > 0 && (
-              <div className="border border-white/40 bg-black/60 p-3 sm:p-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/25 pb-2.5 mb-3.5">
-                  <div className="font-mono text-[10px] sm:text-xs text-white uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
-                    <span className="font-bold text-[#c4ffff]">
+              <div className={`border p-3 sm:p-5 ${isLight ? "border-black/30 bg-black/[0.02] text-black" : "border-white/40 bg-black/60 text-white"}`}>
+                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2.5 mb-3.5 ${
+                  isLight ? "border-black/20" : "border-white/25"
+                }`}>
+                  <div className={`font-mono text-[10px] sm:text-xs uppercase tracking-widest flex items-center gap-2 font-bold ${
+                    isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+                    <span>
                       {isES ? "// DESGLOSE TÉCNICO & PATRONAJE" : "// TECHNICAL BREAKDOWN & PATTERN"}
                     </span>
                   </div>
-                  <span className="font-mono text-[9px] sm:text-[10px] text-white/50">
+                  <span className={`font-mono text-[9px] sm:text-[10px] ${isLight ? "text-black/60" : "text-white/50"}`}>
                     [ {activeSectionIndex + 1} / {sections.length} ]
                   </span>
                 </div>
@@ -407,11 +454,15 @@ export default function ProjectModal({
                         onClick={() => setActiveSectionIndex(idx)}
                         className={`font-mono text-[9px] sm:text-[10px] px-2.5 sm:px-3 py-1.5 border transition-all uppercase flex items-center gap-1.5 cursor-crosshair ${
                           isActive
-                            ? "bg-white text-black font-bold border-white shadow-[0_0_8px_rgba(255,255,255,0.4)]"
-                            : "bg-black/60 text-white/70 border-white/30 hover:border-white hover:text-white"
+                            ? isLight
+                              ? "bg-black text-white font-bold border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                              : "bg-white text-black font-bold border-white shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                            : isLight
+                              ? "bg-white text-black border-black/30 hover:border-black"
+                              : "bg-black/60 text-white/70 border-white/30 hover:border-white hover:text-white"
                         }`}
                       >
-                        {isActive && <span className="text-[10px] text-black">►</span>}
+                        {isActive && <span className={`text-[10px] ${isLight ? "text-white" : "text-black"}`}>►</span>}
                         <span>{s.title}</span>
                       </button>
                     );
@@ -419,12 +470,18 @@ export default function ProjectModal({
                 </div>
 
                 {/* Active Section Content */}
-                <div className="border-t border-white/20 pt-3.5 bg-white/[0.02] p-3 sm:p-4">
-                  <h3 className="text-white text-sm sm:text-base md:text-lg font-bold font-mono mb-2 flex items-center gap-2">
-                    <span className="text-[#c4ffff] font-mono">&gt;</span>
+                <div className={`border-t pt-3.5 p-3 sm:p-4 ${
+                  isLight ? "border-black/15 bg-black/[0.02]" : "border-white/20 bg-white/[0.02]"
+                }`}>
+                  <h3 className={`text-sm sm:text-base md:text-lg font-bold font-mono mb-2 flex items-center gap-2 ${
+                    isLight ? "text-black" : "text-white"
+                  }`}>
+                    <span className={isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}>&gt;</span>
                     <span>{currentSection.title}</span>
                   </h3>
-                  <p className="text-white/90 text-xs sm:text-sm md:text-base font-mono leading-relaxed md:leading-loose">
+                  <p className={`text-xs sm:text-sm md:text-base font-mono leading-relaxed md:leading-loose ${
+                    isLight ? "text-black font-medium" : "text-white/90"
+                  }`}>
                     {currentSection.content}
                   </p>
                 </div>
@@ -437,16 +494,21 @@ export default function ProjectModal({
                 garments={project.garments}
                 availableFilterTags={project.filterTags}
                 projectTitle={project.title}
+                isLight={isLight}
               />
             </div>
           ) : (
             <div>
-              <div className="border border-white/30 bg-black/60 p-2.5 sm:p-3 flex justify-between items-center mb-3">
-                <span className="font-mono text-[9px] sm:text-[10px] text-[#c4ffff] uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+              <div className={`border p-2.5 sm:p-3 flex justify-between items-center mb-3 ${
+                isLight ? "border-black/30 bg-black/[0.03] text-black" : "border-white/30 bg-black/60 text-white"
+              }`}>
+                <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest flex items-center gap-2 ${
+                  isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                }`}>
+                  <span className={`w-1.5 h-1.5 animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
                   <span>{isES ? "// REGISTRO FOTOGRÁFICO Y RENDERIZADO COMPLETO" : "// COMPLETE PHOTOGRAPHIC & RENDER ARCHIVE"}</span>
                 </span>
-                <span className="font-mono text-[8px] sm:text-[9px] text-white/50">
+                <span className={`font-mono text-[8px] sm:text-[9px] ${isLight ? "text-black/50" : "text-white/50"}`}>
                   [{project.images.length} {isES ? "ARCHIVOS" : "FILES"}]
                 </span>
               </div>
@@ -458,26 +520,44 @@ export default function ProjectModal({
                       setActiveHeroIndex(idx);
                       openGallery(idx);
                     }}
-                    className={`border transition-all cursor-crosshair group relative overflow-hidden bg-black/90 p-1.5 sm:p-2 ${
-                      activeHeroIndex === idx
-                        ? "border-[#c4ffff] shadow-[0_0_12px_rgba(196,255,255,0.4)]"
-                        : "border-white/50 hover:border-white"
+                    className={`border transition-all cursor-crosshair group relative overflow-hidden p-1.5 sm:p-2 ${
+                      isLight
+                        ? activeHeroIndex === idx
+                          ? "border-[#0055ff] bg-white shadow-[4px_4px_0px_rgba(0,0,0,0.9)]"
+                          : "border-black/40 hover:border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.7)]"
+                        : activeHeroIndex === idx
+                        ? "border-[#c4ffff] bg-black/90 shadow-[0_0_12px_rgba(196,255,255,0.4)]"
+                        : "border-white/50 hover:border-white bg-black/90"
                     } ${idx === 0 ? "col-span-2 aspect-video" : "aspect-[3/4]"}`}
                   >
-                    <div className="w-full h-full relative overflow-hidden bg-black/80 flex items-center justify-center">
+                    <div className={`w-full h-full relative overflow-hidden flex items-center justify-center ${
+                      isLight ? "bg-[#f2f2f6]" : "bg-black/80"
+                    }`}>
                       {/* Top-left: Look index badge */}
-                      <div className="absolute top-2 left-2 z-20 font-mono text-[8px] sm:text-[9px] bg-black/90 text-[#c4ffff] border border-[#c4ffff]/60 px-1.5 py-0.5 uppercase tracking-wider font-bold shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
+                      <div className={`absolute top-2 left-2 z-20 font-mono text-[8px] sm:text-[9px] px-1.5 py-0.5 uppercase tracking-wider font-bold ${
+                        isLight 
+                          ? "bg-white text-black border border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]" 
+                          : "bg-black/90 text-[#c4ffff] border border-[#c4ffff]/60 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                      }`}>
                         LOOK {(idx + 1).toString().padStart(2, '0')}
                       </div>
 
                       {/* Top-right: Subtle expand / corner indicator */}
-                      <div className="absolute top-2 right-2 z-20 bg-black/80 border border-white/40 group-hover:border-[#c4ffff] text-white/70 group-hover:text-[#c4ffff] p-1 transition-all pointer-events-none shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
+                      <div className={`absolute top-2 right-2 z-20 border p-1 transition-all pointer-events-none shadow-[2px_2px_0px_rgba(0,0,0,0.8)] ${
+                        isLight 
+                          ? "bg-white border-black text-black" 
+                          : "bg-black/80 border-white/40 group-hover:border-[#c4ffff] text-white/70 group-hover:text-[#c4ffff]"
+                      }`}>
                         <Maximize2 size={11} />
                       </div>
 
                       {/* Bottom-right: Subtle 'click-to-zoom' / 'pinch-to-zoom' indicator badge */}
-                      <div className="absolute bottom-2 right-2 z-20 flex items-center gap-1 bg-black/85 border border-white/40 group-hover:border-[#c4ffff] px-1.5 sm:px-2 py-0.5 text-white/80 group-hover:text-[#c4ffff] transition-all shadow-[2px_2px_0px_rgba(0,0,0,0.8)] backdrop-blur-sm pointer-events-none">
-                        <ZoomIn size={11} className="text-[#c4ffff] shrink-0 animate-pulse" />
+                      <div className={`absolute bottom-2 right-2 z-20 flex items-center gap-1 border px-1.5 sm:px-2 py-0.5 transition-all shadow-[2px_2px_0px_rgba(0,0,0,0.8)] backdrop-blur-sm pointer-events-none ${
+                        isLight 
+                          ? "bg-white/95 border-black text-black" 
+                          : "bg-black/85 border-white/40 group-hover:border-[#c4ffff] text-white/80 group-hover:text-[#c4ffff]"
+                      }`}>
+                        <ZoomIn size={11} className={`shrink-0 animate-pulse ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`} />
                         <span className="font-mono text-[7.5px] sm:text-[8.5px] uppercase tracking-wider font-bold">
                           {isES ? "CLICK // ZOOM" : "CLICK // ZOOM"}
                         </span>
@@ -485,7 +565,11 @@ export default function ProjectModal({
 
                       {/* Hover overlay hint */}
                       <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
-                        <span className="font-mono text-[9px] sm:text-[10px] md:text-xs font-bold text-white bg-black/95 border border-[#c4ffff] text-[#c4ffff] px-3 py-1.5 uppercase tracking-widest shadow-[0_0_12px_rgba(196,255,255,0.6)] flex items-center gap-1.5">
+                        <span className={`font-mono text-[9px] sm:text-[10px] md:text-xs font-bold px-3 py-1.5 uppercase tracking-widest flex items-center gap-1.5 ${
+                          isLight
+                            ? "text-white bg-black border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
+                            : "text-[#c4ffff] bg-black/95 border border-[#c4ffff] shadow-[0_0_12px_rgba(196,255,255,0.6)]"
+                        }`}>
                           <ZoomIn size={12} />
                           <span>{t("modal.expand")} [ZOOM]</span>
                         </span>
@@ -513,7 +597,11 @@ export default function ProjectModal({
                         project.hotspots[idx].map((hotspot, hIdx) => (
                           <div
                             key={hIdx}
-                            className="absolute z-20 w-3 h-3 md:w-4 md:h-4 border border-[#c4ffff] bg-black/80 shadow-[0_0_10px_rgba(196,255,255,0.8)]"
+                            className={`absolute z-20 w-3 h-3 md:w-4 md:h-4 border ${
+                              isLight 
+                                ? "border-[#0055ff] bg-white/90 shadow-[0_0_10px_rgba(0,85,255,0.8)]" 
+                                : "border-[#c4ffff] bg-black/80 shadow-[0_0_10px_rgba(196,255,255,0.8)]"
+                            }`}
                             style={{
                               top: `${hotspot.y}%`,
                               left: `${hotspot.x}%`,
@@ -533,39 +621,53 @@ export default function ProjectModal({
       {selectedImageIndex !== null &&
         createPortal(
           <div
-            className="fixed inset-0 z-[100] bg-[#050505]/98 flex flex-col justify-between overflow-hidden select-none animate-fadeIn"
+            className={`fixed inset-0 z-[100] flex flex-col justify-between overflow-hidden select-none animate-fadeIn ${
+              isLight ? "bg-[#f5f5f8]/98 text-black" : "bg-[#050505]/98 text-white"
+            }`}
             onClick={closeGallery}
           >
             {/* Ambient Background Grid & Scanlines */}
-            <div className="absolute inset-0 bg-cyber-grid opacity-15 pointer-events-none" />
+            <div className={`absolute inset-0 bg-cyber-grid pointer-events-none ${isLight ? "opacity-25" : "opacity-15"}`} />
             <div className="scanlines pointer-events-none" />
 
             {/* Top Tactical Control Header */}
             <div
-              className="relative z-[120] w-full bg-black/90 border-b border-white/30 px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.8)]"
+              className={`relative z-[120] w-full border-b px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 ${
+                isLight 
+                  ? "bg-white/95 border-black shadow-[0_4px_20px_rgba(0,0,0,0.1)] text-black" 
+                  : "bg-black/90 border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.8)] text-white"
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Left: Look Identifier */}
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                <span className="w-2 h-2 bg-[#c4ffff] animate-pulse"></span>
-                <span className="font-mono text-[9px] sm:text-xs font-bold text-white uppercase tracking-widest">
+                <span className={`w-2 h-2 animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+                <span className={`font-mono text-[9px] sm:text-xs font-bold uppercase tracking-widest ${
+                  isLight ? "text-black" : "text-white"
+                }`}>
                   {isES
                     ? `LOOKBOOK HD // LOOK ${(selectedImageIndex + 1).toString().padStart(2, '0')} / ${project.images.length.toString().padStart(2, '0')}`
                     : `HD LOOKBOOK // LOOK ${(selectedImageIndex + 1).toString().padStart(2, '0')} / ${project.images.length.toString().padStart(2, '0')}`}
                 </span>
-                <span className="hidden md:inline font-mono text-[9px] text-[#c4ffff]/80 border border-[#c4ffff]/30 px-1.5 py-0.5 uppercase">
+                <span className={`hidden md:inline font-mono text-[9px] border px-1.5 py-0.5 uppercase ${
+                  isLight ? "text-[#0055ff] border-[#0055ff]/40" : "text-[#c4ffff]/80 border-[#c4ffff]/30"
+                }`}>
                   {project.title}
                 </span>
               </div>
 
               {/* Center: Zoom Controls Toolbar */}
-              <div className="flex items-center gap-1.5 sm:gap-2 bg-white/[0.05] border border-white/30 px-2 py-1">
+              <div className={`flex items-center gap-1.5 sm:gap-2 border px-2 py-1 ${
+                isLight ? "bg-black/[0.04] border-black/30" : "bg-white/[0.05] border-white/30"
+              }`}>
                 <button
                   type="button"
                   onClick={handleZoomOut}
                   disabled={zoomLevel <= 1}
                   title={isES ? "Alejar zoom (-)" : "Zoom out (-)"}
-                  className="font-mono text-xs sm:text-sm px-2 py-0.5 text-white hover:text-[#c4ffff] disabled:opacity-30 disabled:hover:text-white cursor-crosshair font-bold transition-colors"
+                  className={`font-mono text-xs sm:text-sm px-2 py-0.5 disabled:opacity-30 cursor-crosshair font-bold transition-colors ${
+                    isLight ? "text-black hover:text-[#0055ff]" : "text-white hover:text-[#c4ffff]"
+                  }`}
                 >
                   -
                 </button>
@@ -573,7 +675,11 @@ export default function ProjectModal({
                   type="button"
                   onClick={resetZoom}
                   title={isES ? "Restablecer zoom 100% (0)" : "Reset zoom 100% (0)"}
-                  className="font-mono text-[9px] sm:text-[10px] px-2 py-0.5 bg-black border border-white/40 text-[#c4ffff] font-bold tracking-wider hover:bg-white hover:text-black transition-colors"
+                  className={`font-mono text-[9px] sm:text-[10px] px-2 py-0.5 border font-bold tracking-wider transition-colors ${
+                    isLight
+                      ? "bg-white border-black text-black hover:bg-black hover:text-white"
+                      : "bg-black border-white/40 text-[#c4ffff] hover:bg-white hover:text-black"
+                  }`}
                 >
                   {Math.round(zoomLevel * 100)}%
                 </button>
@@ -582,21 +688,27 @@ export default function ProjectModal({
                   onClick={handleZoomIn}
                   disabled={zoomLevel >= 4}
                   title={isES ? "Acercar zoom (+)" : "Zoom in (+)"}
-                  className="font-mono text-xs sm:text-sm px-2 py-0.5 text-white hover:text-[#c4ffff] disabled:opacity-30 disabled:hover:text-white cursor-crosshair font-bold transition-colors"
+                  className={`font-mono text-xs sm:text-sm px-2 py-0.5 disabled:opacity-30 cursor-crosshair font-bold transition-colors ${
+                    isLight ? "text-black hover:text-[#0055ff]" : "text-white hover:text-[#c4ffff]"
+                  }`}
                 >
                   +
                 </button>
-                <span className="hidden lg:inline-block font-mono text-[8px] text-white/40 border-l border-white/20 pl-2 ml-1">
+                <span className={`hidden lg:inline-block font-mono text-[8px] border-l pl-2 ml-1 ${
+                  isLight ? "text-black/40 border-black/20" : "text-white/40 border-white/20"
+                }`}>
                   {isES ? "RUEDA / DOBLE CLICK / ARRASTRAR" : "WHEEL / DOUBLE CLICK / DRAG"}
                 </span>
               </div>
 
               {/* Right: Close Button */}
               <div className="shrink-0">
-                <StarBorder as="button" color="#ffffff" speed="3s" className="p-0">
+                <StarBorder as="button" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="p-0">
                   <div
                     onClick={closeGallery}
-                    className="font-mono text-[10px] sm:text-xs text-black bg-white px-3 sm:px-4 py-1 sm:py-1.5 uppercase font-bold hover:bg-[#c4ffff] transition-colors cursor-crosshair flex items-center gap-1.5"
+                    className={`font-mono text-[10px] sm:text-xs px-3 sm:px-4 py-1 sm:py-1.5 uppercase font-bold transition-colors cursor-crosshair flex items-center gap-1.5 ${
+                      isLight ? "text-white bg-black hover:bg-[#0055ff]" : "text-black bg-white hover:bg-[#c4ffff]"
+                    }`}
                   >
                     <span>{isES ? "CERRAR" : "CLOSE"}</span>
                     <span>✕</span>
@@ -625,7 +737,11 @@ export default function ProjectModal({
                     type="button"
                     onClick={prevImage}
                     aria-label="Previous look"
-                    className="cursor-target absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/85 border border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] shadow-[0_0_15px_rgba(0,0,0,0.8)] cursor-crosshair"
+                    className={`cursor-target absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] cursor-crosshair ${
+                      isLight
+                        ? "bg-white hover:bg-black text-black hover:text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
+                        : "bg-black/85 border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                    }`}
                   >
                     &lt;
                   </button>
@@ -633,7 +749,11 @@ export default function ProjectModal({
                     type="button"
                     onClick={nextImage}
                     aria-label="Next look"
-                    className="cursor-target absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-black/85 border border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] shadow-[0_0_15px_rgba(0,0,0,0.8)] cursor-crosshair"
+                    className={`cursor-target absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] cursor-crosshair ${
+                      isLight
+                        ? "bg-white hover:bg-black text-black hover:text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
+                        : "bg-black/85 border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                    }`}
                   >
                     &gt;
                   </button>
@@ -651,7 +771,11 @@ export default function ProjectModal({
                 <img
                   src={project.images[selectedImageIndex]}
                   alt={`${project.title} - Look ${selectedImageIndex + 1}`}
-                  className="max-w-[90vw] max-h-[72vh] object-contain border border-white/60 shadow-[0_0_50px_rgba(0,0,0,0.95)] pointer-events-none select-none"
+                  className={`max-w-[90vw] max-h-[72vh] object-contain border pointer-events-none select-none ${
+                    isLight 
+                      ? "border-black shadow-[8px_8px_0px_rgba(0,0,0,0.9)]" 
+                      : "border-white/60 shadow-[0_0_50px_rgba(0,0,0,0.95)]"
+                  }`}
                   onError={(e) => {
                     const target = e.currentTarget;
                     if (target.dataset.triedFallback) return;
@@ -687,24 +811,38 @@ export default function ProjectModal({
                       >
                         <div className="relative group cursor-crosshair">
                           <div
-                            className={`w-6 h-6 border-2 ${
-                              isActive ? "border-[#c4ffff] bg-[#c4ffff]/30" : "border-white bg-black/70"
-                            } rounded-full flex items-center justify-center shadow-[0_0_12px_rgba(196,255,255,0.7)] transition-colors`}
+                            className={`w-6 h-6 border-2 rounded-full flex items-center justify-center transition-colors ${
+                              isLight
+                                ? isActive 
+                                  ? "border-[#0055ff] bg-[#0055ff]/30 shadow-[0_0_12px_rgba(0,85,255,0.7)]" 
+                                  : "border-black bg-white/90 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                                : isActive 
+                                  ? "border-[#c4ffff] bg-[#c4ffff]/30 shadow-[0_0_12px_rgba(196,255,255,0.7)]" 
+                                  : "border-white bg-black/70 shadow-[0_0_12px_rgba(255,255,255,0.4)]"
+                            }`}
                           >
-                            <span className="w-2 h-2 bg-[#c4ffff] rounded-full animate-ping"></span>
+                            <span className={`w-2 h-2 rounded-full animate-ping ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
                           </div>
                           {isActive && (
                             <div
-                              className="absolute top-1/2 left-8 -translate-y-1/2 w-64 bg-black/95 border border-[#c4ffff] p-3 shadow-2xl pointer-events-auto z-30"
+                              className={`absolute top-1/2 left-8 -translate-y-1/2 w-64 border p-3 pointer-events-auto z-30 ${
+                                isLight
+                                  ? "bg-white border-black text-black shadow-[6px_6px_0px_rgba(0,0,0,0.9)]"
+                                  : "bg-black/95 border-[#c4ffff] text-white shadow-2xl"
+                              }`}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <div className="flex justify-between items-center mb-1.5 border-b border-white/30 pb-1">
-                                <h4 className="font-mono text-xs font-bold text-[#c4ffff] uppercase pr-2">
+                              <div className={`flex justify-between items-center mb-1.5 border-b pb-1 ${
+                                isLight ? "border-black/20" : "border-white/30"
+                              }`}>
+                                <h4 className={`font-mono text-xs font-bold uppercase pr-2 ${
+                                  isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                                }`}>
                                   {hotspot.title}
                                 </h4>
                                 <button
                                   type="button"
-                                  className="text-white/60 hover:text-white"
+                                  className={isLight ? "text-black/60 hover:text-black" : "text-white/60 hover:text-white"}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setActiveHotspot(null);
@@ -713,7 +851,9 @@ export default function ProjectModal({
                                   <X size={12} />
                                 </button>
                               </div>
-                              <p className="font-mono text-[10px] text-white/90 leading-relaxed">
+                              <p className={`font-mono text-[10px] leading-relaxed ${
+                                isLight ? "text-black/90 font-medium" : "text-white/90"
+                              }`}>
                                 {hotspot.description}
                               </p>
                             </div>
@@ -727,7 +867,11 @@ export default function ProjectModal({
 
             {/* Bottom Thumbnails Strip Bar */}
             <div
-              className="relative z-[120] w-full bg-black/95 border-t border-white/30 px-3 sm:px-6 py-2 flex items-center justify-between gap-3 overflow-x-auto shadow-[0_-4px_20px_rgba(0,0,0,0.8)]"
+              className={`relative z-[120] w-full border-t px-3 sm:px-6 py-2 flex items-center justify-between gap-3 overflow-x-auto ${
+                isLight 
+                  ? "bg-white/95 border-black shadow-[0_-4px_20px_rgba(0,0,0,0.1)] text-black" 
+                  : "bg-black/95 border-white/30 shadow-[0_-4px_20px_rgba(0,0,0,0.8)] text-white"
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-2">
@@ -738,10 +882,14 @@ export default function ProjectModal({
                       key={idx}
                       type="button"
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative w-10 h-10 sm:w-12 sm:h-12 border transition-all shrink-0 cursor-crosshair overflow-hidden bg-black/80 ${
+                      className={`relative w-10 h-10 sm:w-12 sm:h-12 border transition-all shrink-0 cursor-crosshair overflow-hidden ${
                         isActive
-                          ? "border-[#c4ffff] shadow-[0_0_10px_#c4ffff] scale-105"
-                          : "border-white/30 hover:border-white opacity-60 hover:opacity-100"
+                          ? isLight
+                            ? "border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)] scale-105 bg-white"
+                            : "border-[#c4ffff] shadow-[0_0_10px_#c4ffff] scale-105 bg-black/80"
+                          : isLight
+                          ? "border-black/30 hover:border-black opacity-70 hover:opacity-100 bg-neutral-100"
+                          : "border-white/30 hover:border-white opacity-60 hover:opacity-100 bg-black/80"
                       }`}
                     >
                       <img

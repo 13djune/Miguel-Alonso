@@ -23,9 +23,10 @@ interface CollectionsViewProps {
   projects: Project[];
   onClose: () => void;
   onSelectProject: (project: Project) => void;
+  isLight?: boolean;
 }
 
-export default function CollectionsView({ projects, onClose, onSelectProject }: CollectionsViewProps) {
+export default function CollectionsView({ projects, onClose, onSelectProject, isLight = false }: CollectionsViewProps) {
   const { t, language } = useLanguage();
   const isES = language === 'es';
 
@@ -664,17 +665,30 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
   const activeSectorProject = typeof selectedSector === 'number' ? industryProjects[selectedSector] : null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 bg-black/95 pointer-events-auto animate-fade-in-up">
-      <div className="w-full h-full flex flex-col bg-black/90 font-mono shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+    <div className={`fixed inset-0 z-[60] flex items-center justify-center p-0 pointer-events-auto animate-fade-in-up ${
+      isLight ? 'bg-white/98 text-black' : 'bg-black/95 text-white'
+    }`}>
+      <div className={`w-full h-full flex flex-col font-mono ${
+        isLight 
+          ? 'bg-[#f7f7fa] text-black shadow-[0_0_30px_rgba(0,0,0,0.15)]' 
+          : 'bg-black/90 text-white shadow-[0_0_30px_rgba(255,255,255,0.1)]'
+      }`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-3 sm:p-4 md:px-8 border-b border-white gap-2 shrink-0">
-          <div className="text-white uppercase tracking-widest text-xs sm:text-sm font-bold flex items-center gap-2 sm:gap-3 truncate">
-            <span className="w-2 h-2 bg-white animate-pulse shrink-0"></span>
+        <div className={`flex items-center justify-between p-3 sm:p-4 md:px-8 border-b gap-2 shrink-0 ${
+          isLight ? 'border-black bg-white text-black' : 'border-white bg-black text-white'
+        }`}>
+          <div className="uppercase tracking-widest text-xs sm:text-sm font-bold flex items-center gap-2 sm:gap-3 truncate">
+            <span className={`w-2 h-2 ${isLight ? 'bg-black' : 'bg-white'} animate-pulse shrink-0`}></span>
             <span className="truncate">{t('overlay.nav.collections')}</span>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:text-black hover:bg-white px-2.5 sm:px-3 py-1 uppercase text-[10px] sm:text-xs transition-colors border border-transparent hover:border-white shrink-0 whitespace-nowrap cursor-crosshair"
+            className={`border font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 transition-colors shrink-0 whitespace-nowrap cursor-crosshair pulse-tactile ${
+              isLight
+                ? 'border-black bg-black text-white hover:bg-[#0055ff] shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                : 'border-white bg-black text-white hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.15)]'
+            }`}
+            title={isES ? "Cerrar Vista" : "Close View"}
           >
             {t('modal.close.view')}
           </button>
@@ -684,20 +698,25 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-8 scrollbar-hide space-y-10">
           {/* 1. CREATIVE UNIVERSE */}
           <div>
-            <h2 className="text-white tracking-widest uppercase text-base sm:text-xl font-bold mb-4 border-b border-white pb-2 break-words flex items-center justify-between">
+            <h2 className={`tracking-widest uppercase text-base sm:text-xl font-bold mb-4 border-b pb-2 break-words flex items-center justify-between ${
+              isLight ? 'text-black border-black' : 'text-white border-white'
+            }`}>
               <span>[ {isES ? 'UNIVERSO: CREATIVO' : 'UNIVERSE: CREATIVE'} ]</span>
-              <span className="text-[10px] sm:text-xs text-[#c4ffff] font-normal">
-                4 {isES ? 'PLANETAS' : 'PLANETS'}
-              </span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {creativeProjects.map((project, idx) => (
                 <div
                   key={project.id}
                   onClick={() => onSelectProject(project)}
-                  className="group relative flex flex-col border border-white hover:border-white transition-colors cursor-crosshair bg-white/5"
+                  className={`group relative flex flex-col border transition-all cursor-crosshair ${
+                    isLight 
+                      ? 'border-black bg-white hover:border-[#0055ff] shadow-[3px_3px_0px_rgba(0,0,0,0.8)]' 
+                      : 'border-white hover:border-white bg-white/5'
+                  }`}
                 >
-                  <div className="aspect-video w-full overflow-hidden border-b border-white group-hover:border-white relative">
+                  <div className={`aspect-video w-full overflow-hidden border-b relative ${
+                    isLight ? 'border-black group-hover:border-black' : 'border-white group-hover:border-white'
+                  }`}>
                     <img
                       src={project.images[0]}
                       alt={project.title}
@@ -713,24 +732,31 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         }
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-100 group-hover:opacity-0 transition-opacity duration-500" />
+                    <div className={`absolute inset-0 bg-gradient-to-t opacity-100 group-hover:opacity-0 transition-opacity duration-500 ${
+                      isLight ? 'from-white/60 to-transparent' : 'from-black/80 to-transparent'
+                    }`} />
                   </div>
-                  <div className="p-3 sm:p-4 flex flex-col gap-2 relative z-10 bg-black/40 group-hover:bg-transparent transition-colors">
+                  <div className={`p-3 sm:p-4 flex flex-col gap-2 relative z-10 transition-colors ${
+                    isLight ? 'bg-white group-hover:bg-black/5 text-black' : 'bg-black/40 group-hover:bg-transparent text-white'
+                  }`}>
                     <div className="flex justify-between items-center gap-1">
-                      <div className="text-[10px] text-white tracking-widest uppercase font-bold shrink-0">
+                      <div className={`text-[10px] tracking-widest uppercase font-bold shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>
                         IDX_{String(idx + 1).padStart(2, '0')}
                       </div>
-                      <div className="text-[9px] text-[#c4ffff] uppercase tracking-wider font-bold truncate max-w-[120px]">
+                      <div className={`text-[9px] uppercase tracking-wider font-bold truncate max-w-[120px] ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
                         {project.tags?.[0] || (isES ? 'CONCEPTO' : 'CONCEPT')}
                       </div>
                     </div>
-                    <div className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mt-1 break-words line-clamp-2">
+                    <div className={`text-xs sm:text-sm font-bold uppercase tracking-wider mt-1 break-words line-clamp-2 ${isLight ? 'text-black' : 'text-white'}`}>
                       {project.title.replace(/^[0-9]+ /, '')}
                     </div>
                   </div>
                   <div
                     className="absolute top-0 left-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ backgroundColor: '#c4ffff', boxShadow: '0 0 10px #c4ffff' }}
+                    style={{ 
+                      backgroundColor: isLight ? '#0055ff' : '#c4ffff', 
+                      boxShadow: isLight ? '0 0 10px #0055ff' : '0 0 10px #c4ffff' 
+                    }}
                   />
                 </div>
               ))}
@@ -739,13 +765,17 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
           {/* 2. REFINED DENSE BENTO GRID HORIZONTAL SCROLL LOOKBOOK */}
           <div className="pt-2">
-            <div className="border-b border-white pb-3 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className={`border-b pb-3 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+              isLight ? 'border-black' : 'border-white'
+            }`}>
               <div>
-                <h2 className="text-white tracking-widest uppercase text-base sm:text-xl font-bold break-words flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-[#c4ffff] animate-pulse"></span>
+                <h2 className={`tracking-widest uppercase text-base sm:text-xl font-bold break-words flex items-center gap-2 ${
+                  isLight ? 'text-black' : 'text-white'
+                }`}>
+                  <span className={`w-2.5 h-2.5 ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'} animate-pulse`}></span>
                   <span>[ {isES ? 'UNIVERSO: INDUSTRIA // BENTO LOOKBOOK DENSE' : 'UNIVERSE: INDUSTRY // DENSE BENTO LOOKBOOK'} ]</span>
                 </h2>
-                <p className="text-white/60 text-xs mt-1">
+                <p className={`text-xs mt-1 ${isLight ? 'text-black/70' : 'text-white/60'}`}>
                   {isES
                     ? 'Distribución paramétrica densa (CSS grid-auto-flow: dense) con desplazamiento inercial suave y fichas técnicas descargables.'
                     : 'Dense parametric packing (CSS grid-auto-flow: dense) with smooth inertia drag-to-scroll and downloadable tech packs.'}
@@ -757,7 +787,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 {activeSectorProject && (
                   <button
                     onClick={() => onSelectProject(activeSectorProject)}
-                    className="px-3 py-1.5 border border-[#c4ffff] bg-black text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black font-mono text-[10px] sm:text-xs uppercase font-bold tracking-wider transition-colors flex items-center gap-1.5 cursor-crosshair"
+                    className={`px-3 py-1.5 border font-mono text-[10px] sm:text-xs uppercase font-bold tracking-wider transition-colors flex items-center gap-1.5 cursor-crosshair ${
+                      isLight
+                        ? 'border-black bg-black text-white hover:bg-[#0055ff] shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                        : 'border-[#c4ffff] bg-black text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black'
+                    }`}
                   >
                     <ExternalLink size={12} />
                     <span>{isES ? 'ABRIR EXPEDIENTE COMPLETO' : 'OPEN FULL DOSSIER'}</span>
@@ -769,14 +803,22 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   <div className="hidden sm:flex items-center gap-1.5">
                     <button
                       onClick={() => scrollStep('left')}
-                      className="p-1.5 border border-white/40 hover:border-[#c4ffff] text-white hover:text-black hover:bg-[#c4ffff] transition-colors cursor-crosshair"
+                      className={`p-1.5 border transition-colors cursor-crosshair ${
+                        isLight
+                          ? 'border-black/40 text-black hover:bg-black hover:text-white'
+                          : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-black hover:bg-[#c4ffff]'
+                      }`}
                       title={isES ? 'Desplazar izquierda' : 'Scroll left'}
                     >
                       <ChevronLeft size={15} />
                     </button>
                     <button
                       onClick={() => scrollStep('right')}
-                      className="p-1.5 border border-white/40 hover:border-[#c4ffff] text-white hover:text-black hover:bg-[#c4ffff] transition-colors cursor-crosshair"
+                      className={`p-1.5 border transition-colors cursor-crosshair ${
+                        isLight
+                          ? 'border-black/40 text-black hover:bg-black hover:text-white'
+                          : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-black hover:bg-[#c4ffff]'
+                      }`}
                       title={isES ? 'Desplazar derecha' : 'Scroll right'}
                     >
                       <ChevronRight size={15} />
@@ -787,8 +829,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
             </div>
 
             {/* Category / Sector Selector Chips */}
-            <div className="flex flex-wrap items-center gap-2 mb-3 bg-black/60 p-2 border border-white/20">
-              <span className="text-[10px] sm:text-xs uppercase tracking-widest text-white/50 mr-1 font-bold whitespace-nowrap shrink-0">
+            <div className={`flex flex-wrap items-center gap-2 mb-3 p-2 border ${
+              isLight ? 'bg-black/5 border-black/30' : 'bg-black/60 border-white/20'
+            }`}>
+              <span className={`text-[10px] sm:text-xs uppercase tracking-widest mr-1 font-bold whitespace-nowrap shrink-0 ${
+                isLight ? 'text-black/60' : 'text-white/50'
+              }`}>
                 {isES ? 'SECTOR:' : 'SECTOR:'}
               </span>
 
@@ -797,8 +843,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 onClick={() => handleSectorChange('ALL')}
                 className={`font-mono text-[9px] sm:text-[10px] md:text-xs uppercase px-2.5 sm:px-3 py-1.5 transition-all duration-200 cursor-crosshair flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                   selectedSector === 'ALL'
-                    ? 'bg-[#c4ffff] text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(196,255,255,0.7)] tracking-wider scale-[1.02]'
-                    : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white'
+                    ? isLight
+                      ? 'bg-black text-white font-extrabold border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-wider scale-[1.02]'
+                      : 'bg-[#c4ffff] text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(196,255,255,0.7)] tracking-wider scale-[1.02]'
+                    : isLight
+                      ? 'bg-white text-black border border-black/30 hover:border-black'
+                      : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white'
                 }`}
               >
                 <span>{selectedSector === 'ALL' ? '▪' : '>'}</span>
@@ -815,8 +865,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     onClick={() => handleSectorChange(idx)}
                     className={`font-mono text-[9px] sm:text-[10px] md:text-xs uppercase px-2.5 sm:px-3 py-1.5 transition-all duration-200 cursor-crosshair flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                       isSelected
-                        ? 'bg-[#c4ffff] text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(196,255,255,0.7)] tracking-wider scale-[1.02]'
-                        : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white'
+                        ? isLight
+                          ? 'bg-black text-white font-extrabold border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-wider scale-[1.02]'
+                          : 'bg-[#c4ffff] text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(196,255,255,0.7)] tracking-wider scale-[1.02]'
+                        : isLight
+                          ? 'bg-white text-black border border-black/30 hover:border-black'
+                          : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white'
                     }`}
                   >
                     <span>{isSelected ? '▪' : '>'}</span>
@@ -828,8 +882,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
             {/* Sub-tag filter strip */}
             {availableTags.length > 2 && (
-              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1.5 mb-3 border-b border-white/10">
-                <span className="text-[9px] text-[#c4ffff] uppercase tracking-wider mr-2 shrink-0">
+              <div className={`flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1.5 mb-3 border-b ${
+                isLight ? 'border-black/15' : 'border-white/10'
+              }`}>
+                <span className={`text-[9px] uppercase tracking-wider mr-2 shrink-0 font-bold ${
+                  isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                }`}>
                   {isES ? 'FILTRO:' : 'FILTER:'}
                 </span>
                 {availableTags.map((tag) => (
@@ -838,8 +896,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     onClick={() => setActiveTag(tag)}
                     className={`px-2.5 py-0.5 text-[8px] sm:text-[9px] uppercase tracking-wider transition-colors border shrink-0 cursor-crosshair ${
                       activeTag === tag
-                        ? 'bg-white text-black font-bold border-white'
-                        : 'bg-black/40 text-white/60 border-white/20 hover:border-white/50 hover:text-white'
+                        ? isLight
+                          ? 'bg-black text-white font-bold border-black'
+                          : 'bg-white text-black font-bold border-white'
+                        : isLight
+                          ? 'bg-white text-black/70 border-black/20 hover:border-black'
+                          : 'bg-black/40 text-white/60 border-white/20 hover:border-white/50 hover:text-white'
                     }`}
                   >
                     {tag}
@@ -849,12 +911,18 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
             )}
 
             {/* BENTO GRID HORIZONTAL SCROLL CONTAINER WITH INERTIA DRAG & DENSE AUTO FLOW */}
-            <div className="relative border border-white/30 bg-black/40 p-2 sm:p-3 overflow-hidden">
+            <div className={`relative border p-2 sm:p-3 overflow-hidden ${
+              isLight ? 'border-black/30 bg-black/[0.02]' : 'border-white/30 bg-black/40'
+            }`}>
               {/* Edge Gradient Scrims */}
               {canScroll && (
                 <>
-                  <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/90 to-transparent z-10 hidden sm:block" />
-                  <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-black/90 to-transparent z-10 hidden sm:block" />
+                  <div className={`pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 hidden sm:block ${
+                    isLight ? 'bg-gradient-to-r from-white to-transparent' : 'bg-gradient-to-r from-black/90 to-transparent'
+                  }`} />
+                  <div className={`pointer-events-none absolute right-0 top-0 bottom-0 w-10 z-10 hidden sm:block ${
+                    isLight ? 'bg-gradient-to-l from-white to-transparent' : 'bg-gradient-to-l from-black/90 to-transparent'
+                  }`} />
                 </>
               )}
 
@@ -895,7 +963,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       <div
                         key={garment.id}
                         onClick={() => handleGarmentClick(garment)}
-                        className={`bento-grid-item group relative border border-white/30 hover:border-[#c4ffff] bg-neutral-950 overflow-hidden flex flex-col justify-between ${spanConfig.colSpan} ${spanConfig.rowSpan} ${spanConfig.widthClass} cursor-crosshair shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(196,255,255,0.25)] snap-start shrink-0`}
+                        className={`bento-grid-item group relative border overflow-hidden flex flex-col justify-between ${spanConfig.colSpan} ${spanConfig.rowSpan} ${spanConfig.widthClass} cursor-crosshair snap-start shrink-0 ${
+                          isLight
+                            ? 'border-black/40 hover:border-[#0055ff] bg-white text-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[3px_3px_0px_rgba(0,85,255,0.8)]'
+                            : 'border-white/30 hover:border-[#c4ffff] bg-neutral-950 text-white shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(196,255,255,0.25)]'
+                        }`}
                         style={{
                           transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
                           scrollSnapAlign: 'start',
@@ -903,54 +975,86 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         }}
                       >
                         {/* Background Garment Image */}
-                        <div className="absolute inset-0 z-0 overflow-hidden bg-black flex items-center justify-center">
+                        <div className={`absolute inset-0 z-0 overflow-hidden flex items-center justify-center ${
+                          isLight ? 'bg-[#f0f0f4]' : 'bg-black'
+                        }`}>
                           <img
                             src={garment.image}
                             alt={garment.name}
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out select-none pointer-events-none"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-85 group-hover:opacity-60 transition-opacity pointer-events-none" />
+                          <div className={`absolute inset-0 transition-opacity pointer-events-none ${
+                            isLight
+                              ? 'bg-gradient-to-t from-white via-white/50 to-transparent opacity-90 group-hover:opacity-75'
+                              : 'bg-gradient-to-t from-black via-black/30 to-transparent opacity-85 group-hover:opacity-60'
+                          }`} />
                         </div>
 
                         {/* Top Metadata Badges (No repeated tags) */}
                         <div className="relative z-10 p-2 sm:p-2.5 flex items-start justify-between gap-1 pointer-events-none">
-                          <div className="bg-black/85 backdrop-blur-sm border border-white/30 px-2 py-0.5 text-xs sm:text-sm text-[#c4ffff] font-bold tracking-widest uppercase flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 bg-[#c4ffff] rounded-full animate-pulse"></span>
+                          <div className={`backdrop-blur-sm border px-2 py-0.5 text-xs sm:text-sm font-bold tracking-widest uppercase flex items-center gap-1.5 ${
+                            isLight
+                              ? 'bg-white/90 border-black/40 text-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                              : 'bg-black/85 border-white/30 text-[#c4ffff]'
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                              isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'
+                            }`}></span>
                             <span>{garment.refCode}</span>
                           </div>
 
-                          <span className="bg-black/80 border border-white/20 px-2 py-0.5 text-[10px] sm:text-xs text-white/80 uppercase font-mono">
+                          <span className={`border px-2 py-0.5 text-[10px] sm:text-xs uppercase font-mono ${
+                            isLight
+                              ? 'bg-white/85 border-black/30 text-black/80'
+                              : 'bg-black/80 border-white/20 text-white/80'
+                          }`}>
                             {spanConfig.label}
                           </span>
                         </div>
 
                         {/* Bottom Information Panel */}
-                        <div className="relative z-10 p-2.5 sm:p-3.5 bg-gradient-to-t from-black via-black/90 to-transparent flex flex-col gap-1.5 border-t border-white/10">
+                        <div className={`relative z-10 p-2.5 sm:p-3.5 flex flex-col gap-1.5 border-t ${
+                          isLight
+                            ? 'bg-gradient-to-t from-white via-white/95 to-transparent text-black border-black/15'
+                            : 'bg-gradient-to-t from-black via-black/90 to-transparent text-white border-white/10'
+                        }`}>
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs sm:text-[13px] text-[#c4ffff] tracking-widest uppercase font-bold truncate">
+                            <span className={`text-xs sm:text-[13px] tracking-widest uppercase font-bold truncate ${
+                              isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                            }`}>
                               {garment.category.toUpperCase()}
                             </span>
                             {garment.tags && garment.tags[0] && (
-                              <span className="text-xs text-white/60 uppercase truncate font-mono">
+                              <span className={`text-xs uppercase truncate font-mono ${
+                                isLight ? 'text-black/60' : 'text-white/60'
+                              }`}>
                                 #{garment.tags[0]}
                               </span>
                             )}
                           </div>
 
-                          <h3 className="text-white text-sm sm:text-base font-bold uppercase tracking-wider line-clamp-1 group-hover:text-[#c4ffff] transition-colors">
+                          <h3 className={`text-sm sm:text-base font-bold uppercase tracking-wider line-clamp-1 transition-colors ${
+                            isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-[#c4ffff]'
+                          }`}>
                             {isES && garment.nameEs ? garment.nameEs : garment.name}
                           </h3>
 
                           {garment.silhouette && (
-                            <p className="text-xs sm:text-[13px] text-white/80 line-clamp-1 italic">
+                            <p className={`text-xs sm:text-[13px] line-clamp-1 italic ${
+                              isLight ? 'text-black/70' : 'text-white/80'
+                            }`}>
                               {garment.silhouette}
                             </p>
                           )}
 
                           {/* Footer Action Strip - Responsive inspect and tech sheet buttons */}
-                          <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-1.5 text-xs">
-                            <span className="text-white/60 text-[10px] sm:text-xs uppercase tracking-wider font-bold font-mono whitespace-nowrap shrink-0">
+                          <div className={`pt-2 border-t flex items-center justify-between gap-1.5 text-xs ${
+                            isLight ? 'border-black/15' : 'border-white/10'
+                          }`}>
+                            <span className={`text-[10px] sm:text-xs uppercase tracking-wider font-bold font-mono whitespace-nowrap shrink-0 ${
+                              isLight ? 'text-black/60' : 'text-white/60'
+                            }`}>
                               [IDX_{String(idx + 1).padStart(2, '0')}]
                             </span>
 
@@ -961,7 +1065,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                                   e.stopPropagation();
                                   setInspectedGarment(garment);
                                 }}
-                                className="cursor-target px-2 sm:px-2.5 py-1 border border-[#c4ffff]/80 hover:border-[#c4ffff] text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
+                                className={`cursor-target px-2 sm:px-2.5 py-1 border transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 ${
+                                  isLight
+                                    ? 'border-black bg-white text-black hover:bg-black hover:text-white'
+                                    : 'border-[#c4ffff]/80 hover:border-[#c4ffff] text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black'
+                                }`}
                                 title={isES ? 'Ver información' : 'View info'}
                               >
                                 <Maximize2 size={11} className="shrink-0" />
@@ -974,13 +1082,15 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                                   onClick={(e) => handleDownloadTechSheet(garment, e)}
                                   className={`cursor-target px-2 sm:px-2.5 py-1 border transition-all uppercase text-[10px] sm:text-xs font-mono font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 ${
                                     isDownloaded
-                                      ? 'bg-green-500/20 border-green-400 text-green-300'
-                                      : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-[#c4ffff] bg-black/60'
+                                      ? 'bg-green-500/20 border-green-400 text-green-700'
+                                      : isLight
+                                        ? 'border-black/40 text-black hover:bg-black hover:text-white bg-white'
+                                        : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-[#c4ffff] bg-black/60'
                                   }`}
                                   title={isES ? 'Descargar Ficha Técnica (.txt)' : 'Download Tech Pack (.txt)'}
                                 >
                                   {isDownloaded ? (
-                                    <CheckCircle2 size={12} className="text-green-400 shrink-0" />
+                                    <CheckCircle2 size={12} className="text-green-600 shrink-0" />
                                   ) : (
                                     <FileText size={12} className="shrink-0" />
                                   )}
@@ -1003,24 +1113,28 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               </div>
 
               {/* Bottom Scroll Status Bar */}
-              <div className="mt-2 pt-2 border-t border-white/20 flex flex-wrap items-center justify-between text-xs text-white/70">
+              <div className={`mt-2 pt-2 border-t flex flex-wrap items-center justify-between text-xs ${
+                isLight ? 'border-black/20 text-black/70' : 'border-white/20 text-white/70'
+              }`}>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#c4ffff]"></span>
-                  <span className="text-white font-bold text-xs sm:text-sm">
+                  <span className={`w-2 h-2 ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`}></span>
+                  <span className={`font-bold text-xs sm:text-sm ${isLight ? 'text-black' : 'text-white'}`}>
                     {displayedGarments.length} {isES ? 'PRENDAS DENSE-PACKED' : 'DENSE-PACKED PIECES'}
                   </span>
                   <span>·</span>
-                  <span className="text-white/50">CSS grid-auto-flow: dense</span>
+                  <span className={isLight ? 'text-black/50' : 'text-white/50'}>CSS grid-auto-flow: dense</span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-[#c4ffff] text-xs hidden sm:inline">
+                  <span className={`text-xs hidden sm:inline ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
                     {isES ? '← ARRASTRA O USA LA RUEDA DEL RATÓN →' : '← DRAG OR USE MOUSE WHEEL TO SCROLL →'}
                   </span>
                   {activeSectorProject && (
                     <button
                       onClick={() => onSelectProject(activeSectorProject)}
-                      className="text-white hover:text-[#c4ffff] underline font-bold text-xs cursor-crosshair"
+                      className={`underline font-bold text-xs cursor-crosshair ${
+                        isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-[#c4ffff]'
+                      }`}
                     >
                       {isES ? 'Ver en 3D' : 'View in 3D'}
                     </button>
@@ -1036,11 +1150,13 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
       {inspectedGarment &&
         createPortal(
           <div
-            className="fixed inset-0 z-[2147483646] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-2 sm:p-4 md:p-6"
+            className={`fixed inset-0 z-[2147483646] backdrop-blur-md flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 ${
+              isLight ? 'bg-black/40 text-black' : 'bg-black/95 text-white'
+            }`}
             onClick={() => setInspectedGarment(null)}
           >
             {/* Cyber scanline backdrop */}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2ZmMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-15 pointer-events-none" />
+            <div className={`absolute inset-0 opacity-15 pointer-events-none ${isLight ? 'bg-cyber-grid' : ''}`} />
 
             {/* Left Prev Arrow Button */}
             {displayedGarments.length > 1 && (
@@ -1049,7 +1165,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   type="button"
                   onClick={goToPrevGarment}
                   title={isES ? 'Prenda anterior (←)' : 'Previous piece (←)'}
-                  className="cursor-target p-2.5 sm:p-3.5 bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] transition-all duration-200 shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                  className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
+                    isLight 
+                      ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
+                      : 'bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] shadow-[0_0_15px_rgba(0,0,0,0.8)]'
+                  }`}
                 >
                   <ChevronLeft size={26} className="sm:w-8 sm:h-8" />
                 </button>
@@ -1063,7 +1183,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   type="button"
                   onClick={goToNextGarment}
                   title={isES ? 'Siguiente prenda (→)' : 'Next piece (→)'}
-                  className="cursor-target p-2.5 sm:p-3.5 bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] transition-all duration-200 shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                  className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
+                    isLight 
+                      ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
+                      : 'bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] shadow-[0_0_15px_rgba(0,0,0,0.8)]'
+                  }`}
                 >
                   <ChevronRight size={26} className="sm:w-8 sm:h-8" />
                 </button>
@@ -1072,18 +1196,30 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
             {/* Main Inspection Dialog */}
             <div
-              className="relative w-full max-w-4xl bg-black border-2 border-white/60 p-5 sm:p-7 md:p-9 flex flex-col md:flex-row gap-6 sm:gap-8 shadow-[0_0_50px_rgba(0,0,0,0.95)] max-h-[92vh] overflow-y-auto scrollbar-hide z-[2147483647]"
+              className={`relative w-full max-w-4xl border-2 p-5 sm:p-7 md:p-9 flex flex-col md:flex-row gap-6 sm:gap-8 max-h-[92vh] overflow-y-auto scrollbar-hide z-[2147483647] ${
+                isLight 
+                  ? 'bg-white border-black text-black shadow-[8px_8px_0px_rgba(0,0,0,0.9)]'
+                  : 'bg-black border-white/60 text-white shadow-[0_0_50px_rgba(0,0,0,0.95)]'
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner Accents */}
-              <div className="absolute top-0 right-0 w-3 h-3 border-b-2 border-l-2 border-[#c4ffff] pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-3 h-3 border-t-2 border-r-2 border-[#c4ffff] pointer-events-none" />
+              <div className={`absolute top-0 right-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none ${
+                isLight ? 'border-black' : 'border-[#c4ffff]'
+              }`} />
+              <div className={`absolute bottom-0 left-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none ${
+                isLight ? 'border-black' : 'border-[#c4ffff]'
+              }`} />
 
               {/* Close Button Top Right */}
               <button
                 type="button"
                 onClick={() => setInspectedGarment(null)}
-                className="cursor-target absolute top-3.5 right-3.5 p-2 text-white/70 hover:text-black hover:bg-[#c4ffff] border border-white/30 hover:border-[#c4ffff] transition-colors bg-black/80 z-20"
+                className={`cursor-target absolute top-3.5 right-3.5 p-2 border transition-colors z-20 ${
+                  isLight 
+                    ? 'text-black hover:text-white hover:bg-black border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                    : 'text-white/70 hover:text-black hover:bg-[#c4ffff] border-white/30 hover:border-[#c4ffff] bg-black/80'
+                }`}
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
                 <X size={20} />
@@ -1092,7 +1228,9 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               {/* Left Column: Image with Zoom Toggle */}
               <div className="w-full md:w-1/2 flex flex-col gap-2.5">
                 <div
-                  className={`w-full aspect-[3/4] relative bg-neutral-950 border border-white/30 overflow-hidden flex items-center justify-center cursor-target ${
+                  className={`w-full aspect-[3/4] relative border overflow-hidden flex items-center justify-center cursor-target ${
+                    isLight ? 'bg-[#f0f0f4] border-black/30' : 'bg-neutral-950 border-white/30'
+                  } ${
                     isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
                   }`}
                   onClick={() => setIsZoomed(!isZoomed)}
@@ -1107,17 +1245,23 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   />
 
                   {/* Zoom Badge Indicator */}
-                  <div className="absolute bottom-2.5 left-2.5 z-10 bg-black/85 border border-white/40 text-white px-2.5 py-1 text-xs font-mono flex items-center gap-1.5 pointer-events-none">
+                  <div className={`absolute bottom-2.5 left-2.5 z-10 border px-2.5 py-1 text-xs font-mono flex items-center gap-1.5 pointer-events-none ${
+                    isLight 
+                      ? 'bg-white/95 border-black/40 text-black shadow-[2px_2px_0px_rgba(0,0,0,0.6)]'
+                      : 'bg-black/85 border-white/40 text-white'
+                  }`}>
                     {isZoomed ? <ZoomOut size={12} /> : <ZoomIn size={12} />}
                     <span>{isZoomed ? (isES ? 'ALEJAR' : 'ZOOM OUT') : (isES ? 'AMPLIAR' : 'ZOOM IN')}</span>
                   </div>
                 </div>
 
                 {/* Sub-label under photo */}
-                <div className="flex items-center justify-between text-xs font-mono text-white/60 px-1 pt-0.5">
+                <div className={`flex items-center justify-between text-xs font-mono px-1 pt-0.5 ${
+                  isLight ? 'text-black/70' : 'text-white/60'
+                }`}>
                   <span className="font-bold">REF: {inspectedGarment.refCode}</span>
                   {currentGarmentIndex !== -1 && (
-                    <span className="text-[#c4ffff] font-bold">
+                    <span className={`font-bold ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
                       [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(displayedGarments.length).padStart(2, '0')} ]
                     </span>
                   )}
@@ -1127,20 +1271,30 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               {/* Right Column: Specification Dossier */}
               <div className="w-full md:w-1/2 flex flex-col justify-between gap-5 font-mono">
                 <div className="flex flex-col gap-3.5">
-                  <div className="flex items-center gap-2 text-[#c4ffff] text-xs sm:text-sm tracking-widest uppercase font-bold">
-                    <span className="w-2 h-2 bg-[#c4ffff] animate-pulse"></span>
+                  <div className={`flex items-center gap-2 text-xs sm:text-sm tracking-widest uppercase font-bold ${
+                    isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                  }`}>
+                    <span className={`w-2 h-2 animate-pulse ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`}></span>
                     <span>{inspectedGarment.refCode}</span>
                     <span>·</span>
                     <span>{inspectedGarment.category.toUpperCase()}</span>
                   </div>
 
-                  <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-extrabold uppercase tracking-wider leading-snug">
+                  <h2 className={`text-xl sm:text-2xl md:text-3xl font-extrabold uppercase tracking-wider leading-snug ${
+                    isLight ? 'text-black' : 'text-white'
+                  }`}>
                     {isES && inspectedGarment.nameEs ? inspectedGarment.nameEs : inspectedGarment.name}
                   </h2>
 
                   {inspectedGarment.silhouette && (
-                    <div className="p-3 bg-white/5 border-l-2 border-[#c4ffff] text-white/95 text-sm sm:text-base leading-relaxed">
-                      <span className="block text-[10px] sm:text-xs text-[#c4ffff] uppercase tracking-widest mb-1 font-bold">
+                    <div className={`p-3 border-l-2 text-sm sm:text-base leading-relaxed ${
+                      isLight 
+                        ? 'bg-black/5 border-[#0055ff] text-black' 
+                        : 'bg-white/5 border-[#c4ffff] text-white/95'
+                    }`}>
+                      <span className={`block text-[10px] sm:text-xs uppercase tracking-widest mb-1 font-bold ${
+                        isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                      }`}>
                         {isES ? 'SILUETA Y CONSTRUCCIÓN' : 'SILHOUETTE & DRAPE'}
                       </span>
                       {inspectedGarment.silhouette}
@@ -1149,41 +1303,55 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
                   {inspectedGarment.material && (
                     <div className="flex flex-col gap-1 text-sm">
-                      <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-widest font-bold">
+                      <span className={`text-[10px] sm:text-xs uppercase tracking-widest font-bold ${
+                        isLight ? 'text-black/50' : 'text-white/50'
+                      }`}>
                         {isES ? 'COMPOSICIÓN TEXTIL' : 'TEXTILE COMPOSITION'}
                       </span>
-                      <span className="text-white text-sm sm:text-base font-medium">{inspectedGarment.material}</span>
+                      <span className={`text-sm sm:text-base font-medium ${isLight ? 'text-black' : 'text-white'}`}>
+                        {inspectedGarment.material}
+                      </span>
                     </div>
                   )}
 
                   {inspectedGarment.details && (
                     <div className="flex flex-col gap-1 text-sm">
-                      <span className="text-[10px] sm:text-xs text-white/50 uppercase tracking-widest font-bold">
+                      <span className={`text-[10px] sm:text-xs uppercase tracking-widest font-bold ${
+                        isLight ? 'text-black/50' : 'text-white/50'
+                      }`}>
                         {isES ? 'ESPECIFICACIONES INDUSTRIALES' : 'INDUSTRIAL SPECIFICATIONS'}
                       </span>
-                      <p className="text-white/85 text-xs sm:text-sm leading-relaxed">
+                      <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-black/85' : 'text-white/85'}`}>
                         {inspectedGarment.details}
                       </p>
                     </div>
                   )}
 
                   {inspectedGarment.techSheet && (
-                    <div className="mt-2 p-3.5 border border-[#c4ffff]/60 bg-black/70 space-y-2.5">
-                      <div className="flex items-center justify-between text-[#c4ffff] text-xs sm:text-sm font-bold uppercase tracking-wider">
+                    <div className={`mt-2 p-3.5 border space-y-2.5 ${
+                      isLight 
+                        ? 'border-black/30 bg-black/5 text-black' 
+                        : 'border-[#c4ffff]/60 bg-black/70 text-white'
+                    }`}>
+                      <div className={`flex items-center justify-between text-xs sm:text-sm font-bold uppercase tracking-wider ${
+                        isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                      }`}>
                         <span className="flex items-center gap-1.5">
                           <FileText size={14} />
                           {isES ? 'FICHA TÉCNICA OFICIAL DISPONIBLE' : 'OFFICIAL TECH PACK AVAILABLE'}
                         </span>
-                        <span className="text-white/80">{inspectedGarment.techSheet.sheetId}</span>
+                        <span className={isLight ? 'text-black/80' : 'text-white/80'}>{inspectedGarment.techSheet.sheetId}</span>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm text-white/80 pt-1.5 border-t border-white/10">
+                      <div className={`grid grid-cols-2 gap-3 text-xs sm:text-sm pt-1.5 border-t ${
+                        isLight ? 'border-black/10 text-black/80' : 'border-white/10 text-white/80'
+                      }`}>
                         <div>
-                          <span className="text-white/40 block text-[10px] sm:text-xs">FABRIC:</span>
+                          <span className={`block text-[10px] sm:text-xs ${isLight ? 'text-black/50' : 'text-white/40'}`}>FABRIC:</span>
                           <span className="font-bold">{inspectedGarment.techSheet.fabricCode}</span>
                         </div>
                         <div>
-                          <span className="text-white/40 block text-[10px] sm:text-xs">WEIGHT:</span>
+                          <span className={`block text-[10px] sm:text-xs ${isLight ? 'text-black/50' : 'text-white/40'}`}>WEIGHT:</span>
                           <span className="font-bold">{inspectedGarment.techSheet.weight}</span>
                         </div>
                       </div>
@@ -1191,7 +1359,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       <button
                         type="button"
                         onClick={(e) => handleDownloadTechSheet(inspectedGarment, e)}
-                        className="cursor-target w-full mt-2 py-2.5 bg-[#c4ffff] hover:bg-white text-black font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-[0_0_15px_rgba(196,255,255,0.4)]"
+                        className={`cursor-target w-full mt-2 py-2.5 font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-colors ${
+                          isLight
+                            ? 'bg-black text-white hover:bg-[#0055ff] shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
+                            : 'bg-[#c4ffff] hover:bg-white text-black shadow-[0_0_15px_rgba(196,255,255,0.4)]'
+                        }`}
                       >
                         <Download size={15} />
                         <span>{isES ? 'DESCARGAR FICHA TÉCNICA COMPLETA (.TXT)' : 'DOWNLOAD FULL TECH PACK (.TXT)'}</span>
@@ -1200,13 +1372,17 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-white/20 flex items-center justify-between text-xs text-white/50 font-mono uppercase">
+                <div className={`pt-4 border-t flex items-center justify-between text-xs font-mono uppercase ${
+                  isLight ? 'border-black/20 text-black/60' : 'border-white/20 text-white/50'
+                }`}>
                   <div className="flex items-center gap-2.5">
                     <span>{isES ? '[ESC] SALIR' : '[ESC] EXIT'}</span>
                     <span>·</span>
                     <span>{isES ? '[← →] NAVEGAR' : '[← →] NAVIGATE'}</span>
                   </div>
-                  <span className="text-[#c4ffff] tracking-widest text-[11px]">
+                  <span className={`tracking-widest text-[11px] font-bold ${
+                    isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                  }`}>
                     CAD // ARCHIVE
                   </span>
                 </div>

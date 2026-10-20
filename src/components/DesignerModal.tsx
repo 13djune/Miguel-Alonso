@@ -22,9 +22,10 @@ interface RadarVertexDotProps {
   cy?: number;
   value?: number;
   index?: number;
+  isLight?: boolean;
 }
 
-function RadarVertexDot({ cx, cy, value, index }: RadarVertexDotProps) {
+function RadarVertexDot({ cx, cy, value, index, isLight = false }: RadarVertexDotProps) {
   const [hovered, setHovered] = useState(false);
 
   if (typeof cx !== 'number' || typeof cy !== 'number' || isNaN(cx) || isNaN(cy)) {
@@ -53,14 +54,14 @@ function RadarVertexDot({ cx, cy, value, index }: RadarVertexDotProps) {
         cx={cx}
         cy={cy}
         r={hovered ? 4.5 : 0}
-        fill="#c4ffff"
-        stroke="#ffffff"
+        fill={isLight ? "#0055ff" : "#c4ffff"}
+        stroke={isLight ? "#000000" : "#ffffff"}
         strokeWidth={1.5}
         className="transition-all duration-150"
         style={{
           opacity: hovered ? 1 : 0,
           pointerEvents: 'none',
-          filter: hovered ? 'drop-shadow(0 0 6px rgba(196, 255, 255, 0.95))' : 'none',
+          filter: hovered ? (isLight ? 'drop-shadow(0 0 6px rgba(0, 85, 255, 0.8))' : 'drop-shadow(0 0 6px rgba(196, 255, 255, 0.95))') : 'none',
         }}
       />
       {/* Mini score HUD pill that appears with the vertex dot */}
@@ -71,8 +72,8 @@ function RadarVertexDot({ cx, cy, value, index }: RadarVertexDotProps) {
             y={cy - 22}
             width={32}
             height={15}
-            fill="#000000"
-            stroke="#c4ffff"
+            fill={isLight ? "#ffffff" : "#000000"}
+            stroke={isLight ? "#0055ff" : "#c4ffff"}
             strokeWidth={1}
             rx={1}
           />
@@ -80,7 +81,7 @@ function RadarVertexDot({ cx, cy, value, index }: RadarVertexDotProps) {
             x={cx}
             y={cy - 11}
             textAnchor="middle"
-            fill="#c4ffff"
+            fill={isLight ? "#0055ff" : "#c4ffff"}
             fontSize={9}
             fontFamily="monospace"
             fontWeight="bold"
@@ -96,9 +97,10 @@ function RadarVertexDot({ cx, cy, value, index }: RadarVertexDotProps) {
 
 interface DesignerModalProps {
   onClose: () => void;
+  isLight?: boolean;
 }
 
-export default function DesignerModal({ onClose }: DesignerModalProps) {
+export default function DesignerModal({ onClose, isLight = false }: DesignerModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
@@ -148,24 +150,37 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
     });
   };
 
+  const cardBorderClass = isLight ? 'border-black' : 'border-white';
+  const cardBgClass = isLight 
+    ? 'bg-white border-black text-black shadow-[4px_4px_0px_rgba(0,0,0,0.9)]' 
+    : 'bg-black/80 border-white text-white shadow-[4px_4px_0px_rgba(255,255,255,0.05)]';
+
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 bg-[#070707]/95 flex flex-col z-50 overflow-x-hidden overflow-y-auto"
+      className={`absolute inset-0 flex flex-col z-50 overflow-x-hidden overflow-y-auto ${
+        isLight ? 'bg-white/98 text-black' : 'bg-[#070707]/95 text-white'
+      }`}
     >
-      <div className="absolute inset-0 bg-cyber-grid opacity-20 pointer-events-none" />
+      <div className={`absolute inset-0 bg-cyber-grid pointer-events-none ${isLight ? 'opacity-30' : 'opacity-20'}`} />
       <div className="scanlines" />
 
       {/* Header */}
-      <header className="sticky top-0 z-[100] bg-[#070707]/90 pt-3 sm:pt-4 md:pt-8 flex flex-row justify-between items-center border-b border-white pb-3 sm:pb-4 shrink-0 px-3 sm:px-6 md:px-8 w-full gap-2 sm:gap-4 overflow-hidden">
-        <div className="font-mono text-[9px] sm:text-[10px] text-white uppercase bg-white/10 px-2 py-1 border border-white flex items-center gap-1.5 sm:gap-2 truncate">
-          <span className="w-1.5 h-1.5 bg-white animate-pulse shrink-0"></span>
+      <header className={`sticky top-0 z-[100] pt-3 sm:pt-4 md:pt-8 flex flex-row justify-between items-center border-b pb-3 sm:pb-4 shrink-0 px-3 sm:px-6 md:px-8 w-full gap-2 sm:gap-4 overflow-hidden backdrop-blur-md ${
+        isLight ? 'bg-white/95 border-black text-black' : 'bg-[#070707]/90 border-white text-white'
+      }`}>
+        <div className={`font-mono text-[9px] sm:text-[10px] uppercase px-2 py-1 border flex items-center gap-1.5 sm:gap-2 truncate ${
+          isLight ? 'bg-black/5 text-black border-black' : 'bg-white/10 text-white border-white'
+        }`}>
+          <span className={`w-1.5 h-1.5 ${isLight ? 'bg-black' : 'bg-white'} animate-pulse shrink-0`}></span>
           <span className="truncate">{t('sys.viewer')}</span>
         </div>
-        <StarBorder as="button" color="#ffffff" speed="3s" className="p-0 shrink-0">
+        <StarBorder as="button" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="p-0 shrink-0">
           <div
             onClick={handleClose}
-            className="font-mono text-[10px] sm:text-xs text-black bg-white px-3 sm:px-4 py-1.5 sm:py-2 uppercase font-bold hover:bg-white transition-colors flex items-center cursor-crosshair whitespace-nowrap"
+            className={`font-mono text-[10px] sm:text-xs px-3 sm:px-4 py-1.5 sm:py-2 uppercase font-bold transition-colors flex items-center cursor-crosshair whitespace-nowrap ${
+              isLight ? 'bg-black text-white hover:bg-[#0055ff]' : 'bg-white text-black hover:bg-white'
+            }`}
           >
             <span>{t('modal.terminate')}</span>
           </div>
@@ -180,25 +195,31 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
         {/* Top Row: Main Info & Skills */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           {/* Main Info */}
-          <div className="lg:col-span-1 bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content flex flex-col justify-between min-w-0">
+          <div className={`lg:col-span-1 border p-4 sm:p-6 md:p-8 relative modal-content flex flex-col justify-between min-w-0 ${cardBgClass}`}>
             <div>
-              <div className="absolute top-0 right-0 w-4 h-4 border-b-2 border-l-2 border-white"></div>
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-t-2 border-r-2 border-white"></div>
+              <div className={`absolute top-0 right-0 w-4 h-4 border-b-2 border-l-2 ${cardBorderClass}`}></div>
+              <div className={`absolute bottom-0 left-0 w-4 h-4 border-t-2 border-r-2 ${cardBorderClass}`}></div>
               <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:gap-6 sm:items-start">
                 <div className="w-28 sm:w-36 md:w-48 shrink-0 self-center sm:self-start">
-                  <div className="border border-white bg-black flex items-center justify-center overflow-hidden aspect-square">
+                  <div className={`border ${cardBorderClass} ${isLight ? 'bg-[#f0f0f4]' : 'bg-black'} flex items-center justify-center overflow-hidden aspect-square`}>
                     <AsciiImage src="/designer.jpg" width={120} />
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl sm:text-2xl md:text-4xl font-bold uppercase text-white mb-2 tracking-tighter shadow-[#ffffff]/50 drop-shadow-sm flex items-center gap-2 sm:gap-3 flex-wrap break-words">
-                    <DesignerIcon className="text-white shrink-0" />
+                  <h2 className={`text-xl sm:text-2xl md:text-4xl font-bold uppercase mb-2 tracking-tighter flex items-center gap-2 sm:gap-3 flex-wrap break-words ${
+                    isLight ? 'text-black' : 'text-white shadow-[#ffffff]/50 drop-shadow-sm'
+                  }`}>
+                    <DesignerIcon className={`${isLight ? 'text-black' : 'text-white'} shrink-0`} />
                     <span>{t('overlay.designer.title')}</span>
                   </h2>
-                  <div className="font-mono text-[10px] sm:text-xs text-white bg-white/10 inline-block px-2 sm:px-3 py-1 border border-white mb-4 whitespace-nowrap">
+                  <div className={`font-mono text-[10px] sm:text-xs inline-block px-2 sm:px-3 py-1 border mb-4 whitespace-nowrap ${
+                    isLight ? 'bg-black/5 text-black border-black' : 'bg-white/10 text-white border-white'
+                  }`}>
                     {t('designer.id')}
                   </div>
-                  <p className="text-xs md:text-sm leading-relaxed text-white font-mono uppercase mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-white break-words">
+                  <p className={`text-xs md:text-sm leading-relaxed font-mono uppercase mb-6 sm:mb-8 pb-4 sm:pb-6 border-b break-words ${
+                    isLight ? 'text-black border-black/30' : 'text-white border-white'
+                  }`}>
                     {t('designer.desc')}
                   </p>
                 </div>
@@ -206,15 +227,18 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-auto">
-              <StarBorder as="div" color="#ffffff" speed="3s" className="w-full sm:w-1/2 p-0 cursor-pointer">
-                <div className="flex items-center justify-between w-full py-3 sm:py-4 px-4 sm:px-6 bg-white text-black text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest hover:bg-white transition-colors relative group overflow-hidden cursor-crosshair">
+              <StarBorder as="div" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="w-full sm:w-1/2 p-0 cursor-pointer">
+                <div className={`flex items-center justify-between w-full py-3 sm:py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest relative group overflow-hidden cursor-crosshair ${
+                  isLight ? 'bg-black text-white hover:bg-[#0055ff]' : 'bg-white text-black hover:bg-white'
+                }`}>
                   <span className="relative z-10 truncate">{t('overlay.btn.portfolio')}</span>
                   <ExternalLink size={14} className="relative z-10 shrink-0 ml-1" />
-                  <div className="absolute inset-0 bg-white translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
                 </div>
               </StarBorder>
-              <StarBorder as="div" color="#ffffff" speed="3s" className="w-full sm:w-1/2 p-0 cursor-pointer">
-                <div className="flex items-center justify-between w-full py-3 sm:py-4 px-4 sm:px-6 bg-black border border-white text-white text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest hover:bg-white/10 transition-colors cursor-crosshair">
+              <StarBorder as="div" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="w-full sm:w-1/2 p-0 cursor-pointer">
+                <div className={`flex items-center justify-between w-full py-3 sm:py-4 px-4 sm:px-6 border text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest transition-colors cursor-crosshair ${
+                  isLight ? 'bg-white text-black border-black hover:bg-black/10' : 'bg-black border-white text-white hover:bg-white/10'
+                }`}>
                   <span className="truncate">{t('overlay.btn.resume')}</span>
                   <DownloadIcon className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] shrink-0 ml-1" />
                 </div>
@@ -223,9 +247,9 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
           </div>
 
           {/* Skills Radar */}
-          <div className="lg:col-span-1 bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content flex flex-col min-w-0 select-none">
-            <div className="flex justify-between items-center mb-4 sm:mb-6 border-b border-white pb-3 sm:pb-4 select-none">
-              <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate select-none">
+          <div className={`lg:col-span-1 border p-4 sm:p-6 md:p-8 relative modal-content flex flex-col min-w-0 select-none ${cardBgClass}`}>
+            <div className={`flex justify-between items-center mb-4 sm:mb-6 border-b pb-3 sm:pb-4 select-none ${isLight ? 'border-black/30' : 'border-white'}`}>
+              <h3 className={`text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 truncate select-none ${isLight ? 'text-black' : 'text-white'}`}>
                 <SkillsIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
                 <span className="truncate">{t('skills.title')}</span>
               </h3>
@@ -239,23 +263,23 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
                   data={skillsData}
                   className="select-none"
                 >
-                  <PolarGrid stroke="#ffffff" strokeOpacity={0.3} style={{ pointerEvents: 'none', userSelect: 'none' }} />
+                  <PolarGrid stroke={isLight ? "#000000" : "#ffffff"} strokeOpacity={isLight ? 0.2 : 0.3} style={{ pointerEvents: 'none', userSelect: 'none' }} />
                   <PolarAngleAxis
                     dataKey="subject"
-                    tick={{ fill: '#ffffff', fontSize: 9, fontFamily: 'monospace' }}
+                    tick={{ fill: isLight ? '#000000' : '#ffffff', fontSize: 9, fontFamily: 'monospace', fontWeight: 'bold' }}
                     style={{ pointerEvents: 'none', userSelect: 'none' }}
                   />
                   <PolarRadiusAxis angle={30} domain={[0, 5]} tickCount={6} tick={false} axisLine={false} style={{ pointerEvents: 'none', userSelect: 'none' }} />
                   <Radar
                     name="Skills"
                     dataKey="A"
-                    stroke="#ffffff"
+                    stroke={isLight ? "#0055ff" : "#ffffff"}
                     strokeWidth={2}
-                    fill="#ffffff"
-                    fillOpacity={0.2}
+                    fill={isLight ? "#0055ff" : "#ffffff"}
+                    fillOpacity={isLight ? 0.35 : 0.2}
                     isAnimationActive={false}
                     dot={(dotProps: any) => (
-                      <RadarVertexDot key={`radar-vertex-${dotProps.index}`} {...dotProps} />
+                      <RadarVertexDot key={`radar-vertex-${dotProps.index}`} isLight={isLight} {...dotProps} />
                     )}
                   />
                 </RadarChart>
@@ -267,13 +291,13 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
         {/* Middle Row: Details */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {/* Experience */}
-          <div className="bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content">
-            <div className="flex justify-between items-center mb-6 sm:mb-8 border-b border-white pb-3 sm:pb-4 gap-2">
-              <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate">
+          <div className={`border p-4 sm:p-6 md:p-8 relative modal-content ${cardBgClass}`}>
+            <div className={`flex justify-between items-center mb-6 sm:mb-8 border-b pb-3 sm:pb-4 gap-2 ${isLight ? 'border-black/30' : 'border-white'}`}>
+              <h3 className={`text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 truncate ${isLight ? 'text-black' : 'text-white'}`}>
                 <ExperienceIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
                 <span className="truncate">{t('overlay.exp.title')}</span>
               </h3>
-              <span className="text-[9px] sm:text-[10px] text-white animate-pulse shrink-0">■ REC</span>
+              <span className={`text-[9px] sm:text-[10px] animate-pulse shrink-0 font-bold ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>■ REC</span>
             </div>
             <div className="space-y-6">
               {[
@@ -288,15 +312,15 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
                   className="cursor-target block group cursor-crosshair animate-stagger-item"
                 >
                   <div className="flex justify-between items-baseline mb-1 gap-2">
-                    <h4 className="text-xs sm:text-sm font-bold text-white font-mono group-hover:text-white transition-colors break-words">
+                    <h4 className={`text-xs sm:text-sm font-bold font-mono transition-colors break-words ${isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-white'}`}>
                       {job.company}
                     </h4>
-                    <span className="text-[9px] sm:text-[10px] text-white font-mono group-hover:text-white transition-colors whitespace-nowrap shrink-0">
+                    <span className={`text-[9px] sm:text-[10px] font-mono whitespace-nowrap shrink-0 ${isLight ? 'text-black/60' : 'text-white'}`}>
                       {job.period}
                     </span>
                   </div>
-                  <p className="text-[10px] sm:text-xs text-white font-mono flex items-center gap-2 break-words">
-                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity shrink-0">&gt;</span>
+                  <p className={`text-[10px] sm:text-xs font-mono flex items-center gap-2 break-words ${isLight ? 'text-black/80' : 'text-white'}`}>
+                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>&gt;</span>
                     <span className="break-words">{job.role}</span>
                   </p>
                 </a>
@@ -305,9 +329,9 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
           </div>
 
           {/* Education */}
-          <div className="bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content">
-            <div className="flex justify-between items-center mb-6 sm:mb-8 border-b border-white pb-3 sm:pb-4">
-              <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate">
+          <div className={`border p-4 sm:p-6 md:p-8 relative modal-content ${cardBgClass}`}>
+            <div className={`flex justify-between items-center mb-6 sm:mb-8 border-b pb-3 sm:pb-4 ${isLight ? 'border-black/30' : 'border-white'}`}>
+              <h3 className={`text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 truncate ${isLight ? 'text-black' : 'text-white'}`}>
                 <EducationIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
                 <span className="truncate">{t('edu.title')}</span>
               </h3>
@@ -324,15 +348,15 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
                   className="cursor-target block group cursor-crosshair animate-stagger-item"
                 >
                   <div className="flex justify-between items-baseline mb-1 gap-2">
-                    <h4 className="text-[10px] sm:text-xs font-bold text-white font-mono group-hover:text-white transition-colors leading-tight line-clamp-2 break-words">
+                    <h4 className={`text-[10px] sm:text-xs font-bold font-mono transition-colors leading-tight line-clamp-2 break-words ${isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-white'}`}>
                       {edu.school}
                     </h4>
-                    <span className="text-[9px] sm:text-[10px] text-white font-mono group-hover:text-white transition-colors whitespace-nowrap shrink-0">
+                    <span className={`text-[9px] sm:text-[10px] font-mono whitespace-nowrap shrink-0 ${isLight ? 'text-black/60' : 'text-white'}`}>
                       {edu.period}
                     </span>
                   </div>
-                  <p className="text-[10px] sm:text-xs text-white font-mono flex items-center gap-2 mt-1 break-words">
-                    <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity shrink-0">&gt;</span>
+                  <p className={`text-[10px] sm:text-xs font-mono flex items-center gap-2 mt-1 break-words ${isLight ? 'text-black/80' : 'text-white'}`}>
+                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>&gt;</span>
                     <span className="break-words">{edu.degree}</span>
                   </p>
                 </a>
@@ -341,9 +365,9 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
           </div>
 
           {/* Awards */}
-          <div className="bg-black/80 border border-white p-4 sm:p-6 md:p-8 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content">
-            <div className="flex justify-between items-center mb-6 sm:mb-8 border-b border-white pb-3 sm:pb-4">
-              <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate">
+          <div className={`border p-4 sm:p-6 md:p-8 relative modal-content ${cardBgClass}`}>
+            <div className={`flex justify-between items-center mb-6 sm:mb-8 border-b pb-3 sm:pb-4 ${isLight ? 'border-black/30' : 'border-white'}`}>
+              <h3 className={`text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 truncate ${isLight ? 'text-black' : 'text-white'}`}>
                 <AwardsIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
                 <span className="truncate">{t('awards.title')}</span>
               </h3>
@@ -356,15 +380,15 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
                 className="cursor-target block group cursor-crosshair animate-stagger-item"
               >
                 <div className="flex justify-between items-baseline mb-1 gap-2">
-                  <h4 className="text-xs sm:text-sm font-bold text-white font-mono group-hover:text-white transition-colors leading-tight break-words">
+                  <h4 className={`text-xs sm:text-sm font-bold font-mono transition-colors leading-tight break-words ${isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-white'}`}>
                     Manteco Sustainability Award
                   </h4>
-                  <span className="text-[9px] sm:text-[10px] text-white font-mono group-hover:text-white transition-colors whitespace-nowrap shrink-0">
+                  <span className={`text-[9px] sm:text-[10px] font-mono whitespace-nowrap shrink-0 ${isLight ? 'text-black/60' : 'text-white'}`}>
                     [2023]
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-xs text-white font-mono flex items-start gap-2 mt-2 leading-relaxed break-words">
-                  <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity mt-0.5 shrink-0">&gt;</span>
+                <p className={`text-[10px] sm:text-xs font-mono flex items-start gap-2 mt-2 leading-relaxed break-words ${isLight ? 'text-black/80' : 'text-white'}`}>
+                  <span className={`opacity-0 group-hover:opacity-100 transition-opacity mt-0.5 shrink-0 ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>&gt;</span>
                   <span dangerouslySetInnerHTML={{ __html: t('award.manteco') }} />
                 </p>
               </a>
@@ -373,9 +397,9 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
         </div>
 
         {/* Tools & Tech */}
-        <div className="bg-black/80 border border-white p-4 sm:p-6 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content">
-          <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 border-b border-white pb-3 sm:pb-4">
-            <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 truncate">
+        <div className={`border p-4 sm:p-6 relative modal-content ${cardBgClass}`}>
+          <div className={`flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 border-b pb-3 sm:pb-4 ${isLight ? 'border-black/30' : 'border-white'}`}>
+            <h3 className={`text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 truncate ${isLight ? 'text-black' : 'text-white'}`}>
               <ToolsIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
               <span className="truncate">{t('sys.tools')}</span>
             </h3>
@@ -391,9 +415,13 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
             ].map((tool, i) => (
               <div
                 key={i}
-                className="border border-white bg-white/5 px-2.5 sm:px-3 py-1 text-center select-none animate-stagger-item"
+                className={`border px-2.5 sm:px-3 py-1 text-center select-none animate-stagger-item ${
+                  isLight ? 'border-black bg-black/5' : 'border-white bg-white/5'
+                }`}
               >
-                <span className="font-mono text-[8px] sm:text-[9px] md:text-[10px] text-white uppercase tracking-widest whitespace-nowrap">
+                <span className={`font-mono text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-widest whitespace-nowrap font-bold ${
+                  isLight ? 'text-black' : 'text-white'
+                }`}>
                   {tool}
                 </span>
               </div>
@@ -402,33 +430,39 @@ export default function DesignerModal({ onClose }: DesignerModalProps) {
         </div>
 
         {/* Contact Bar */}
-        <div className="bg-black/80 border border-white p-4 sm:p-6 relative shadow-[4px_4px_0px_rgba(255,255,255,0.05)] modal-content flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 mt-auto">
-          <h3 className="text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest text-white flex items-center gap-2 sm:gap-3 whitespace-nowrap shrink-0">
+        <div className={`border p-4 sm:p-6 relative modal-content flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 mt-auto ${cardBgClass}`}>
+          <h3 className={`text-xs sm:text-sm md:text-base font-mono font-bold uppercase tracking-widest flex items-center gap-2 sm:gap-3 whitespace-nowrap shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>
             <ContactIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px]" />
             <span>{t('contact.title')}</span>
           </h3>
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-6 md:gap-8 flex-1 w-full md:w-auto">
             <a
               href="mailto:design@sys.void"
-              className="cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs text-white hover:text-white transition-colors group cursor-crosshair break-all"
+              className={`cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs transition-colors group cursor-crosshair break-all font-bold ${
+                isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-white'
+              }`}
             >
-              <Mail size={13} className="group-hover:text-white shrink-0" />
+              <Mail size={13} className="shrink-0" />
               <span className="uppercase tracking-widest">design@sys.void</span>
             </a>
             <a
               href="#"
-              className="cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs text-white hover:text-white transition-colors group cursor-crosshair whitespace-nowrap"
+              className={`cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs transition-colors group cursor-crosshair whitespace-nowrap font-bold ${
+                isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-white'
+              }`}
             >
-              <Instagram size={13} className="group-hover:text-white shrink-0" />
+              <Instagram size={13} className="shrink-0" />
               <span className="uppercase tracking-widest">@sys.void.design</span>
             </a>
             <a
               href="https://www.linkedin.com/in/miguel-alonso-frutos-b4bb55272/"
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs text-white hover:text-white transition-colors group cursor-crosshair whitespace-nowrap"
+              className={`cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs transition-colors group cursor-crosshair whitespace-nowrap font-bold ${
+                isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-white'
+              }`}
             >
-              <Linkedin size={13} className="group-hover:text-white shrink-0" />
+              <Linkedin size={13} className="shrink-0" />
               <span className="uppercase tracking-widest">linkedin/sys-void</span>
             </a>
           </div>

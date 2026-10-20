@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ArrowRight, Compass } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import StarBorder from './StarBorder';
 import AsciiTree from './AsciiTree';
 import SystemLog from './SystemLog';
 import { Project } from '../types';
@@ -17,6 +16,9 @@ interface OverlayProps {
   onSetUniverse?: (universe: 'all' | 'creative' | 'industry') => void;
   projects?: Project[];
   selectedProject?: Project | null;
+  isLight?: boolean;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
 }
 
 export default function Overlay({
@@ -28,7 +30,10 @@ export default function Overlay({
   activeUniverse = 'all',
   onSetUniverse,
   projects = [],
-  selectedProject = null
+  selectedProject = null,
+  isLight = false,
+  theme = 'dark',
+  onToggleTheme,
 }: OverlayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { t, language, toggleLanguage } = useLanguage();
@@ -76,120 +81,122 @@ export default function Overlay({
             <span className="sm:hidden">{language === 'es' ? 'OBJETIVO' : 'TARGET'}</span>
           </div>
 
-          {/* Unified single [ MAPA_CODEX ] button with centered dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                if (appMode === 'terminal' && onEnterUniverse) {
-                  onEnterUniverse();
-                }
-                setIsSidebarOpen(!isSidebarOpen);
-              }}
-              className={`cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 border border-white transition-colors whitespace-nowrap shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.15)] pulse-tactile ${
-                isSidebarOpen
-                  ? 'bg-[#c4ffff] text-black shadow-[0_0_15px_rgba(196,255,255,0.5)]'
-                  : 'bg-black text-white hover:bg-white hover:text-black'
-              }`}
-              title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir Mapa Codex" : "Open Codex Map")}
-            >
-              <span className="hidden sm:inline">
-                [ {isSidebarOpen
-                  ? (language === 'es' ? 'CERRAR_MAPA' : 'CLOSE_MAP')
-                  : t('overlay.nav.universe')} ]
-              </span>
-              <span className="sm:hidden">
-                [ {isSidebarOpen
-                  ? (language === 'es' ? 'CERRAR' : 'CLOSE')
-                  : 'CODEX'} ]
-              </span>
-              <span className="text-[9px] sm:text-[10px]">
-                {isSidebarOpen ? '▲' : '▼'}
-              </span>
-            </button>
+          {/* Show [ MAPA_CODEX ] and [ PROY3CTOS ] only on universe mode (not on home/terminal page) */}
+          {appMode !== 'terminal' && (
+            <>
+              {/* Unified single [ MAPA_CODEX ] button with centered dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setIsSidebarOpen(!isSidebarOpen);
+                  }}
+                  className={`cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none ${
+                    isSidebarOpen
+                      ? 'text-[#c4ffff] drop-shadow-[0_0_8px_rgba(196,255,255,0.8)]'
+                      : 'text-white hover:text-[#c4ffff]'
+                  }`}
+                  title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir Mapa Codex" : "Open Codex Map")}
+                >
+                  <span className="hidden sm:inline">
+                    [ {isSidebarOpen
+                      ? (language === 'es' ? 'CERRAR_MAPA' : 'CLOSE_MAP')
+                      : t('overlay.nav.universe')} ]
+                  </span>
+                  <span className="sm:hidden">
+                    [ {isSidebarOpen
+                      ? (language === 'es' ? 'CERRAR' : 'CLOSE')
+                      : 'CODEX'} ]
+                  </span>
+                  <span className="text-[9px] sm:text-[10px]">
+                    {isSidebarOpen ? '▲' : '▼'}
+                  </span>
+                </button>
 
-            {/* Dropdown panel: Centered on screen, never cut off, completely scroll-free */}
-            {isSidebarOpen && (
-              <div
-                id="sys-nav-modal"
-                className="fixed sm:absolute top-12 sm:top-full left-1/2 -translate-x-1/2 sm:left-1/2 sm:-translate-x-1/2 mt-1 sm:mt-2 z-50 bg-black/95 border border-white p-2.5 sm:p-3.5 md:p-4 shadow-[0_0_35px_rgba(255,255,255,0.3)] w-[95vw] sm:w-[380px] md:w-[420px] max-w-[440px] overflow-hidden flex flex-col items-center gap-2 sm:gap-2.5 pointer-events-auto"
-              >
-                <div className="border-b border-white pb-1.5 flex justify-between items-center w-full">
-                  <div className="font-mono text-xs sm:text-sm text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
-                    <span className="w-2 h-2 bg-[#c4ffff] animate-pulse shrink-0"></span>
-                    <span className="truncate whitespace-nowrap">[ {language === 'es' ? 'MAPA_CODEX // SYS.NAV' : 'CODEX_MAP // SYS.NAV'} ]</span>
+                {/* Dropdown panel: Centered on screen, never cut off, completely scroll-free */}
+                {isSidebarOpen && (
+                  <div
+                    id="sys-nav-modal"
+                    className="fixed sm:absolute top-12 sm:top-full left-1/2 -translate-x-1/2 sm:left-1/2 sm:-translate-x-1/2 mt-1 sm:mt-2 z-50 bg-black/95 border border-white p-2.5 sm:p-3.5 md:p-4 shadow-[0_0_35px_rgba(255,255,255,0.3)] w-[95vw] sm:w-[380px] md:w-[420px] max-w-[440px] overflow-hidden flex flex-col items-center gap-2 sm:gap-2.5 pointer-events-auto"
+                  >
+                    <div className="border-b border-white pb-1.5 flex justify-between items-center w-full">
+                      <div className="font-mono text-xs sm:text-sm text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
+                        <span className="w-2 h-2 bg-[#c4ffff] animate-pulse shrink-0"></span>
+                        <span className="truncate whitespace-nowrap">[ {language === 'es' ? 'MAPA_CODEX // SYS.NAV' : 'CODEX_MAP // SYS.NAV'} ]</span>
+                      </div>
+                      <button
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="font-mono text-xs sm:text-sm px-2 py-0.5 border border-white text-white hover:bg-white hover:text-black transition-colors cursor-crosshair shrink-0 pulse-tactile whitespace-nowrap"
+                        title={language === 'es' ? 'Cerrar' : 'Close'}
+                      >
+                        [ ✕ ]
+                      </button>
+                    </div>
+
+                    {/* Quick Universe Selectors - guaranteed single line and legible */}
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-xs uppercase tracking-wider w-full">
+                      <button
+                        onClick={() => onSetUniverse?.('all')}
+                        className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
+                          activeUniverse === 'all'
+                            ? 'bg-white text-black font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.4)]'
+                            : 'bg-black text-white/80 border-white/30 hover:border-white'
+                        }`}
+                      >
+                        [ {language === 'es' ? 'TODOS' : 'ALL'} ]
+                      </button>
+                      <button
+                        onClick={() => onSetUniverse?.('creative')}
+                        className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
+                          activeUniverse === 'creative'
+                            ? 'bg-[#c4ffff] text-black font-bold border-[#c4ffff] shadow-[0_0_10px_rgba(196,255,255,0.5)]'
+                            : 'bg-black text-white/80 border-white/30 hover:border-white'
+                        }`}
+                      >
+                        [ {language === 'es' ? 'CREATIVO' : 'CREATIVE'} ]
+                      </button>
+                      <button
+                        onClick={() => onSetUniverse?.('industry')}
+                        className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
+                          activeUniverse === 'industry'
+                            ? 'bg-[#c4ffff] text-black font-bold border-[#c4ffff] shadow-[0_0_10px_rgba(196,255,255,0.5)]'
+                            : 'bg-black text-white/80 border-white/30 hover:border-white'
+                        }`}
+                      >
+                        [ {language === 'es' ? 'INDUSTRIA' : 'INDUSTRY'} ]
+                      </button>
+                    </div>
+
+                    {/* Interactive AsciiTree / Universe Map that adapts to the activeUniverse - strictly zero scroll */}
+                    <div className="pt-1 w-full flex justify-center overflow-hidden">
+                      <AsciiTree
+                        appMode="universe"
+                        activeUniverse={activeUniverse}
+                        onSetUniverse={onSetUniverse}
+                        onSelectProject={(idx) => {
+                          setIsSidebarOpen(false);
+                          onSelectProject?.(idx);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <button
-                    onClick={() => setIsSidebarOpen(false)}
-                    className="font-mono text-xs sm:text-sm px-2 py-0.5 border border-white text-white hover:bg-white hover:text-black transition-colors cursor-crosshair shrink-0 pulse-tactile whitespace-nowrap"
-                    title={language === 'es' ? 'Cerrar' : 'Close'}
-                  >
-                    [ ✕ ]
-                  </button>
-                </div>
-
-                {/* Quick Universe Selectors - guaranteed single line and legible */}
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-xs uppercase tracking-wider w-full">
-                  <button
-                    onClick={() => onSetUniverse?.('all')}
-                    className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
-                      activeUniverse === 'all'
-                        ? 'bg-white text-black font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.4)]'
-                        : 'bg-black text-white/80 border-white/30 hover:border-white'
-                    }`}
-                  >
-                    [ {language === 'es' ? 'TODOS' : 'ALL'} ]
-                  </button>
-                  <button
-                    onClick={() => onSetUniverse?.('creative')}
-                    className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
-                      activeUniverse === 'creative'
-                        ? 'bg-[#c4ffff] text-black font-bold border-[#c4ffff] shadow-[0_0_10px_rgba(196,255,255,0.5)]'
-                        : 'bg-black text-white/80 border-white/30 hover:border-white'
-                    }`}
-                  >
-                    [ {language === 'es' ? 'CREATIVO' : 'CREATIVE'} ]
-                  </button>
-                  <button
-                    onClick={() => onSetUniverse?.('industry')}
-                    className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
-                      activeUniverse === 'industry'
-                        ? 'bg-[#c4ffff] text-black font-bold border-[#c4ffff] shadow-[0_0_10px_rgba(196,255,255,0.5)]'
-                        : 'bg-black text-white/80 border-white/30 hover:border-white'
-                    }`}
-                  >
-                    [ {language === 'es' ? 'INDUSTRIA' : 'INDUSTRY'} ]
-                  </button>
-                </div>
-
-                {/* Interactive AsciiTree / Universe Map that adapts to the activeUniverse - strictly zero scroll */}
-                <div className="pt-1 w-full flex justify-center overflow-hidden">
-                  <AsciiTree
-                    appMode="universe"
-                    activeUniverse={activeUniverse}
-                    onSetUniverse={onSetUniverse}
-                    onSelectProject={(idx) => {
-                      setIsSidebarOpen(false);
-                      onSelectProject?.(idx);
-                    }}
-                  />
-                </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* PROY3CTOS Button - strictly identical box styling as MAPA_UNIVERSO on the left */}
-          <a
-            href="#"
-            role="button"
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenCollections?.();
-            }}
-            className="cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1 sm:gap-1.5 border border-white transition-colors whitespace-nowrap shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.15)] pulse-tactile bg-black text-white hover:bg-white hover:text-black"
-            title="PROY3CTOS"
-          >
-            <span>[ PROY3CTOS ]</span>
-          </a>
+              {/* PROJECTS / PROYECTOS Button - clean borderless styling leaving brackets */}
+              <a
+                href="#"
+                role="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onOpenCollections?.();
+                }}
+                className="cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center transition-colors whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white hover:text-[#c4ffff]"
+                title={t('overlay.nav.collections')}
+              >
+                <span>[ {t('overlay.nav.collections')} ]</span>
+              </a>
+            </>
+          )}
         </div>
 
         {/* Right: System Mode Indicator (Universe Mode) placed right next to Language Switcher */}
@@ -207,19 +214,14 @@ export default function Overlay({
             </div>
           )}
 
-          <StarBorder
-            as="button"
+          <button
             onClick={toggleLanguage}
-            color="#c4ffff"
-            speed="3s"
-            className="cursor-crosshair p-0 pointer-events-auto shrink-0"
+            className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:text-[#c4ffff] transition-colors uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
             title={language === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'}
           >
-            <div className="font-mono text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 text-white hover:bg-white hover:text-black transition-colors uppercase bg-black border border-white/60 hover:border-white whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.15)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
-              <span>[ {language.toUpperCase()} ]</span>
-            </div>
-          </StarBorder>
+            <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+            <span>[ {language.toUpperCase()} ]</span>
+          </button>
         </div>
       </header>
 
@@ -236,17 +238,18 @@ export default function Overlay({
 
       {/* TERMINAL MODE (1st Menu): Safe vertical bounds between header and bottom terminal log */}
       {appMode === 'terminal' && (
-        <main className="fixed inset-x-0 top-12 sm:top-14 bottom-24 sm:bottom-28 flex items-center justify-center pointer-events-none z-40 p-2 sm:p-4">
+        <main className="fixed inset-x-0 top-11 sm:top-12 bottom-16 sm:bottom-20 flex items-center justify-center pointer-events-none z-40 p-2 sm:p-3">
           <div
             id="terminal-modal"
             data-terminal="true"
-            className="bg-black/95 p-3 sm:p-4 md:p-6 shadow-[8px_8px_0px_rgba(255,255,255,0.2)] border border-white pointer-events-auto cursor-default flex flex-col max-h-full overflow-y-auto w-[92vw] sm:w-[540px] md:w-[620px] lg:w-[680px] max-w-[95vw]"
+            className="bg-transparent border-none shadow-none pointer-events-auto cursor-default flex flex-col w-[92vw] sm:w-[480px] md:w-[540px] lg:w-[580px] max-w-[95vw] items-center"
           >
             <AsciiTree
               appMode="terminal"
               activeUniverse={activeUniverse}
               onSetUniverse={onSetUniverse}
               onEnterUniverse={onEnterUniverse}
+              onOpenDesigner={onOpenDesigner}
               onSelectProject={(idx) => {
                 if (onEnterUniverse) onEnterUniverse();
                 if (onSelectProject) onSelectProject(idx);
@@ -278,13 +281,15 @@ export default function Overlay({
             {t('overlay.subtitle')}
           </p>
 
-          <button
-            onClick={onOpenDesigner}
-            className="pointer-events-auto font-mono text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-2.5 sm:py-1.5 text-black bg-white hover:bg-[#c4ffff] active:bg-[#c4ffff] transition-colors uppercase cursor-crosshair flex items-center gap-1.5 border border-white whitespace-nowrap shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.15)] pulse-tactile"
-          >
-            <span className="w-1.5 h-1.5 bg-black animate-pulse"></span>
-            <span>{t('overlay.btn.profile')}</span>
-          </button>
+          {appMode !== 'terminal' && (
+            <button
+              onClick={onOpenDesigner}
+              className="pointer-events-auto font-mono text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-2.5 sm:py-1.5 text-black bg-white hover:bg-[#c4ffff] active:bg-[#c4ffff] transition-colors uppercase cursor-crosshair flex items-center gap-1.5 border border-white whitespace-nowrap shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.15)] pulse-tactile"
+            >
+              <span className="w-1.5 h-1.5 bg-black animate-pulse"></span>
+              <span>{t('overlay.btn.profile')}</span>
+            </button>
+          )}
         </div>
 
         {/* Right: Inspect Target Hint (swapped from top bar to bottom bar) */}

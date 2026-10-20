@@ -21,7 +21,7 @@ const LOG_MESSAGES_ES = [
   'ESPERANDO ENTRADA DE USUARIO...'
 ];
 
-export default function SystemLog() {
+export default function SystemLog({ isLight = false }: { isLight?: boolean }) {
   const { language } = useLanguage();
   const [logs, setLogs] = useState<string[]>([]);
   
@@ -48,7 +48,9 @@ export default function SystemLog() {
   const displayedLogs = logs.slice(-4);
 
   return (
-    <div className="flex fixed bottom-11 sm:bottom-12 md:bottom-14 left-2.5 sm:left-4 md:left-8 z-30 pointer-events-none text-[8px] sm:text-[9px] md:text-[10px] max-w-[240px] sm:max-w-[320px] md:max-w-[420px] font-mono text-[#ffffff] opacity-80 flex-col gap-0.5 overflow-hidden justify-end">
+    <div className={`flex fixed bottom-11 sm:bottom-12 md:bottom-14 left-2.5 sm:left-4 md:left-8 z-30 pointer-events-none text-[8px] sm:text-[9px] md:text-[10px] max-w-[240px] sm:max-w-[320px] md:max-w-[420px] font-mono flex-col gap-0.5 overflow-hidden justify-end ${
+      isLight ? 'text-black opacity-90 font-semibold' : 'text-[#ffffff] opacity-80'
+    }`}>
       {displayedLogs.map((log, index) => (
         <div key={index} className="animate-fade-in text-shadow-sm truncate">
           <span className="opacity-50 mr-1.5">{'>'}</span> {log}
