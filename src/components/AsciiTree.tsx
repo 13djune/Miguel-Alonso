@@ -264,72 +264,75 @@ export default function AsciiTree({
     { id: 7, num: '08', title: isES ? 'ACCESORIOS' : 'ACCESSORIES' },
   ];
 
-  // 1. CODEX MAP MODE (Used inside the header dropdown when appMode === 'universe')
-  const codexMapTree = (
-    <div
-      className={`font-mono text-white opacity-95 whitespace-pre pointer-events-auto overflow-hidden flex flex-col items-center w-full select-none ${
-        isUniverseMode
-          ? 'text-[10px] sm:text-[11px] leading-[1.35]'
-          : 'text-xs leading-normal sm:leading-relaxed'
-      }`}
-    >
-      {/* Root Node: Core / System Title */}
-      <div className="flex flex-col items-center text-center">
-        <span>{"┌───────────────────────┐"}</span>
-        <span>
-          {"│  "}
-          <Clickable
-            text={
-              activeUniverse === 'all'
-                ? (isES ? "[ SYS.VOID NÚCLEO ]" : "[  SYS.VOID CORE  ]")
-                : activeUniverse === 'creative'
-                  ? (isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]")
-                  : (isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]")
-            }
-            onClick={
-              activeUniverse === 'all'
-                ? handleNucleo
-                : activeUniverse === 'creative'
-                  ? handleCreative
-                  : handleIndustry
-            }
-            color={activeUniverse === 'all' ? "#ffffff" : "#c4ffff"}
-            className="font-bold tracking-wider"
-            title={
-              activeUniverse === 'all'
-                ? (isES ? "Acceder a ambos sistemas" : "Access both systems")
-                : activeUniverse === 'creative'
-                  ? (isES ? "Sistema creativo" : "Creative system")
-                  : (isES ? "Sistema industria" : "Industry system")
-            }
-          />
-          {"  │"}
-        </span>
-        <span>{"└───────────┬───────────┘"}</span>
-        <span className="text-white/70">{"            │"}</span>
+  // Shared branching dropdown content - identical for both SYS.VOID CORE on home and VOID_MAP in 3D map
+  const renderBranches = (isUniverseDropdown = false) => (
+    <div className="w-full flex flex-col items-center select-none font-mono">
+      {/* Top stem */}
+      <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
+        <span>│</span>
+        <span className="text-[#c4ffff] font-bold">▼</span>
       </div>
 
-      {/* Vertical Branches */}
-      <div className="flex flex-col w-full max-w-[340px] px-2 sm:px-4">
-        {activeUniverse === 'all' && (
-          <>
-            {/* Creative Branch */}
-            <div className="flex items-center">
-              <span className="text-[#c4ffff] font-bold select-none whitespace-pre">{"  ├──► "}</span>
+      {/* Quick Explore 3D Portfolio Button */}
+      <button
+        type="button"
+        onClick={handleNucleo}
+        className={`font-mono text-[10px] sm:text-xs font-bold tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 border uppercase flex items-center justify-center gap-1.5 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] pulse-tactile my-0.5 cursor-crosshair transition-all ${
+          activeUniverse === 'all' && isUniverseDropdown
+            ? 'bg-[#c4ffff] text-black border-[#c4ffff] shadow-[0_0_15px_rgba(196,255,255,0.7)]'
+            : 'border-[#c4ffff] bg-black/90 text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black shadow-[0_0_10px_rgba(196,255,255,0.25)] hover:shadow-[0_0_15px_rgba(196,255,255,0.6)]'
+        }`}
+        title={isES ? "Acceder al portfolio en 3D" : "Access 3D portfolio"}
+      >
+        <span className="w-1.5 h-1.5 bg-current animate-ping"></span>
+        <span>{isES ? '[ ✦ EXPLORAR TODO EL PORTFOLIO 3D ]' : '[ ✦ EXPLORE FULL 3D PORTFOLIO ]'}</span>
+      </button>
+      <span className="text-[8px] sm:text-[9px] font-mono text-white/60 bg-black/60 px-2 py-0.5 tracking-wider uppercase text-center mb-0.5 select-none border border-white/10">
+        {isES ? '> ACCESO DIRECTO // NAVEGACIÓN LIBRE' : '> DIRECT ACCESS // FREE NAVIGATION'}
+      </span>
+
+      {/* Desktop Branching (Side-by-side columns) */}
+      <div className="hidden md:flex flex-col items-center w-full max-w-[440px]">
+        <div className="w-full flex flex-col items-center select-none leading-none my-0.5">
+          <span className="text-white/60 font-mono text-[10px]">{"│"}</span>
+          <div className="w-full flex items-center justify-between px-8 text-white/60 font-mono text-[10px]">
+            <span>{"┌────────────────"}</span>
+            <span>{"┴"}</span>
+            <span>{"────────────────┐"}</span>
+          </div>
+          <div className="w-full flex items-center justify-between px-8 text-[#c4ffff] font-bold font-mono text-[10px]">
+            <span>{"▼"}</span>
+            <span>{"▼"}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5 w-full px-1 font-mono text-[10px] sm:text-[11px]">
+          {/* Left: Creative */}
+          <div
+            className={`flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border transition-all ${
+              activeUniverse === 'creative' && isUniverseDropdown
+                ? 'border-[#c4ffff] shadow-[0_0_20px_rgba(196,255,255,0.35)]'
+                : 'border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]'
+            }`}
+          >
+            <div className="flex items-center justify-between border-b border-white/20 pb-0.5 mb-1">
               <Clickable
                 text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
                 onClick={handleCreative}
                 color="#c4ffff"
-                className="font-bold tracking-wider text-xs text-[#c4ffff]"
-                title={isES ? "Acceder al sistema creativo" : "Access creative system"}
+                className={`font-bold tracking-wider text-[11px] ${
+                  activeUniverse === 'creative' && isUniverseDropdown ? 'text-[#c4ffff] underline' : 'text-[#c4ffff]'
+                }`}
+                title={isES ? "Acceder al sistema creativo en 3D" : "Access creative system in 3D"}
               />
+              <span className="text-[8px] text-white/50 uppercase">
+                {isES ? 'MODA' : 'FASHION'}
+              </span>
             </div>
-            <span className="text-white/60 whitespace-pre">{"  │    │"}</span>
-
             {creativeProjects.map((p, idx) => (
-              <div key={p.id} className="flex items-center">
-                <span className="text-[#c4ffff] font-bold select-none whitespace-pre">
-                  {idx === creativeProjects.length - 1 ? "  │    └──► " : "  │    ├──► "}
+              <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
+                <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
+                  {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
                 </span>
                 <ProjectItem
                   num={p.num}
@@ -339,26 +342,34 @@ export default function AsciiTree({
                 />
               </div>
             ))}
+          </div>
 
-            <span className="text-white/60 whitespace-pre">{"  │"}</span>
-
-            {/* Industry Branch */}
-            <div className="flex items-center">
-              <span className="text-[#c4ffff] font-bold select-none whitespace-pre">{"  └──► "}</span>
+          {/* Right: Industry */}
+          <div
+            className={`flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border transition-all ${
+              activeUniverse === 'industry' && isUniverseDropdown
+                ? 'border-[#c4ffff] shadow-[0_0_20px_rgba(196,255,255,0.35)]'
+                : 'border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]'
+            }`}
+          >
+            <div className="flex items-center justify-between border-b border-white/20 pb-0.5 mb-1">
               <Clickable
                 text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
                 onClick={handleIndustry}
                 color="#c4ffff"
-                className="font-bold tracking-wider text-xs text-[#c4ffff]"
-                title={isES ? "Acceder al sistema industria" : "Access industry system"}
+                className={`font-bold tracking-wider text-[11px] ${
+                  activeUniverse === 'industry' && isUniverseDropdown ? 'text-[#c4ffff] underline' : 'text-[#c4ffff]'
+                }`}
+                title={isES ? "Acceder al sistema industria en 3D" : "Access industry system in 3D"}
               />
+              <span className="text-[8px] text-white/50 uppercase">
+                {isES ? 'CAD/TECH' : 'CAD/TECH'}
+              </span>
             </div>
-            <span className="text-white/60 whitespace-pre">{"       │"}</span>
-
             {industryProjects.map((p, idx) => (
-              <div key={p.id} className="flex items-center">
-                <span className="text-[#c4ffff] font-bold select-none whitespace-pre">
-                  {idx === industryProjects.length - 1 ? "       └──► " : "       ├──► "}
+              <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
+                <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
+                  {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
                 </span>
                 <ProjectItem
                   num={p.num}
@@ -368,44 +379,61 @@ export default function AsciiTree({
                 />
               </div>
             ))}
-          </>
-        )}
+          </div>
+        </div>
+      </div>
 
-        {activeUniverse === 'creative' && (
-          <>
-            {creativeProjects.map((p, idx) => (
-              <div key={p.id} className="flex items-center">
-                <span className="text-[#c4ffff] font-bold select-none whitespace-pre">
-                  {idx === creativeProjects.length - 1 ? "  └──► " : "  ├──► "}
-                </span>
-                <ProjectItem
-                  num={p.num}
-                  title={p.title}
-                  onClick={() => handleProject(p.id)}
-                  tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                />
-              </div>
-            ))}
-          </>
-        )}
+      {/* Mobile Branching (Stacked lists) */}
+      <div className="md:hidden flex flex-col w-full max-w-[320px] px-2 py-1.5 bg-black/90 backdrop-blur-md border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)] font-mono text-[10px] sm:text-[11px] mt-0.5 select-none">
+        {/* Creative branch */}
+        <div className="flex items-center mt-0.5">
+          <span className="text-[#c4ffff] font-bold mr-1">├──►</span>
+          <Clickable
+            text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
+            onClick={handleCreative}
+            color="#c4ffff"
+            className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+            title={isES ? "Acceder al sistema creativo" : "Access creative system"}
+          />
+        </div>
+        {creativeProjects.map((p, idx) => (
+          <div key={p.id} className="flex items-center pl-3 py-0.25">
+            <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
+              {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
+            </span>
+            <ProjectItem
+              num={p.num}
+              title={p.title}
+              onClick={() => handleProject(p.id)}
+              tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+            />
+          </div>
+        ))}
 
-        {activeUniverse === 'industry' && (
-          <>
-            {industryProjects.map((p, idx) => (
-              <div key={p.id} className="flex items-center">
-                <span className="text-[#c4ffff] font-bold select-none whitespace-pre">
-                  {idx === industryProjects.length - 1 ? "  └──► " : "  ├──► "}
-                </span>
-                <ProjectItem
-                  num={p.num}
-                  title={p.title}
-                  onClick={() => handleProject(p.id)}
-                  tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                />
-              </div>
-            ))}
-          </>
-        )}
+        {/* Industry branch */}
+        <div className="flex items-center mt-1">
+          <span className="text-[#c4ffff] font-bold mr-1">└──►</span>
+          <Clickable
+            text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
+            onClick={handleIndustry}
+            color="#c4ffff"
+            className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+            title={isES ? "Acceder al sistema industria" : "Access industry system"}
+          />
+        </div>
+        {industryProjects.map((p, idx) => (
+          <div key={p.id} className="flex items-center pl-3 py-0.25">
+            <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
+              {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
+            </span>
+            <ProjectItem
+              num={p.num}
+              title={p.title}
+              onClick={() => handleProject(p.id)}
+              tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -449,154 +477,7 @@ export default function AsciiTree({
                 : 'max-h-0 opacity-0 my-0 scale-95 pointer-events-none'
             }`}
           >
-            {/* Top stem from SYS.VOID CORE */}
-            <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
-              <span>│</span>
-              <span className="text-[#c4ffff] font-bold">▼</span>
-            </div>
-
-            {/* Quick Explore 3D Portfolio Button */}
-            <button
-              type="button"
-              onClick={handleNucleo}
-              className="font-mono text-[10px] sm:text-xs font-bold tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 border border-[#c4ffff] bg-black/90 text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black transition-all cursor-crosshair shadow-[0_0_10px_rgba(196,255,255,0.25)] hover:shadow-[0_0_15px_rgba(196,255,255,0.6)] uppercase flex items-center justify-center gap-1.5 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] pulse-tactile my-0.5"
-              title={isES ? "Acceder al portfolio en 3D" : "Access 3D portfolio"}
-            >
-              <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-ping"></span>
-              <span>{isES ? '[ ✦ EXPLORAR TODO EL PORTFOLIO 3D ]' : '[ ✦ EXPLORE FULL 3D PORTFOLIO ]'}</span>
-            </button>
-            <span className="text-[8px] sm:text-[9px] font-mono text-white/60 bg-black/60 px-2 py-0.5 tracking-wider uppercase text-center mb-0.5 select-none border border-white/10">
-              {isES ? '> ACCESO DIRECTO // NAVEGACIÓN LIBRE' : '> DIRECT ACCESS // FREE NAVIGATION'}
-            </span>
-
-            {/* Desktop Branching (Side-by-side columns) */}
-            <div className="hidden md:flex flex-col items-center w-full max-w-[440px]">
-              <div className="w-full flex flex-col items-center select-none leading-none my-0.5">
-                <span className="text-white/60 font-mono text-[10px]">{"│"}</span>
-                <div className="w-full flex items-center justify-between px-8 text-white/60 font-mono text-[10px]">
-                  <span>{"┌────────────────"}</span>
-                  <span>{"┴"}</span>
-                  <span>{"────────────────┐"}</span>
-                </div>
-                <div className="w-full flex items-center justify-between px-8 text-[#c4ffff] font-bold font-mono text-[10px]">
-                  <span>{"▼"}</span>
-                  <span>{"▼"}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2.5 w-full px-1 font-mono text-[10px] sm:text-[11px]">
-                {/* Left: Creative */}
-                <div className="flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-                  <div className="flex items-center justify-between border-b border-white/20 pb-0.5 mb-1">
-                    <Clickable
-                      text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
-                      onClick={handleCreative}
-                      color="#c4ffff"
-                      className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
-                      title={isES ? "Acceder al sistema creativo en 3D" : "Access creative system in 3D"}
-                    />
-                    <span className="text-[8px] text-white/50 uppercase">
-                      {isES ? 'MODA' : 'FASHION'}
-                    </span>
-                  </div>
-                  {creativeProjects.map((p, idx) => (
-                    <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
-                      <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
-                        {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
-                      </span>
-                      <ProjectItem
-                        num={p.num}
-                        title={p.title}
-                        onClick={() => handleProject(p.id)}
-                        tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Right: Industry */}
-                <div className="flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]">
-                  <div className="flex items-center justify-between border-b border-white/20 pb-0.5 mb-1">
-                    <Clickable
-                      text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
-                      onClick={handleIndustry}
-                      color="#c4ffff"
-                      className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
-                      title={isES ? "Acceder al sistema industria en 3D" : "Access industry system in 3D"}
-                    />
-                    <span className="text-[8px] text-white/50 uppercase">
-                      {isES ? 'CAD/TECH' : 'CAD/TECH'}
-                    </span>
-                  </div>
-                  {industryProjects.map((p, idx) => (
-                    <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
-                      <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
-                        {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
-                      </span>
-                      <ProjectItem
-                        num={p.num}
-                        title={p.title}
-                        onClick={() => handleProject(p.id)}
-                        tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile Branching (Stacked lists) */}
-            <div className="md:hidden flex flex-col w-full max-w-[320px] px-2 py-1.5 bg-black/90 backdrop-blur-md border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)] font-mono text-[10px] sm:text-[11px] mt-0.5 select-none">
-              {/* Creative branch */}
-              <div className="flex items-center mt-0.5">
-                <span className="text-[#c4ffff] font-bold mr-1">├──►</span>
-                <Clickable
-                  text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
-                  onClick={handleCreative}
-                  color="#c4ffff"
-                  className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
-                  title={isES ? "Acceder al sistema creativo" : "Access creative system"}
-                />
-              </div>
-              {creativeProjects.map((p, idx) => (
-                <div key={p.id} className="flex items-center pl-3 py-0.25">
-                  <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
-                    {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
-                  </span>
-                  <ProjectItem
-                    num={p.num}
-                    title={p.title}
-                    onClick={() => handleProject(p.id)}
-                    tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                  />
-                </div>
-              ))}
-
-              {/* Industry branch */}
-              <div className="flex items-center mt-1">
-                <span className="text-[#c4ffff] font-bold mr-1">└──►</span>
-                <Clickable
-                  text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
-                  onClick={handleIndustry}
-                  color="#c4ffff"
-                  className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
-                  title={isES ? "Acceder al sistema industria" : "Access industry system"}
-                />
-              </div>
-              {industryProjects.map((p, idx) => (
-                <div key={p.id} className="flex items-center pl-3 py-0.25">
-                  <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
-                    {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
-                  </span>
-                  <ProjectItem
-                    num={p.num}
-                    title={p.title}
-                    onClick={() => handleProject(p.id)}
-                    tooltip={isES ? `Inspeccionar ${p.title}` : `Inspect ${p.title}`}
-                  />
-                </div>
-              ))}
-            </div>
+            {renderBranches(false)}
 
             {/* Stem connecting downwards to the displaced Profile button */}
             <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
@@ -634,5 +515,6 @@ export default function AsciiTree({
     );
   }
 
-  return codexMapTree;
+  // 3. UNIVERSE / VOID_MAP DROPDOWN: Uses the exact same dropdown design as SYS.VOID CORE
+  return renderBranches(true);
 }

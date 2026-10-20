@@ -84,7 +84,7 @@ export default function Overlay({
           {/* Show [ MAPA_CODEX ] and [ PROY3CTOS ] only on universe mode (not on home/terminal page) */}
           {appMode !== 'terminal' && (
             <>
-              {/* Unified single [ MAPA_CODEX ] button with centered dropdown */}
+              {/* Unified single [ VOID_MAP ] button with centered dropdown */}
               <div className="relative">
                 <button
                   onClick={() => {
@@ -95,79 +95,45 @@ export default function Overlay({
                       ? 'text-[#c4ffff] drop-shadow-[0_0_8px_rgba(196,255,255,0.8)]'
                       : 'text-white hover:text-[#c4ffff]'
                   }`}
-                  title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir Mapa Codex" : "Open Codex Map")}
+                  title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir VOID_MAP" : "Open VOID_MAP")}
                 >
                   <span className="hidden sm:inline">
                     [ {isSidebarOpen
                       ? (language === 'es' ? 'CERRAR_MAPA' : 'CLOSE_MAP')
-                      : t('overlay.nav.universe')} ]
+                      : 'VOID_MAP'} ]
                   </span>
                   <span className="sm:hidden">
                     [ {isSidebarOpen
                       ? (language === 'es' ? 'CERRAR' : 'CLOSE')
-                      : 'CODEX'} ]
+                      : 'VOID_MAP'} ]
                   </span>
                   <span className="text-[9px] sm:text-[10px]">
                     {isSidebarOpen ? '▲' : '▼'}
                   </span>
                 </button>
 
-                {/* Dropdown panel: Centered on screen, never cut off, completely scroll-free */}
+                {/* Dropdown panel: Matching SYS.VOID CORE design, floating, zero-scroll */}
                 {isSidebarOpen && (
                   <div
                     id="sys-nav-modal"
-                    className="fixed sm:absolute top-12 sm:top-full left-1/2 -translate-x-1/2 sm:left-1/2 sm:-translate-x-1/2 mt-1 sm:mt-2 z-50 bg-black/95 border border-white p-2.5 sm:p-3.5 md:p-4 shadow-[0_0_35px_rgba(255,255,255,0.3)] w-[95vw] sm:w-[380px] md:w-[420px] max-w-[440px] overflow-hidden flex flex-col items-center gap-2 sm:gap-2.5 pointer-events-auto"
+                    className="fixed sm:absolute top-12 sm:top-full left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mt-1 sm:mt-2 z-50 bg-black/90 backdrop-blur-md border border-white/20 p-2 sm:p-2.5 shadow-[0_0_35px_rgba(0,0,0,0.9)] w-[95vw] sm:w-[440px] md:w-[460px] max-w-[480px] overflow-hidden flex flex-col items-center gap-1.5 pointer-events-auto"
                   >
-                    <div className="border-b border-white pb-1.5 flex justify-between items-center w-full">
-                      <div className="font-mono text-xs sm:text-sm text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
-                        <span className="w-2 h-2 bg-[#c4ffff] animate-pulse shrink-0"></span>
-                        <span className="truncate whitespace-nowrap">[ {language === 'es' ? 'MAPA_CODEX // SYS.NAV' : 'CODEX_MAP // SYS.NAV'} ]</span>
+                    <div className="border-b border-white/20 pb-1 flex justify-between items-center w-full px-1">
+                      <div className="font-mono text-[11px] sm:text-xs text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
+                        <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse shrink-0"></span>
+                        <span className="truncate whitespace-nowrap">[ VOID_MAP // SYS.NAV ]</span>
                       </div>
                       <button
                         onClick={() => setIsSidebarOpen(false)}
-                        className="font-mono text-xs sm:text-sm px-2 py-0.5 border border-white text-white hover:bg-white hover:text-black transition-colors cursor-crosshair shrink-0 pulse-tactile whitespace-nowrap"
+                        className="font-mono text-xs px-1.5 py-0.5 text-white/70 hover:text-white transition-colors cursor-crosshair shrink-0 pulse-tactile whitespace-nowrap bg-transparent border-0"
                         title={language === 'es' ? 'Cerrar' : 'Close'}
                       >
                         [ ✕ ]
                       </button>
                     </div>
 
-                    {/* Quick Universe Selectors - guaranteed single line and legible */}
-                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-xs uppercase tracking-wider w-full">
-                      <button
-                        onClick={() => onSetUniverse?.('all')}
-                        className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
-                          activeUniverse === 'all'
-                            ? 'bg-white text-black font-bold border-white shadow-[0_0_10px_rgba(255,255,255,0.4)]'
-                            : 'bg-black text-white/80 border-white/30 hover:border-white'
-                        }`}
-                      >
-                        [ {language === 'es' ? 'TODOS' : 'ALL'} ]
-                      </button>
-                      <button
-                        onClick={() => onSetUniverse?.('creative')}
-                        className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
-                          activeUniverse === 'creative'
-                            ? 'bg-[#c4ffff] text-black font-bold border-[#c4ffff] shadow-[0_0_10px_rgba(196,255,255,0.5)]'
-                            : 'bg-black text-white/80 border-white/30 hover:border-white'
-                        }`}
-                      >
-                        [ {language === 'es' ? 'CREATIVO' : 'CREATIVE'} ]
-                      </button>
-                      <button
-                        onClick={() => onSetUniverse?.('industry')}
-                        className={`py-1.5 sm:py-2 px-1 sm:px-2 border transition-colors font-bold pulse-tactile text-center whitespace-nowrap truncate ${
-                          activeUniverse === 'industry'
-                            ? 'bg-[#c4ffff] text-black font-bold border-[#c4ffff] shadow-[0_0_10px_rgba(196,255,255,0.5)]'
-                            : 'bg-black text-white/80 border-white/30 hover:border-white'
-                        }`}
-                      >
-                        [ {language === 'es' ? 'INDUSTRIA' : 'INDUSTRY'} ]
-                      </button>
-                    </div>
-
-                    {/* Interactive AsciiTree / Universe Map that adapts to the activeUniverse - strictly zero scroll */}
-                    <div className="pt-1 w-full flex justify-center overflow-hidden">
+                    {/* Interactive VOID_MAP tree matching SYS.VOID CORE dropdown design */}
+                    <div className="w-full flex justify-center overflow-hidden">
                       <AsciiTree
                         appMode="universe"
                         activeUniverse={activeUniverse}
