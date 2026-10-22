@@ -18,7 +18,7 @@ const TargetCursor = ({
   targetSelector = 'a, button, [role="button"], [role="tab"], [role="link"], [role="menuitem"], [role="checkbox"], .cursor-target, .cursor-crosshair, .cursor-pointer, .star-border-container, .pulse-tactile, [data-interactive], [data-clickable], .radar-vertex-hitbox, .radar-vertex-group, input, select, textarea',
   hideDefaultCursor = true,
   cursorColor = '#ffffff',
-  cursorColorOnTarget = '#c4ffff',
+  cursorColorOnTarget = '#ffffff',
   appMode
 }: TargetCursorProps) => {
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -133,10 +133,10 @@ const TargetCursor = ({
       if (!cornersRef.current || !dotRef.current) return;
       Array.from(cornersRef.current).forEach(corner => {
         (corner as HTMLElement).style.borderColor = cursorColorOnTarget;
-        (corner as HTMLElement).style.filter = 'drop-shadow(0 0 4px rgba(196, 255, 255, 0.7))';
+        (corner as HTMLElement).style.filter = 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.7))';
       });
       (dotRef.current as HTMLElement).style.backgroundColor = cursorColorOnTarget;
-      (dotRef.current as HTMLElement).style.filter = 'drop-shadow(0 0 5px rgba(196, 255, 255, 0.9))';
+      (dotRef.current as HTMLElement).style.filter = 'drop-shadow(0 0 5px rgba(255, 255, 255, 0.9))';
       gsap.to(dotRef.current, { scale: 1.35, duration: 0.18, ease: 'power2.out', overwrite: 'auto' });
     };
 

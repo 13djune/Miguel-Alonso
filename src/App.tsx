@@ -413,7 +413,7 @@ function AppContent() {
       <TargetCursor
         appMode={appMode}
         cursorColor="#ffffff"
-        cursorColorOnTarget="#c4ffff"
+        cursorColorOnTarget="#ffffff"
       />
     </>
   );

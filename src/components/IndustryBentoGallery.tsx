@@ -606,7 +606,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
         } group relative border transition-all duration-300 flex flex-col overflow-hidden select-none cursor-target ${
           isLight
             ? 'border-black/30 hover:border-black bg-white hover:bg-neutral-50 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] text-black'
-            : 'border-white/40 hover:border-[#c4ffff] bg-black/85 hover:bg-black/95 shadow-[4px_4px_0px_rgba(255,255,255,0.05)] hover:shadow-[0_0_22px_rgba(196,255,255,0.25)] text-white'
+            : 'border-white/40 hover:border-white bg-black/85 hover:bg-black/95 shadow-[4px_4px_0px_rgba(255,255,255,0.05)] hover:shadow-[0_0_22px_rgba(255, 255, 255,0.25)] text-white'
         }`}
       >
         {/* Top Header / Ref Tag */}
@@ -614,8 +614,8 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
           isLight ? 'border-black/20 bg-neutral-100 text-black' : 'border-white/20 bg-black/90 text-white/80'
         }`}>
           <div className="flex items-center gap-1.5 truncate">
-            <span className={`w-1.5 h-1.5 animate-pulse shrink-0 ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`}></span>
-            <span className={`font-bold ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>{garment.refCode}</span>
+            <span className={`w-1.5 h-1.5 animate-pulse shrink-0 ${isLight ? "bg-black" : "bg-white"}`}></span>
+            <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>{garment.refCode}</span>
           </div>
           <div className={`tracking-wider text-[10px] sm:text-xs uppercase font-mono ${
             isLight ? 'text-black/60' : 'text-white/60'
@@ -641,7 +641,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
             <div className={`w-full h-full flex flex-col items-center justify-center p-4 text-center ${
               isLight ? 'bg-neutral-200 text-black/60' : 'bg-gradient-to-b from-neutral-900 to-black text-white/60'
             }`}>
-              <Layers size={28} className={`mb-2 ${isLight ? 'text-[#0055ff] opacity-80' : 'text-[#c4ffff] opacity-60'}`} />
+              <Layers size={28} className={`mb-2 ${isLight ? 'text-black opacity-80' : 'text-white opacity-60'}`} />
               <span className={`text-[10px] font-bold tracking-widest uppercase ${
                 isLight ? 'text-black/80' : 'text-white/80'
               }`}>
@@ -664,7 +664,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
         }`}>
           <div className="flex flex-col">
             <h3 className={`text-sm sm:text-base font-bold uppercase tracking-wider line-clamp-1 transition-colors ${
-              isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-[#c4ffff]'
+              isLight ? 'text-black group-hover:text-black' : 'text-white group-hover:text-white'
             }`}>
               {isES && garment.nameEs ? garment.nameEs : garment.name}
             </h3>
@@ -702,7 +702,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                 className={`cursor-target px-2 sm:px-2.5 py-1 border transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 whitespace-nowrap shrink-0 ${
                   isLight
                     ? 'border-black bg-white text-black hover:bg-black hover:text-white'
-                    : 'border-[#c4ffff]/80 hover:border-[#c4ffff] text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black'
+                    : 'border-white/80 hover:border-white text-white hover:bg-white hover:text-black'
                 }`}
                 title={isES ? 'Ver información' : 'View info'}
               >
@@ -718,10 +718,10 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                     isTechSheetOpen
                       ? isLight
                         ? 'bg-black text-white border-black'
-                        : 'bg-[#c4ffff] text-black border-[#c4ffff]'
+                        : 'bg-white text-black border-white'
                       : isLight
                       ? 'border-black/40 hover:border-black text-black hover:bg-black/5 bg-white'
-                      : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-[#c4ffff] bg-black/60'
+                      : 'border-white/40 hover:border-white text-white hover:text-white bg-black/60'
                   }`}
                   title={isES ? 'Ficha técnica' : 'Technical sheet'}
                 >
@@ -745,8 +745,8 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
           <div
             className={`absolute inset-x-0 bottom-0 top-[35px] z-30 p-3 sm:p-4 border-t-2 flex flex-col justify-between overflow-y-auto animate-fade-in-up ${
               isLight
-                ? 'bg-white/95 text-black border-[#0055ff] shadow-lg'
-                : 'bg-black/95 text-white border-[#c4ffff]'
+                ? 'bg-white/95 text-black border-black shadow-lg'
+                : 'bg-black/95 text-white border-white'
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -755,7 +755,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                 isLight ? 'border-black/15' : 'border-white/20'
               }`}>
                 <span className={`text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 ${
-                  isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                  isLight ? "text-black" : "text-white"
                 }`}>
                   <FileText size={11} />
                   {isES ? 'FICHA TÉCNICA INDUSTRIAL' : 'TECHNICAL SPEC SHEET'}
@@ -771,7 +771,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               <div className={`text-[8px] sm:text-[9px] space-y-1 ${isLight ? 'text-black/80' : 'text-white/80'}`}>
                 <div className="flex justify-between">
                   <span className={`uppercase ${isLight ? 'text-black/50' : 'text-white/50'}`}>TEJIDO:</span>
-                  <span className={`font-bold ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>{garment.techSheet.fabricCode}</span>
+                  <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>{garment.techSheet.fabricCode}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className={`uppercase ${isLight ? 'text-black/50' : 'text-white/50'}`}>GRAMAJE:</span>
@@ -801,8 +801,8 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                 onClick={(e) => handleDownloadTechSheet(garment, e)}
                 className={`w-full py-1.5 font-bold text-[9px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors ${
                   isLight
-                    ? 'bg-black hover:bg-[#0055ff] text-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                    : 'bg-[#c4ffff] hover:bg-white text-black shadow-[0_0_10px_rgba(196,255,255,0.4)]'
+                    ? 'bg-black hover:bg-black text-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                    : 'bg-white hover:bg-white text-black shadow-[0_0_10px_rgba(255, 255, 255,0.4)]'
                 }`}
               >
                 {isDownloaded ? (
@@ -823,7 +823,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
 
         {/* Hover accent */}
         <div className={`absolute top-0 left-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${
-          isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'
+          isLight ? "bg-black" : "bg-white"
         }`} />
       </div>
     );
@@ -836,9 +836,9 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
         isLight ? 'border-black/20 bg-black/[0.03] text-black' : 'border-white/20 bg-black/60 text-white'
       }`}>
         <div className="flex items-center gap-2 text-xs">
-          <span className={`w-2 h-2 animate-ping shrink-0 ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`} />
+          <span className={`w-2 h-2 animate-ping shrink-0 ${isLight ? "bg-black" : "bg-white"}`} />
           <span className={`text-[10px] sm:text-xs uppercase tracking-widest font-bold ${
-            isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+            isLight ? "text-black" : "text-white"
           }`}>
             SYS.FILTER // [SELECT_TAG]:
           </span>
@@ -859,13 +859,13 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                   isActive
                     ? isLight
                       ? 'bg-black text-white font-extrabold border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] tracking-wider scale-[1.02]'
-                      : 'bg-white text-black font-extrabold border-2 border-[#c4ffff] shadow-[0_0_15px_rgba(196,255,255,0.8),inset_0_0_4px_rgba(0,0,0,0.3)] tracking-wider scale-[1.02]'
+                      : 'bg-white text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(255, 255, 255,0.8),inset_0_0_4px_rgba(0,0,0,0.3)] tracking-wider scale-[1.02]'
                     : isLight
                     ? 'bg-white text-black border border-black/30 hover:border-black hover:bg-black/5'
                     : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white hover:bg-white/10'
                 }`}
               >
-                <span className={isActive ? (isLight ? 'text-white font-bold' : 'text-black font-bold') : (isLight ? 'text-[#0055ff]' : 'text-[#c4ffff] opacity-70')}>
+                <span className={isActive ? (isLight ? 'text-white font-bold' : 'text-black font-bold') : (isLight ? 'text-black' : 'text-white opacity-70')}>
                   {isActive ? '▪' : '>'}
                 </span>
                 <span>{tag}</span>
@@ -894,7 +894,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               className={`p-1.5 border transition-colors cursor-crosshair ${
                 isLight
                   ? 'border-black/30 hover:border-black text-black hover:bg-black/10'
-                  : 'border-white/40 hover:border-[#c4ffff] text-white/80 hover:text-white hover:bg-white/10'
+                  : 'border-white/40 hover:border-white text-white/80 hover:text-white hover:bg-white/10'
               }`}
             >
               <ChevronLeft size={16} />
@@ -905,7 +905,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               className={`p-1.5 border transition-colors cursor-crosshair ${
                 isLight
                   ? 'border-black/30 hover:border-black text-black hover:bg-black/10'
-                  : 'border-white/40 hover:border-[#c4ffff] text-white/80 hover:text-white hover:bg-white/10'
+                  : 'border-white/40 hover:border-white text-white/80 hover:text-white hover:bg-white/10'
               }`}
             >
               <ChevronRight size={16} />
@@ -961,7 +961,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
         isLight ? 'border-black/15 text-black/60' : 'border-white/10 text-white/50'
       }`}>
         <div className="flex items-center gap-1.5">
-          <Compass size={11} className={isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'} />
+          <Compass size={11} className={isLight ? "text-black" : "text-white"} />
           <span>
             {isES
               ? `BENTO GRID // ${filteredGarments.length} PRENDAS EN ${projectTitle}`
@@ -969,7 +969,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
           </span>
         </div>
         <div className={`hidden sm:flex items-center gap-2 uppercase tracking-widest ${
-          isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+          isLight ? "text-black" : "text-white"
         }`}>
           {canScroll ? (
             <span>{isES ? '↔ ARRASTRAR O SCROLL HORIZONTAL ↔' : '↔ CLICK & DRAG TO SCROLL ↔'}</span>
@@ -1003,7 +1003,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                   className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
                     isLight
                       ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
-                      : 'bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] shadow-[0_0_15px_rgba(0,0,0,0.8)]'
+                      : 'bg-black/90 hover:bg-white text-white hover:text-black border border-white/50 hover:border-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
                   }`}
                 >
                   <ChevronLeft size={26} className="sm:w-8 sm:h-8" />
@@ -1021,7 +1021,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                   className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
                     isLight
                       ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
-                      : 'bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] shadow-[0_0_15px_rgba(0,0,0,0.8)]'
+                      : 'bg-black/90 hover:bg-white text-white hover:text-black border border-white/50 hover:border-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
                   }`}
                 >
                   <ChevronRight size={26} className="sm:w-8 sm:h-8" />
@@ -1040,10 +1040,10 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
             >
               {/* Corner Accents */}
               <div className={`absolute top-0 right-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none ${
-                isLight ? 'border-black' : 'border-[#c4ffff]'
+                isLight ? "border-black" : "border-white"
               }`} />
               <div className={`absolute bottom-0 left-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none ${
-                isLight ? 'border-black' : 'border-[#c4ffff]'
+                isLight ? "border-black" : "border-white"
               }`} />
 
               {/* Close Button Top Right */}
@@ -1053,7 +1053,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                 className={`cursor-target absolute top-3.5 right-3.5 p-2 border transition-colors z-20 ${
                   isLight
                     ? 'text-black hover:text-white hover:bg-black border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                    : 'text-white/70 hover:text-black hover:bg-[#c4ffff] border-white/30 hover:border-[#c4ffff] bg-black/80'
+                    : 'text-white/70 hover:text-black hover:bg-white border-white/30 hover:border-white bg-black/80'
                 }`}
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
@@ -1083,7 +1083,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                     <div className={`flex flex-col items-center justify-center p-6 text-center ${
                       isLight ? 'text-black/60' : 'text-white/60'
                     }`}>
-                      <Layers size={40} className={`mb-3 ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`} />
+                      <Layers size={40} className={`mb-3 ${isLight ? "text-black" : "text-white"}`} />
                       <span className={`text-xs uppercase font-bold ${isLight ? 'text-black' : 'text-white'}`}>
                         {selectedGarment.refCode} // CAD BLUEPRINT
                       </span>
@@ -1107,7 +1107,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                 }`}>
                   <span className="font-bold">REF: {selectedGarment.refCode}</span>
                   {currentGarmentIndex !== -1 && (
-                    <span className={`font-bold ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
+                    <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
                       [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(filteredGarments.length).padStart(2, '0')} ]
                     </span>
                   )}
@@ -1118,9 +1118,9 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               <div className="w-full md:w-1/2 flex flex-col justify-between gap-5 font-mono">
                 <div className="flex flex-col gap-3.5">
                   <div className={`flex items-center gap-2 text-xs sm:text-sm tracking-widest uppercase font-bold ${
-                    isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                    isLight ? "text-black" : "text-white"
                   }`}>
-                    <span className={`w-2 h-2 animate-pulse ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`}></span>
+                    <span className={`w-2 h-2 animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
                     <span>{selectedGarment.refCode}</span>
                     <span>·</span>
                     <span>{selectedGarment.category.toUpperCase()}</span>
@@ -1135,11 +1135,11 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                   {selectedGarment.silhouette && (
                     <div className={`p-3 border-l-2 text-sm sm:text-base leading-relaxed ${
                       isLight
-                        ? 'bg-black/5 border-[#0055ff] text-black'
-                        : 'bg-white/5 border-[#c4ffff] text-white/95'
+                        ? 'bg-black/5 border-black text-black'
+                        : 'bg-white/5 border-white text-white/95'
                     }`}>
                       <span className={`block text-[10px] sm:text-xs uppercase tracking-widest mb-1 font-bold ${
-                        isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                        isLight ? "text-black" : "text-white"
                       }`}>
                         {isES ? 'SILUETA Y CONSTRUCCIÓN' : 'SILHOUETTE & DRAPE'}
                       </span>
@@ -1177,10 +1177,10 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                     <div className={`mt-2 p-3.5 border space-y-2.5 ${
                       isLight
                         ? 'border-black/30 bg-black/5 text-black'
-                        : 'border-[#c4ffff]/60 bg-black/70 text-white'
+                        : 'border-white/60 bg-black/70 text-white'
                     }`}>
                       <div className={`flex items-center justify-between text-xs sm:text-sm font-bold uppercase tracking-wider ${
-                        isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                        isLight ? "text-black" : "text-white"
                       }`}>
                         <span className="flex items-center gap-1.5">
                           <FileText size={14} />
@@ -1207,8 +1207,8 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                         onClick={(e) => handleDownloadTechSheet(selectedGarment, e)}
                         className={`cursor-target w-full mt-2 py-2.5 font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-colors ${
                           isLight
-                            ? 'bg-black text-white hover:bg-[#0055ff] shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
-                            : 'bg-[#c4ffff] hover:bg-white text-black shadow-[0_0_15px_rgba(196,255,255,0.4)]'
+                            ? 'bg-black text-white hover:bg-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
+                            : 'bg-white hover:bg-white text-black shadow-[0_0_15px_rgba(255, 255, 255,0.4)]'
                         }`}
                       >
                         <Download size={15} />
@@ -1227,7 +1227,7 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                     <span>{isES ? '[← →] NAVEGAR' : '[← →] NAVIGATE'}</span>
                   </div>
                   <span className={`tracking-widest text-[11px] font-bold ${
-                    isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                    isLight ? "text-black" : "text-white"
                   }`}>
                     CAD // BLUEPRINT
                   </span>

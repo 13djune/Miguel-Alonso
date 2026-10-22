@@ -54,7 +54,7 @@
   line-height: 1.2;
   color: color-mix(in srgb, var(--accent-color) calc(var(--effect, 0) * 100%), var(--text-color));
   transform: translateX(calc(var(--effect, 0) * var(--max-shift)));
-  text-shadow: calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 5px) rgba(196, 255, 255, 0.4);
+  text-shadow: calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 2px) calc(var(--effect, 0) * 5px) rgba(255, 255, 255, 0.4);
 }
 
 .line-sidebar__index {
@@ -100,7 +100,7 @@
 
 .line-sidebar__item:hover .line-sidebar__label {
   color: var(--accent-color) !important;
-  text-shadow: 0 0 15px rgba(196, 255, 255, 0.8) !important;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8) !important;
 }
 
 .line-sidebar__item:hover .line-sidebar__marker {
@@ -111,5 +111,5 @@
 .line-sidebar__item:active .line-sidebar__label {
   transform: translateX(calc(var(--effect, 0) * var(--max-shift))) scale(0.95);
   opacity: 0.8;
-  text-shadow: 0 0 5px rgba(196, 255, 255, 0.5) !important;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
 }

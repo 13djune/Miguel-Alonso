@@ -365,7 +365,7 @@ export default function P3rmfrstPointCloud({
       <mesh position={[0, -1.6, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.2, 0.95, 32]} />
         <meshBasicMaterial
-          color="#c4ffff"
+          color="#ffffff"
           transparent
           opacity={0.15}
           side={THREE.DoubleSide}

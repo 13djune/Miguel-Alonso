@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AsciiTree from './AsciiTree';
 import SystemLog from './SystemLog';
@@ -90,10 +89,10 @@ export default function Overlay({
                   onClick={() => {
                     setIsSidebarOpen(!isSidebarOpen);
                   }}
-                  className={`cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center gap-1 sm:gap-1.5 transition-colors whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none ${
+                  className={`cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center gap-1 sm:gap-1.5 transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none ${
                     isSidebarOpen
-                      ? 'text-[#c4ffff] drop-shadow-[0_0_8px_rgba(196,255,255,0.8)]'
-                      : 'text-white hover:text-[#c4ffff]'
+                      ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+                      : 'text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
                   }`}
                   title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir VOID_MAP" : "Open VOID_MAP")}
                 >
@@ -120,7 +119,7 @@ export default function Overlay({
                   >
                     <div className="border-b border-white/20 pb-1 flex justify-between items-center w-full px-1">
                       <div className="font-mono text-[11px] sm:text-xs text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
-                        <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse shrink-0"></span>
+                        <span className="w-1.5 h-1.5 bg-white animate-pulse shrink-0"></span>
                         <span className="truncate whitespace-nowrap">[ VOID_MAP // SYS.NAV ]</span>
                       </div>
                       <button
@@ -156,7 +155,7 @@ export default function Overlay({
                   e.preventDefault();
                   onOpenCollections?.();
                 }}
-                className="cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center transition-colors whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white hover:text-[#c4ffff]"
+                className="cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                 title={t('overlay.nav.collections')}
               >
                 <span>[ {t('overlay.nav.collections')} ]</span>
@@ -181,10 +180,10 @@ export default function Overlay({
 
           <button
             onClick={toggleLanguage}
-            className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:text-[#c4ffff] transition-colors uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
+            className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
             title={language === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'}
           >
-            <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+            <span className="w-1.5 h-1.5 bg-white animate-pulse"></span>
             <span>[ {language.toUpperCase()} ]</span>
           </button>
         </div>
@@ -244,22 +243,22 @@ export default function Overlay({
                 {t('overlay.title')}
               </h1>
 
-              <p className="hidden md:inline-block text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase bg-white/10 px-2 py-1 pointer-events-none border border-white whitespace-nowrap truncate max-w-[130px] sm:max-w-none">
+              <p className="hidden md:inline-block text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase pointer-events-none whitespace-nowrap truncate max-w-[130px] sm:max-w-none">
                 {t('overlay.subtitle')}
               </p>
             </>
           ) : (
             <>
-              <p className="text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase bg-white/10 px-2 py-1 pointer-events-none border border-white whitespace-nowrap truncate max-w-[160px] sm:max-w-none">
+              <p className="text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase pointer-events-none whitespace-nowrap truncate max-w-[160px] sm:max-w-none">
                 {t('overlay.subtitle')}
               </p>
 
               <button
                 onClick={onOpenDesigner}
-                className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:text-[#c4ffff] transition-colors uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
+                className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
                 title={t('overlay.btn.profile')}
               >
-                <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+                <span className="w-1.5 h-1.5 bg-white animate-pulse"></span>
                 <span>[ {t('overlay.btn.profile')} ]</span>
               </button>
             </>
@@ -271,12 +270,10 @@ export default function Overlay({
           {/* Desktop full hint */}
           <div className="hidden sm:flex text-[10px] md:text-xs font-mono font-bold tracking-wider uppercase text-white items-center gap-1.5 px-1.5 py-1 whitespace-nowrap pointer-events-none bg-transparent border-0 shadow-none">
             <span>{t('overlay.target.inspect')}</span>
-            <ArrowRight size={12} className="text-[#c4ffff] shrink-0" />
           </div>
           {/* Mobile compact hint */}
           <div className="sm:hidden text-[9px] font-mono font-bold tracking-wider uppercase text-white flex items-center gap-1 px-1.5 py-1 whitespace-nowrap pointer-events-none bg-transparent border-0 shadow-none">
             <span>{language === 'es' ? 'SIS 3D' : '3D SYS'}</span>
-            <ArrowRight size={10} className="text-[#c4ffff] shrink-0" />
           </div>
         </div>
       </footer>

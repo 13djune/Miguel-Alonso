@@ -685,7 +685,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
             onClick={onClose}
             className={`border font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 transition-colors shrink-0 whitespace-nowrap cursor-crosshair pulse-tactile ${
               isLight
-                ? 'border-black bg-black text-white hover:bg-[#0055ff] shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                ? 'border-black bg-black text-white hover:bg-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
                 : 'border-white bg-black text-white hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.15)]'
             }`}
             title={isES ? "Cerrar Vista" : "Close View"}
@@ -710,7 +710,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   onClick={() => onSelectProject(project)}
                   className={`group relative flex flex-col border transition-all cursor-crosshair ${
                     isLight 
-                      ? 'border-black bg-white hover:border-[#0055ff] shadow-[3px_3px_0px_rgba(0,0,0,0.8)]' 
+                      ? 'border-black bg-white hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]' 
                       : 'border-white hover:border-white bg-white/5'
                   }`}
                 >
@@ -743,7 +743,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       <div className={`text-[10px] tracking-widest uppercase font-bold shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>
                         IDX_{String(idx + 1).padStart(2, '0')}
                       </div>
-                      <div className={`text-[9px] uppercase tracking-wider font-bold truncate max-w-[120px] ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
+                      <div className={`text-[9px] uppercase tracking-wider font-bold truncate max-w-[120px] ${isLight ? "text-black" : "text-white"}`}>
                         {project.tags?.[0] || (isES ? 'CONCEPTO' : 'CONCEPT')}
                       </div>
                     </div>
@@ -754,8 +754,8 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   <div
                     className="absolute top-0 left-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ 
-                      backgroundColor: isLight ? '#0055ff' : '#c4ffff', 
-                      boxShadow: isLight ? '0 0 10px #0055ff' : '0 0 10px #c4ffff' 
+                      backgroundColor: isLight ? '#ffffff' : '#ffffff', 
+                      boxShadow: isLight ? '0 0 10px #ffffff' : '0 0 10px #ffffff' 
                     }}
                   />
                 </div>
@@ -772,7 +772,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 <h2 className={`tracking-widest uppercase text-base sm:text-xl font-bold break-words flex items-center gap-2 ${
                   isLight ? 'text-black' : 'text-white'
                 }`}>
-                  <span className={`w-2.5 h-2.5 ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'} animate-pulse`}></span>
+                  <span className={`w-2.5 h-2.5 ${isLight ? "bg-black" : "bg-white"} animate-pulse`}></span>
                   <span>[ {isES ? 'UNIVERSO: INDUSTRIA // BENTO LOOKBOOK DENSE' : 'UNIVERSE: INDUSTRY // DENSE BENTO LOOKBOOK'} ]</span>
                 </h2>
                 <p className={`text-xs mt-1 ${isLight ? 'text-black/70' : 'text-white/60'}`}>
@@ -789,8 +789,8 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     onClick={() => onSelectProject(activeSectorProject)}
                     className={`px-3 py-1.5 border font-mono text-[10px] sm:text-xs uppercase font-bold tracking-wider transition-colors flex items-center gap-1.5 cursor-crosshair ${
                       isLight
-                        ? 'border-black bg-black text-white hover:bg-[#0055ff] shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                        : 'border-[#c4ffff] bg-black text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black'
+                        ? 'border-black bg-black text-white hover:bg-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                        : 'border-white bg-black text-white hover:bg-white hover:text-black'
                     }`}
                   >
                     <ExternalLink size={12} />
@@ -806,7 +806,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       className={`p-1.5 border transition-colors cursor-crosshair ${
                         isLight
                           ? 'border-black/40 text-black hover:bg-black hover:text-white'
-                          : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-black hover:bg-[#c4ffff]'
+                          : 'border-white/40 hover:border-white text-white hover:text-black hover:bg-white'
                       }`}
                       title={isES ? 'Desplazar izquierda' : 'Scroll left'}
                     >
@@ -817,7 +817,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       className={`p-1.5 border transition-colors cursor-crosshair ${
                         isLight
                           ? 'border-black/40 text-black hover:bg-black hover:text-white'
-                          : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-black hover:bg-[#c4ffff]'
+                          : 'border-white/40 hover:border-white text-white hover:text-black hover:bg-white'
                       }`}
                       title={isES ? 'Desplazar derecha' : 'Scroll right'}
                     >
@@ -845,7 +845,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   selectedSector === 'ALL'
                     ? isLight
                       ? 'bg-black text-white font-extrabold border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-wider scale-[1.02]'
-                      : 'bg-[#c4ffff] text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(196,255,255,0.7)] tracking-wider scale-[1.02]'
+                      : 'bg-white text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(255, 255, 255,0.7)] tracking-wider scale-[1.02]'
                     : isLight
                       ? 'bg-white text-black border border-black/30 hover:border-black'
                       : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white'
@@ -867,7 +867,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       isSelected
                         ? isLight
                           ? 'bg-black text-white font-extrabold border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] tracking-wider scale-[1.02]'
-                          : 'bg-[#c4ffff] text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(196,255,255,0.7)] tracking-wider scale-[1.02]'
+                          : 'bg-white text-black font-extrabold border-2 border-white shadow-[0_0_15px_rgba(255, 255, 255,0.7)] tracking-wider scale-[1.02]'
                         : isLight
                           ? 'bg-white text-black border border-black/30 hover:border-black'
                           : 'bg-black/80 text-white/70 border border-white/30 hover:border-white hover:text-white'
@@ -886,7 +886,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 isLight ? 'border-black/15' : 'border-white/10'
               }`}>
                 <span className={`text-[9px] uppercase tracking-wider mr-2 shrink-0 font-bold ${
-                  isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                  isLight ? "text-black" : "text-white"
                 }`}>
                   {isES ? 'FILTRO:' : 'FILTER:'}
                 </span>
@@ -965,8 +965,8 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         onClick={() => handleGarmentClick(garment)}
                         className={`bento-grid-item group relative border overflow-hidden flex flex-col justify-between ${spanConfig.colSpan} ${spanConfig.rowSpan} ${spanConfig.widthClass} cursor-crosshair snap-start shrink-0 ${
                           isLight
-                            ? 'border-black/40 hover:border-[#0055ff] bg-white text-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[3px_3px_0px_rgba(0,85,255,0.8)]'
-                            : 'border-white/30 hover:border-[#c4ffff] bg-neutral-950 text-white shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(196,255,255,0.25)]'
+                            ? 'border-black/40 hover:border-black bg-white text-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[3px_3px_0px_rgba(255, 255, 255,0.8)]'
+                            : 'border-white/30 hover:border-white bg-neutral-950 text-white shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(255, 255, 255,0.25)]'
                         }`}
                         style={{
                           transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
@@ -996,10 +996,10 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                           <div className={`backdrop-blur-sm border px-2 py-0.5 text-xs sm:text-sm font-bold tracking-widest uppercase flex items-center gap-1.5 ${
                             isLight
                               ? 'bg-white/90 border-black/40 text-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                              : 'bg-black/85 border-white/30 text-[#c4ffff]'
+                              : 'bg-black/85 border-white/30 text-white'
                           }`}>
                             <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                              isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'
+                              isLight ? "bg-black" : "bg-white"
                             }`}></span>
                             <span>{garment.refCode}</span>
                           </div>
@@ -1021,7 +1021,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         }`}>
                           <div className="flex items-center justify-between gap-2">
                             <span className={`text-xs sm:text-[13px] tracking-widest uppercase font-bold truncate ${
-                              isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                              isLight ? "text-black" : "text-white"
                             }`}>
                               {garment.category.toUpperCase()}
                             </span>
@@ -1035,7 +1035,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                           </div>
 
                           <h3 className={`text-sm sm:text-base font-bold uppercase tracking-wider line-clamp-1 transition-colors ${
-                            isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-[#c4ffff]'
+                            isLight ? 'text-black group-hover:text-black' : 'text-white group-hover:text-white'
                           }`}>
                             {isES && garment.nameEs ? garment.nameEs : garment.name}
                           </h3>
@@ -1068,7 +1068,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                                 className={`cursor-target px-2 sm:px-2.5 py-1 border transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 ${
                                   isLight
                                     ? 'border-black bg-white text-black hover:bg-black hover:text-white'
-                                    : 'border-[#c4ffff]/80 hover:border-[#c4ffff] text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black'
+                                    : 'border-white/80 hover:border-white text-white hover:bg-white hover:text-black'
                                 }`}
                                 title={isES ? 'Ver información' : 'View info'}
                               >
@@ -1085,7 +1085,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                                       ? 'bg-green-500/20 border-green-400 text-green-700'
                                       : isLight
                                         ? 'border-black/40 text-black hover:bg-black hover:text-white bg-white'
-                                        : 'border-white/40 hover:border-[#c4ffff] text-white hover:text-[#c4ffff] bg-black/60'
+                                        : 'border-white/40 hover:border-white text-white hover:text-white bg-black/60'
                                   }`}
                                   title={isES ? 'Descargar Ficha Técnica (.txt)' : 'Download Tech Pack (.txt)'}
                                 >
@@ -1117,7 +1117,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 isLight ? 'border-black/20 text-black/70' : 'border-white/20 text-white/70'
               }`}>
                 <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`}></span>
+                  <span className={`w-2 h-2 ${isLight ? "bg-black" : "bg-white"}`}></span>
                   <span className={`font-bold text-xs sm:text-sm ${isLight ? 'text-black' : 'text-white'}`}>
                     {displayedGarments.length} {isES ? 'PRENDAS DENSE-PACKED' : 'DENSE-PACKED PIECES'}
                   </span>
@@ -1126,14 +1126,14 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs hidden sm:inline ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
+                  <span className={`text-xs hidden sm:inline ${isLight ? "text-black" : "text-white"}`}>
                     {isES ? '← ARRASTRA O USA LA RUEDA DEL RATÓN →' : '← DRAG OR USE MOUSE WHEEL TO SCROLL →'}
                   </span>
                   {activeSectorProject && (
                     <button
                       onClick={() => onSelectProject(activeSectorProject)}
                       className={`underline font-bold text-xs cursor-crosshair ${
-                        isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-[#c4ffff]'
+                        isLight ? 'text-black hover:text-black' : 'text-white hover:text-white'
                       }`}
                     >
                       {isES ? 'Ver en 3D' : 'View in 3D'}
@@ -1168,7 +1168,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
                     isLight 
                       ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
-                      : 'bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] shadow-[0_0_15px_rgba(0,0,0,0.8)]'
+                      : 'bg-black/90 hover:bg-white text-white hover:text-black border border-white/50 hover:border-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
                   }`}
                 >
                   <ChevronLeft size={26} className="sm:w-8 sm:h-8" />
@@ -1186,7 +1186,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
                     isLight 
                       ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
-                      : 'bg-black/90 hover:bg-[#c4ffff] text-white hover:text-black border border-white/50 hover:border-[#c4ffff] shadow-[0_0_15px_rgba(0,0,0,0.8)]'
+                      : 'bg-black/90 hover:bg-white text-white hover:text-black border border-white/50 hover:border-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
                   }`}
                 >
                   <ChevronRight size={26} className="sm:w-8 sm:h-8" />
@@ -1205,10 +1205,10 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
             >
               {/* Corner Accents */}
               <div className={`absolute top-0 right-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none ${
-                isLight ? 'border-black' : 'border-[#c4ffff]'
+                isLight ? "border-black" : "border-white"
               }`} />
               <div className={`absolute bottom-0 left-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none ${
-                isLight ? 'border-black' : 'border-[#c4ffff]'
+                isLight ? "border-black" : "border-white"
               }`} />
 
               {/* Close Button Top Right */}
@@ -1218,7 +1218,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 className={`cursor-target absolute top-3.5 right-3.5 p-2 border transition-colors z-20 ${
                   isLight 
                     ? 'text-black hover:text-white hover:bg-black border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                    : 'text-white/70 hover:text-black hover:bg-[#c4ffff] border-white/30 hover:border-[#c4ffff] bg-black/80'
+                    : 'text-white/70 hover:text-black hover:bg-white border-white/30 hover:border-white bg-black/80'
                 }`}
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
@@ -1261,7 +1261,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 }`}>
                   <span className="font-bold">REF: {inspectedGarment.refCode}</span>
                   {currentGarmentIndex !== -1 && (
-                    <span className={`font-bold ${isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'}`}>
+                    <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
                       [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(displayedGarments.length).padStart(2, '0')} ]
                     </span>
                   )}
@@ -1272,9 +1272,9 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               <div className="w-full md:w-1/2 flex flex-col justify-between gap-5 font-mono">
                 <div className="flex flex-col gap-3.5">
                   <div className={`flex items-center gap-2 text-xs sm:text-sm tracking-widest uppercase font-bold ${
-                    isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                    isLight ? "text-black" : "text-white"
                   }`}>
-                    <span className={`w-2 h-2 animate-pulse ${isLight ? 'bg-[#0055ff]' : 'bg-[#c4ffff]'}`}></span>
+                    <span className={`w-2 h-2 animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
                     <span>{inspectedGarment.refCode}</span>
                     <span>·</span>
                     <span>{inspectedGarment.category.toUpperCase()}</span>
@@ -1289,11 +1289,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   {inspectedGarment.silhouette && (
                     <div className={`p-3 border-l-2 text-sm sm:text-base leading-relaxed ${
                       isLight 
-                        ? 'bg-black/5 border-[#0055ff] text-black' 
-                        : 'bg-white/5 border-[#c4ffff] text-white/95'
+                        ? 'bg-black/5 border-black text-black' 
+                        : 'bg-white/5 border-white text-white/95'
                     }`}>
                       <span className={`block text-[10px] sm:text-xs uppercase tracking-widest mb-1 font-bold ${
-                        isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                        isLight ? "text-black" : "text-white"
                       }`}>
                         {isES ? 'SILUETA Y CONSTRUCCIÓN' : 'SILHOUETTE & DRAPE'}
                       </span>
@@ -1331,10 +1331,10 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     <div className={`mt-2 p-3.5 border space-y-2.5 ${
                       isLight 
                         ? 'border-black/30 bg-black/5 text-black' 
-                        : 'border-[#c4ffff]/60 bg-black/70 text-white'
+                        : 'border-white/60 bg-black/70 text-white'
                     }`}>
                       <div className={`flex items-center justify-between text-xs sm:text-sm font-bold uppercase tracking-wider ${
-                        isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                        isLight ? "text-black" : "text-white"
                       }`}>
                         <span className="flex items-center gap-1.5">
                           <FileText size={14} />
@@ -1361,8 +1361,8 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         onClick={(e) => handleDownloadTechSheet(inspectedGarment, e)}
                         className={`cursor-target w-full mt-2 py-2.5 font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-colors ${
                           isLight
-                            ? 'bg-black text-white hover:bg-[#0055ff] shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
-                            : 'bg-[#c4ffff] hover:bg-white text-black shadow-[0_0_15px_rgba(196,255,255,0.4)]'
+                            ? 'bg-black text-white hover:bg-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
+                            : 'bg-white hover:bg-white text-black shadow-[0_0_15px_rgba(255, 255, 255,0.4)]'
                         }`}
                       >
                         <Download size={15} />
@@ -1381,7 +1381,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     <span>{isES ? '[← →] NAVEGAR' : '[← →] NAVIGATE'}</span>
                   </div>
                   <span className={`tracking-widest text-[11px] font-bold ${
-                    isLight ? 'text-[#0055ff]' : 'text-[#c4ffff]'
+                    isLight ? "text-black" : "text-white"
                   }`}>
                     CAD // ARCHIVE
                   </span>

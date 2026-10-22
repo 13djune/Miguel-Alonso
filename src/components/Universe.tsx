@@ -342,15 +342,15 @@ function ProjectNode({
             {isSelected && (
               <div
                 className="absolute -inset-4 border border-dashed animate-[spin_10s_linear_infinite]"
-                style={{ borderColor: isLight ? "#0055ff" : "#c4ffff", opacity: 0.7 }}
+                style={{ borderColor: isLight ? "#ffffff" : "#ffffff", opacity: 0.7 }}
               />
             )}
             <span
               className={`px-1 transition-colors border ${
                 hovered
                   ? isLight
-                    ? "bg-[#0055ff] text-white border-[#0055ff] font-bold shadow-[0_0_8px_rgba(0,85,255,0.4)]"
-                    : "bg-[#c4ffff] text-black border-[#c4ffff] font-bold"
+                    ? "bg-black text-white border-black font-bold shadow-[0_0_8px_rgba(255, 255, 255,0.4)]"
+                    : "bg-white text-black border-white font-bold"
                   : isLight
                     ? "bg-white text-black border-black/80 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
                     : "bg-black/60 text-white border-white/30"
@@ -449,7 +449,7 @@ function PlanetTrail({
 
     const trailArc = baseArc * (isHovered ? 1.25 : 1.0);
 
-    // Color tones: Electric cobalt in light mode, cyan #c4ffff in dark mode
+    // Color tones: Electric cobalt in light mode, cyan #ffffff in dark mode
     const headR = isLight ? (isHovered || isSelected ? 0.0 : 0.08) : (isHovered || isSelected ? 0.77 : 0.95);
     const headG = isLight ? (isHovered || isSelected ? 0.33 : 0.28) : (isHovered || isSelected ? 1.0 : 0.98);
     const headB = isLight ? (isHovered || isSelected ? 1.0 : 0.9) : 1.0;
@@ -842,7 +842,7 @@ function CentralCore({ isLight = false }: { isLight?: boolean }) {
       <pointLight
         position={[0, 0, 0]}
         intensity={isLight ? 1.2 : 2}
-        color={isLight ? "#0055ff" : "#ffffff"}
+        color={isLight ? "#ffffff" : "#ffffff"}
         distance={30}
         decay={2}
       />
@@ -928,7 +928,7 @@ export default function Universe({
                     : "bg-black/90 text-white border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)]"
                 }`}
               >
-                <span className={`font-bold whitespace-nowrap ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`}>
+                <span className={`font-bold whitespace-nowrap ${isLight ? "text-black" : "text-white"}`}>
                   [ CREATIVE.SYS ]
                 </span>
                 <span className={`text-[7px] md:text-[8px] tracking-wider whitespace-nowrap ${isLight ? "text-black/70" : "text-white/80"}`}>
@@ -970,7 +970,7 @@ export default function Universe({
                     : "bg-black/90 text-white border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)]"
                 }`}
               >
-                <span className={`font-bold whitespace-nowrap ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`}>
+                <span className={`font-bold whitespace-nowrap ${isLight ? "text-black" : "text-white"}`}>
                   [ INDUSTRY.SYS ]
                 </span>
                 <span className={`text-[7px] md:text-[8px] tracking-wider whitespace-nowrap ${isLight ? "text-black/70" : "text-white/80"}`}>
@@ -1015,7 +1015,7 @@ export default function Universe({
                   : "bg-black/90 text-white border-white/40 shadow-[0_0_12px_rgba(255,255,255,0.2)]"
               }`}
             >
-              <span className={`font-bold whitespace-nowrap ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`}>
+              <span className={`font-bold whitespace-nowrap ${isLight ? "text-black" : "text-white"}`}>
                 {activeUniverse === 'creative' ? '[ CREATIVE.SYS ]' : '[ INDUSTRY.SYS ]'}
               </span>
               <span className={`text-[7px] md:text-[8px] tracking-wider whitespace-nowrap ${isLight ? "text-black/70" : "text-white/80"}`}>

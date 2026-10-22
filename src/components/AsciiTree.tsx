@@ -43,10 +43,10 @@ const Clickable = ({
         backgroundColor: active || hovered
           ? color === '#ffffff'
             ? '#ffffff'
-            : '#c4ffff'
+            : '#ffffff'
           : 'transparent',
         color: active || hovered ? '#000000' : 'inherit',
-        boxShadow: active || hovered ? '0 0 10px rgba(196, 255, 255, 0.7)' : 'none',
+        boxShadow: active || hovered ? '0 0 10px rgba(255, 255, 255, 0.7)' : 'none',
       }}
     >
       {text}
@@ -84,9 +84,9 @@ const ProjectItem = ({
         onClick();
       }}
       style={{
-        backgroundColor: isLit ? '#c4ffff' : 'transparent',
+        backgroundColor: isLit ? '#ffffff' : 'transparent',
         color: isLit ? '#000000' : 'inherit',
-        boxShadow: isLit ? '0 0 10px rgba(196, 255, 255, 0.7)' : 'none',
+        boxShadow: isLit ? '0 0 10px rgba(255, 255, 255, 0.7)' : 'none',
       }}
     >
       <span
@@ -158,14 +158,14 @@ const MainMenuButton = ({
       <div
         className={`w-full flex items-center justify-between px-2.5 sm:px-3.5 py-1.5 sm:py-2 transition-all duration-200 border-x select-none ${
           isLit
-            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(196,255,255,0.7)]'
+            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255, 255, 255,0.7)]'
             : 'bg-black/90 text-white border-white/70 group-hover:border-white'
         }`}
       >
         <div className="flex items-center gap-1.5 sm:gap-2 truncate">
           <span
             className={`w-1.5 h-1.5 sm:w-2 sm:h-2 shrink-0 transition-colors ${
-              isLit ? 'bg-black' : 'bg-[#c4ffff] animate-pulse'
+              isLit ? 'bg-black' : 'bg-[#ffffff] animate-pulse'
             }`}
           />
           <span className="font-bold text-[11px] sm:text-xs md:text-[13px] tracking-wider uppercase truncate">
@@ -187,7 +187,7 @@ const MainMenuButton = ({
             className={`font-mono text-[10px] sm:text-xs font-bold px-1.5 py-0.5 border transition-all ${
               isLit
                 ? 'border-black text-black bg-black/10'
-                : 'border-white/50 text-[#c4ffff] bg-white/5 group-hover:border-white'
+                : 'border-white/50 text-[#ffffff] bg-white/5 group-hover:border-white'
             }`}
           >
             {icon}
@@ -270,7 +270,7 @@ export default function AsciiTree({
       {/* Top stem */}
       <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
         <span>│</span>
-        <span className="text-[#c4ffff] font-bold">▼</span>
+        <span className="text-[#ffffff] font-bold">▼</span>
       </div>
 
       {/* Quick Explore 3D Portfolio Button */}
@@ -279,8 +279,8 @@ export default function AsciiTree({
         onClick={handleNucleo}
         className={`font-mono text-[10px] sm:text-xs font-bold tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 border uppercase flex items-center justify-center gap-1.5 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] pulse-tactile my-0.5 cursor-crosshair transition-all ${
           activeUniverse === 'all' && isUniverseDropdown
-            ? 'bg-[#c4ffff] text-black border-[#c4ffff] shadow-[0_0_15px_rgba(196,255,255,0.7)]'
-            : 'border-[#c4ffff] bg-black/90 text-[#c4ffff] hover:bg-[#c4ffff] hover:text-black shadow-[0_0_10px_rgba(196,255,255,0.25)] hover:shadow-[0_0_15px_rgba(196,255,255,0.6)]'
+            ? 'bg-[#ffffff] text-black border-[#ffffff] shadow-[0_0_15px_rgba(255, 255, 255,0.7)]'
+            : 'border-[#ffffff] bg-black/90 text-[#ffffff] hover:bg-[#ffffff] hover:text-black shadow-[0_0_10px_rgba(255, 255, 255,0.25)] hover:shadow-[0_0_15px_rgba(255, 255, 255,0.6)]'
         }`}
         title={isES ? "Acceder al portfolio en 3D" : "Access 3D portfolio"}
       >
@@ -300,7 +300,7 @@ export default function AsciiTree({
             <span>{"┴"}</span>
             <span>{"────────────────┐"}</span>
           </div>
-          <div className="w-full flex items-center justify-between px-8 text-[#c4ffff] font-bold font-mono text-[10px]">
+          <div className="w-full flex items-center justify-between px-8 text-[#ffffff] font-bold font-mono text-[10px]">
             <span>{"▼"}</span>
             <span>{"▼"}</span>
           </div>
@@ -311,7 +311,7 @@ export default function AsciiTree({
           <div
             className={`flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border transition-all ${
               activeUniverse === 'creative' && isUniverseDropdown
-                ? 'border-[#c4ffff] shadow-[0_0_20px_rgba(196,255,255,0.35)]'
+                ? 'border-[#ffffff] shadow-[0_0_20px_rgba(255, 255, 255,0.35)]'
                 : 'border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]'
             }`}
           >
@@ -319,9 +319,9 @@ export default function AsciiTree({
               <Clickable
                 text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
                 onClick={handleCreative}
-                color="#c4ffff"
+                color="#ffffff"
                 className={`font-bold tracking-wider text-[11px] ${
-                  activeUniverse === 'creative' && isUniverseDropdown ? 'text-[#c4ffff] underline' : 'text-[#c4ffff]'
+                  activeUniverse === 'creative' && isUniverseDropdown ? 'text-[#ffffff] underline' : 'text-[#ffffff]'
                 }`}
                 title={isES ? "Acceder al sistema creativo en 3D" : "Access creative system in 3D"}
               />
@@ -331,7 +331,7 @@ export default function AsciiTree({
             </div>
             {creativeProjects.map((p, idx) => (
               <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
-                <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
+                <span className="text-[#ffffff] font-bold select-none mr-1 text-[10px]">
                   {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
                 </span>
                 <ProjectItem
@@ -348,7 +348,7 @@ export default function AsciiTree({
           <div
             className={`flex flex-col bg-black/90 backdrop-blur-md p-1.5 sm:p-2 border transition-all ${
               activeUniverse === 'industry' && isUniverseDropdown
-                ? 'border-[#c4ffff] shadow-[0_0_20px_rgba(196,255,255,0.35)]'
+                ? 'border-[#ffffff] shadow-[0_0_20px_rgba(255, 255, 255,0.35)]'
                 : 'border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)]'
             }`}
           >
@@ -356,9 +356,9 @@ export default function AsciiTree({
               <Clickable
                 text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
                 onClick={handleIndustry}
-                color="#c4ffff"
+                color="#ffffff"
                 className={`font-bold tracking-wider text-[11px] ${
-                  activeUniverse === 'industry' && isUniverseDropdown ? 'text-[#c4ffff] underline' : 'text-[#c4ffff]'
+                  activeUniverse === 'industry' && isUniverseDropdown ? 'text-[#ffffff] underline' : 'text-[#ffffff]'
                 }`}
                 title={isES ? "Acceder al sistema industria en 3D" : "Access industry system in 3D"}
               />
@@ -368,7 +368,7 @@ export default function AsciiTree({
             </div>
             {industryProjects.map((p, idx) => (
               <div key={p.id} className="flex items-center py-0.25 whitespace-nowrap">
-                <span className="text-[#c4ffff] font-bold select-none mr-1 text-[10px]">
+                <span className="text-[#ffffff] font-bold select-none mr-1 text-[10px]">
                   {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
                 </span>
                 <ProjectItem
@@ -387,18 +387,18 @@ export default function AsciiTree({
       <div className="md:hidden flex flex-col w-full max-w-[320px] px-2 py-1.5 bg-black/90 backdrop-blur-md border border-white/30 shadow-[0_0_20px_rgba(0,0,0,0.8)] font-mono text-[10px] sm:text-[11px] mt-0.5 select-none">
         {/* Creative branch */}
         <div className="flex items-center mt-0.5">
-          <span className="text-[#c4ffff] font-bold mr-1">├──►</span>
+          <span className="text-[#ffffff] font-bold mr-1">├──►</span>
           <Clickable
             text={isES ? "[ SYS: CREATIVO ]" : "[ SYS: CREATIVE ]"}
             onClick={handleCreative}
-            color="#c4ffff"
-            className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+            color="#ffffff"
+            className="font-bold tracking-wider text-[11px] text-[#ffffff]"
             title={isES ? "Acceder al sistema creativo" : "Access creative system"}
           />
         </div>
         {creativeProjects.map((p, idx) => (
           <div key={p.id} className="flex items-center pl-3 py-0.25">
-            <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
+            <span className="text-[#ffffff] font-bold mr-1 text-[10px]">
               {idx === creativeProjects.length - 1 ? "└──►" : "├──►"}
             </span>
             <ProjectItem
@@ -412,18 +412,18 @@ export default function AsciiTree({
 
         {/* Industry branch */}
         <div className="flex items-center mt-1">
-          <span className="text-[#c4ffff] font-bold mr-1">└──►</span>
+          <span className="text-[#ffffff] font-bold mr-1">└──►</span>
           <Clickable
             text={isES ? "[ SYS: INDUSTRIA ]" : "[ SYS: INDUSTRY ]"}
             onClick={handleIndustry}
-            color="#c4ffff"
-            className="font-bold tracking-wider text-[11px] text-[#c4ffff]"
+            color="#ffffff"
+            className="font-bold tracking-wider text-[11px] text-[#ffffff]"
             title={isES ? "Acceder al sistema industria" : "Access industry system"}
           />
         </div>
         {industryProjects.map((p, idx) => (
           <div key={p.id} className="flex items-center pl-3 py-0.25">
-            <span className="text-[#c4ffff] font-bold mr-1 text-[10px]">
+            <span className="text-[#ffffff] font-bold mr-1 text-[10px]">
               {idx === industryProjects.length - 1 ? "└──►" : "├──►"}
             </span>
             <ProjectItem
@@ -447,13 +447,13 @@ export default function AsciiTree({
         {/* Terminal Header Info */}
         <div className="w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] flex items-center justify-between border-b border-white/30 pb-1 mb-2 font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-white/80">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+            <span className="w-1.5 h-1.5 bg-[#ffffff] animate-pulse"></span>
             <span className="font-bold text-white">[ SYS.TERMINAL // CORE ]</span>
           </div>
           <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-white/60">
             <span>DIR: 01</span>
             <span>//</span>
-            <span className="text-[#c4ffff] font-bold">ONLINE</span>
+            <span className="text-[#ffffff] font-bold">ONLINE</span>
           </div>
         </div>
 
@@ -482,7 +482,7 @@ export default function AsciiTree({
             {/* Stem connecting downwards to the displaced Profile button */}
             <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
               <span>│</span>
-              <span className="text-[#c4ffff] font-bold">▼</span>
+              <span className="text-[#ffffff] font-bold">▼</span>
             </div>
           </div>
 

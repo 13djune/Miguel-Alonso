@@ -104,7 +104,7 @@ export default function IntroCurtain({
                 onClick={handleStart}
                 className={`px-6 py-2.5 border font-bold tracking-widest text-xs uppercase cursor-pointer transition-all pulse-tactile animate-fade-in ${
                   isLight
-                    ? 'border-black text-white bg-black hover:bg-[#0055ff] hover:border-[#0055ff] shadow-[3px_3px_0px_rgba(0,0,0,0.9)]'
+                    ? 'border-black text-white bg-black hover:bg-neutral-800 hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)]'
                     : 'border-[#ffffff] text-[#ffffff] bg-black hover:bg-[#ffffff] hover:text-black shadow-[0_0_15px_rgba(255,255,255,0.25)] hover:shadow-[0_0_25px_rgba(255,255,255,0.6)]'
                 }`}
               >

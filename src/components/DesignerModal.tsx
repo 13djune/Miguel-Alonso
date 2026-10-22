@@ -54,14 +54,14 @@ function RadarVertexDot({ cx, cy, value, index, isLight = false }: RadarVertexDo
         cx={cx}
         cy={cy}
         r={hovered ? 4.5 : 0}
-        fill={isLight ? "#0055ff" : "#c4ffff"}
+        fill={isLight ? "#ffffff" : "#ffffff"}
         stroke={isLight ? "#000000" : "#ffffff"}
         strokeWidth={1.5}
         className="transition-all duration-150"
         style={{
           opacity: hovered ? 1 : 0,
           pointerEvents: 'none',
-          filter: hovered ? (isLight ? 'drop-shadow(0 0 6px rgba(0, 85, 255, 0.8))' : 'drop-shadow(0 0 6px rgba(196, 255, 255, 0.95))') : 'none',
+          filter: hovered ? (isLight ? 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.8))' : 'drop-shadow(0 0 6px rgba(255, 255, 255, 0.95))') : 'none',
         }}
       />
       {/* Mini score HUD pill that appears with the vertex dot */}
@@ -73,7 +73,7 @@ function RadarVertexDot({ cx, cy, value, index, isLight = false }: RadarVertexDo
             width={32}
             height={15}
             fill={isLight ? "#ffffff" : "#000000"}
-            stroke={isLight ? "#0055ff" : "#c4ffff"}
+            stroke={isLight ? "#ffffff" : "#ffffff"}
             strokeWidth={1}
             rx={1}
           />
@@ -81,7 +81,7 @@ function RadarVertexDot({ cx, cy, value, index, isLight = false }: RadarVertexDo
             x={cx}
             y={cy - 11}
             textAnchor="middle"
-            fill={isLight ? "#0055ff" : "#c4ffff"}
+            fill={isLight ? "#ffffff" : "#ffffff"}
             fontSize={9}
             fontFamily="monospace"
             fontWeight="bold"
@@ -179,7 +179,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
           <div
             onClick={handleClose}
             className={`font-mono text-[10px] sm:text-xs px-3 sm:px-4 py-1.5 sm:py-2 uppercase font-bold transition-colors flex items-center cursor-crosshair whitespace-nowrap ${
-              isLight ? 'bg-black text-white hover:bg-[#0055ff]' : 'bg-white text-black hover:bg-white'
+              isLight ? 'bg-black text-white hover:bg-black' : 'bg-white text-black hover:bg-white'
             }`}
           >
             <span>{t('modal.terminate')}</span>
@@ -229,7 +229,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-auto">
               <StarBorder as="div" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="w-full sm:w-1/2 p-0 cursor-pointer">
                 <div className={`flex items-center justify-between w-full py-3 sm:py-4 px-4 sm:px-6 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest relative group overflow-hidden cursor-crosshair ${
-                  isLight ? 'bg-black text-white hover:bg-[#0055ff]' : 'bg-white text-black hover:bg-white'
+                  isLight ? 'bg-black text-white hover:bg-black' : 'bg-white text-black hover:bg-white'
                 }`}>
                   <span className="relative z-10 truncate">{t('overlay.btn.portfolio')}</span>
                   <ExternalLink size={14} className="relative z-10 shrink-0 ml-1" />
@@ -273,9 +273,9 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                   <Radar
                     name="Skills"
                     dataKey="A"
-                    stroke={isLight ? "#0055ff" : "#ffffff"}
+                    stroke={isLight ? "#ffffff" : "#ffffff"}
                     strokeWidth={2}
-                    fill={isLight ? "#0055ff" : "#ffffff"}
+                    fill={isLight ? "#ffffff" : "#ffffff"}
                     fillOpacity={isLight ? 0.35 : 0.2}
                     isAnimationActive={false}
                     dot={(dotProps: any) => (
@@ -297,7 +297,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                 <ExperienceIcon className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] shrink-0" />
                 <span className="truncate">{t('overlay.exp.title')}</span>
               </h3>
-              <span className={`text-[9px] sm:text-[10px] animate-pulse shrink-0 font-bold ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>■ REC</span>
+              <span className={`text-[9px] sm:text-[10px] animate-pulse shrink-0 font-bold ${isLight ? 'text-black' : 'text-white'}`}>■ REC</span>
             </div>
             <div className="space-y-6">
               {[
@@ -312,7 +312,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                   className="cursor-target block group cursor-crosshair animate-stagger-item"
                 >
                   <div className="flex justify-between items-baseline mb-1 gap-2">
-                    <h4 className={`text-xs sm:text-sm font-bold font-mono transition-colors break-words ${isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-white'}`}>
+                    <h4 className={`text-xs sm:text-sm font-bold font-mono transition-colors break-words ${isLight ? 'text-black group-hover:text-black' : 'text-white group-hover:text-white'}`}>
                       {job.company}
                     </h4>
                     <span className={`text-[9px] sm:text-[10px] font-mono whitespace-nowrap shrink-0 ${isLight ? 'text-black/60' : 'text-white'}`}>
@@ -320,7 +320,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                     </span>
                   </div>
                   <p className={`text-[10px] sm:text-xs font-mono flex items-center gap-2 break-words ${isLight ? 'text-black/80' : 'text-white'}`}>
-                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>&gt;</span>
+                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>&gt;</span>
                     <span className="break-words">{job.role}</span>
                   </p>
                 </a>
@@ -348,7 +348,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                   className="cursor-target block group cursor-crosshair animate-stagger-item"
                 >
                   <div className="flex justify-between items-baseline mb-1 gap-2">
-                    <h4 className={`text-[10px] sm:text-xs font-bold font-mono transition-colors leading-tight line-clamp-2 break-words ${isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-white'}`}>
+                    <h4 className={`text-[10px] sm:text-xs font-bold font-mono transition-colors leading-tight line-clamp-2 break-words ${isLight ? 'text-black group-hover:text-black' : 'text-white group-hover:text-white'}`}>
                       {edu.school}
                     </h4>
                     <span className={`text-[9px] sm:text-[10px] font-mono whitespace-nowrap shrink-0 ${isLight ? 'text-black/60' : 'text-white'}`}>
@@ -356,7 +356,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                     </span>
                   </div>
                   <p className={`text-[10px] sm:text-xs font-mono flex items-center gap-2 mt-1 break-words ${isLight ? 'text-black/80' : 'text-white'}`}>
-                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>&gt;</span>
+                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>&gt;</span>
                     <span className="break-words">{edu.degree}</span>
                   </p>
                 </a>
@@ -380,7 +380,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                 className="cursor-target block group cursor-crosshair animate-stagger-item"
               >
                 <div className="flex justify-between items-baseline mb-1 gap-2">
-                  <h4 className={`text-xs sm:text-sm font-bold font-mono transition-colors leading-tight break-words ${isLight ? 'text-black group-hover:text-[#0055ff]' : 'text-white group-hover:text-white'}`}>
+                  <h4 className={`text-xs sm:text-sm font-bold font-mono transition-colors leading-tight break-words ${isLight ? 'text-black group-hover:text-black' : 'text-white group-hover:text-white'}`}>
                     Manteco Sustainability Award
                   </h4>
                   <span className={`text-[9px] sm:text-[10px] font-mono whitespace-nowrap shrink-0 ${isLight ? 'text-black/60' : 'text-white'}`}>
@@ -388,7 +388,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
                   </span>
                 </div>
                 <p className={`text-[10px] sm:text-xs font-mono flex items-start gap-2 mt-2 leading-relaxed break-words ${isLight ? 'text-black/80' : 'text-white'}`}>
-                  <span className={`opacity-0 group-hover:opacity-100 transition-opacity mt-0.5 shrink-0 ${isLight ? 'text-[#0055ff]' : 'text-white'}`}>&gt;</span>
+                  <span className={`opacity-0 group-hover:opacity-100 transition-opacity mt-0.5 shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>&gt;</span>
                   <span dangerouslySetInnerHTML={{ __html: t('award.manteco') }} />
                 </p>
               </a>
@@ -439,7 +439,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
             <a
               href="mailto:design@sys.void"
               className={`cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs transition-colors group cursor-crosshair break-all font-bold ${
-                isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-white'
+                isLight ? 'text-black hover:text-black' : 'text-white hover:text-white'
               }`}
             >
               <Mail size={13} className="shrink-0" />
@@ -448,7 +448,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
             <a
               href="#"
               className={`cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs transition-colors group cursor-crosshair whitespace-nowrap font-bold ${
-                isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-white'
+                isLight ? 'text-black hover:text-black' : 'text-white hover:text-white'
               }`}
             >
               <Instagram size={13} className="shrink-0" />
@@ -459,7 +459,7 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
               target="_blank"
               rel="noopener noreferrer"
               className={`cursor-target flex items-center gap-2 font-mono text-[10px] sm:text-xs transition-colors group cursor-crosshair whitespace-nowrap font-bold ${
-                isLight ? 'text-black hover:text-[#0055ff]' : 'text-white hover:text-white'
+                isLight ? 'text-black hover:text-black' : 'text-white hover:text-white'
               }`}
             >
               <Linkedin size={13} className="shrink-0" />

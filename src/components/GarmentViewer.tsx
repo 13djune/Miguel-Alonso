@@ -80,7 +80,7 @@ export default function GarmentViewer({
               onClick={() => setColorMode("cyber")}
               className={`px-1.5 py-0.5 transition-colors uppercase font-bold cursor-crosshair ${
                 colorMode === "cyber"
-                  ? "bg-[#c4ffff] text-black"
+                  ? "bg-white text-black"
                   : "text-white/70 hover:text-white"
               }`}
               title="Escaner cian holográfico"
@@ -144,7 +144,7 @@ export default function GarmentViewer({
       {/* Point Cloud Telemetry Badge in bottom-left */}
       {isP3rmfrst && (
         <div className="absolute bottom-2 left-2 z-30 pointer-events-none font-mono text-[8px] sm:text-[9px] text-white/75 bg-black/80 px-2 py-1 border border-white/20 flex items-center gap-1.5 shadow-[0_0_10px_rgba(0,0,0,0.8)]">
-          <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-ping"></span>
+          <span className="w-1.5 h-1.5 bg-white animate-ping"></span>
           <span>[ 3D POINT CLOUD: 36,400 PTS // P3RMFRST LOOK ]</span>
         </div>
       )}
@@ -164,7 +164,7 @@ export default function GarmentViewer({
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 10, 5]} intensity={1.8} />
         <directionalLight position={[-5, 5, -5]} intensity={0.9} color="#ffffff" />
-        <directionalLight position={[0, -5, 5]} intensity={0.4} color="#c4ffff" />
+        <directionalLight position={[0, -5, 5]} intensity={0.4} color="#ffffff" />
 
         <Suspense fallback={<LoaderFallback />}>
           <Center>

@@ -249,7 +249,7 @@ export default function ProjectModal({
                 className={`cursor-target border transition-all duration-[400ms] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none ${
                   isLight
                     ? "bg-black/5 hover:bg-black hover:text-white border-black text-black"
-                    : "bg-white/10 hover:bg-[#c4ffff] hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                    : "bg-white/10 hover:bg-white hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
                 }`}
               >
                 &lt;
@@ -264,7 +264,7 @@ export default function ProjectModal({
                 className={`cursor-target border transition-all duration-[400ms] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none ${
                   isLight
                     ? "bg-black/5 hover:bg-black hover:text-white border-black text-black"
-                    : "bg-white/10 hover:bg-[#c4ffff] hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                    : "bg-white/10 hover:bg-white hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
                 }`}
               >
                 &gt;
@@ -275,7 +275,7 @@ export default function ProjectModal({
             <div
               onClick={handleClose}
               className={`font-mono text-[9px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-2 uppercase font-bold transition-colors cursor-crosshair flex items-center whitespace-nowrap ${
-                isLight ? "text-white bg-black hover:bg-[#0055ff]" : "text-black bg-white hover:bg-white"
+                isLight ? "text-white bg-black hover:bg-black" : "text-black bg-white hover:bg-white"
               }`}
             >
               <span className="hidden sm:inline">{t("modal.terminate")}</span>
@@ -342,9 +342,9 @@ export default function ProjectModal({
             
             {/* Category / System pill */}
             <div className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2 font-bold ${
-              isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+              isLight ? "text-black" : "text-white"
             }`}>
-              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
               <span>{isIndustry ? (isES ? "// SISTEMA INDUSTRIA // CATÁLOGO TÉCNICO" : "// INDUSTRY SYSTEM // TECHNICAL CATALOG") : (isES ? "// SISTEMA CREATIVO // ARCHIVO EXPERIMENTAL" : "// CREATIVE SYSTEM // EXPERIMENTAL ARCHIVE")}</span>
             </div>
 
@@ -360,10 +360,10 @@ export default function ProjectModal({
             {/* Prominent Project Description Block */}
             {project.description && (
               <div className={`border-l-2 p-3.5 sm:p-5 mb-6 relative ${
-                isLight ? "border-[#0055ff] bg-black/[0.03] text-black" : "border-[#c4ffff] bg-white/[0.03] text-white"
+                isLight ? "border-black bg-black/[0.03] text-black" : "border-white bg-white/[0.03] text-white"
               }`}>
                 <div className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-2 flex items-center justify-between font-bold ${
-                  isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                  isLight ? "text-black" : "text-white"
                 }`}>
                   <span className="flex items-center gap-1.5 font-bold">
                     <span>{isES ? "// MANIFIESTO CONCEPTUAL & SILUETA" : "// CONCEPT STATEMENT & SILHOUETTE"}</span>
@@ -383,7 +383,7 @@ export default function ProjectModal({
               {(!project.garments || project.garments.length === 0) && (
                 <div className={`border p-3 sm:p-4 ${isLight ? "border-black/30 bg-black/[0.02] text-black" : "border-white/40 bg-black/60 text-white"}`}>
                   <h4 className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-2.5 border-b pb-1.5 flex items-center justify-between font-bold ${
-                    isLight ? "text-[#0055ff] border-black/15" : "text-[#c4ffff] border-white/20"
+                    isLight ? "text-black border-black/15" : "text-white border-white/20"
                   }`}>
                     <span>{isES ? "// ESPECIFICACIONES & TAGS" : "// SPECIFICATIONS & TAGS"}</span>
                     <span className={`text-[8px] font-mono ${isLight ? "text-black/40" : "text-white/40"}`}>[TAGS]</span>
@@ -404,7 +404,7 @@ export default function ProjectModal({
               )}
               <div className={`border p-3 sm:p-4 ${isLight ? "border-black/30 bg-black/[0.02] text-black" : "border-white/40 bg-black/60 text-white"}`}>
                 <h4 className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest mb-2.5 border-b pb-1.5 flex items-center justify-between font-bold ${
-                  isLight ? "text-[#0055ff] border-black/15" : "text-[#c4ffff] border-white/20"
+                  isLight ? "text-black border-black/15" : "text-white border-white/20"
                 }`}>
                   <span>{isES ? "// SOFTWARE & MÉTODOS 3D" : "// 3D PIPELINE & TOOLING"}</span>
                   <span className={`text-[8px] font-mono ${isLight ? "text-black/40" : "text-white/40"}`}>[PIPELINE]</span>
@@ -431,9 +431,9 @@ export default function ProjectModal({
                   isLight ? "border-black/20" : "border-white/25"
                 }`}>
                   <div className={`font-mono text-[10px] sm:text-xs uppercase tracking-widest flex items-center gap-2 font-bold ${
-                    isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                    isLight ? "text-black" : "text-white"
                   }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+                    <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
                     <span>
                       {isES ? "// DESGLOSE TÉCNICO & PATRONAJE" : "// TECHNICAL BREAKDOWN & PATTERN"}
                     </span>
@@ -476,7 +476,7 @@ export default function ProjectModal({
                   <h3 className={`text-sm sm:text-base md:text-lg font-bold font-mono mb-2 flex items-center gap-2 ${
                     isLight ? "text-black" : "text-white"
                   }`}>
-                    <span className={isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}>&gt;</span>
+                    <span className={isLight ? "text-black" : "text-white"}>&gt;</span>
                     <span>{currentSection.title}</span>
                   </h3>
                   <p className={`text-xs sm:text-sm md:text-base font-mono leading-relaxed md:leading-loose ${
@@ -503,9 +503,9 @@ export default function ProjectModal({
                 isLight ? "border-black/30 bg-black/[0.03] text-black" : "border-white/30 bg-black/60 text-white"
               }`}>
                 <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-widest flex items-center gap-2 ${
-                  isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                  isLight ? "text-black" : "text-white"
                 }`}>
-                  <span className={`w-1.5 h-1.5 animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+                  <span className={`w-1.5 h-1.5 animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
                   <span>{isES ? "// REGISTRO FOTOGRÁFICO Y RENDERIZADO COMPLETO" : "// COMPLETE PHOTOGRAPHIC & RENDER ARCHIVE"}</span>
                 </span>
                 <span className={`font-mono text-[8px] sm:text-[9px] ${isLight ? "text-black/50" : "text-white/50"}`}>
@@ -523,10 +523,10 @@ export default function ProjectModal({
                     className={`border transition-all cursor-crosshair group relative overflow-hidden p-1.5 sm:p-2 ${
                       isLight
                         ? activeHeroIndex === idx
-                          ? "border-[#0055ff] bg-white shadow-[4px_4px_0px_rgba(0,0,0,0.9)]"
+                          ? "border-black bg-white shadow-[4px_4px_0px_rgba(0,0,0,0.9)]"
                           : "border-black/40 hover:border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.7)]"
                         : activeHeroIndex === idx
-                        ? "border-[#c4ffff] bg-black/90 shadow-[0_0_12px_rgba(196,255,255,0.4)]"
+                        ? "border-white bg-black/90 shadow-[0_0_12px_rgba(255, 255, 255,0.4)]"
                         : "border-white/50 hover:border-white bg-black/90"
                     } ${idx === 0 ? "col-span-2 aspect-video" : "aspect-[3/4]"}`}
                   >
@@ -537,7 +537,7 @@ export default function ProjectModal({
                       <div className={`absolute top-2 left-2 z-20 font-mono text-[8px] sm:text-[9px] px-1.5 py-0.5 uppercase tracking-wider font-bold ${
                         isLight 
                           ? "bg-white text-black border border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]" 
-                          : "bg-black/90 text-[#c4ffff] border border-[#c4ffff]/60 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                          : "bg-black/90 text-white border border-white/60 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
                       }`}>
                         LOOK {(idx + 1).toString().padStart(2, '0')}
                       </div>
@@ -546,7 +546,7 @@ export default function ProjectModal({
                       <div className={`absolute top-2 right-2 z-20 border p-1 transition-all pointer-events-none shadow-[2px_2px_0px_rgba(0,0,0,0.8)] ${
                         isLight 
                           ? "bg-white border-black text-black" 
-                          : "bg-black/80 border-white/40 group-hover:border-[#c4ffff] text-white/70 group-hover:text-[#c4ffff]"
+                          : "bg-black/80 border-white/40 group-hover:border-white text-white/70 group-hover:text-white"
                       }`}>
                         <Maximize2 size={11} />
                       </div>
@@ -555,9 +555,9 @@ export default function ProjectModal({
                       <div className={`absolute bottom-2 right-2 z-20 flex items-center gap-1 border px-1.5 sm:px-2 py-0.5 transition-all shadow-[2px_2px_0px_rgba(0,0,0,0.8)] backdrop-blur-sm pointer-events-none ${
                         isLight 
                           ? "bg-white/95 border-black text-black" 
-                          : "bg-black/85 border-white/40 group-hover:border-[#c4ffff] text-white/80 group-hover:text-[#c4ffff]"
+                          : "bg-black/85 border-white/40 group-hover:border-white text-white/80 group-hover:text-white"
                       }`}>
-                        <ZoomIn size={11} className={`shrink-0 animate-pulse ${isLight ? "text-[#0055ff]" : "text-[#c4ffff]"}`} />
+                        <ZoomIn size={11} className={`shrink-0 animate-pulse ${isLight ? "text-black" : "text-white"}`} />
                         <span className="font-mono text-[7.5px] sm:text-[8.5px] uppercase tracking-wider font-bold">
                           {isES ? "CLICK // ZOOM" : "CLICK // ZOOM"}
                         </span>
@@ -568,7 +568,7 @@ export default function ProjectModal({
                         <span className={`font-mono text-[9px] sm:text-[10px] md:text-xs font-bold px-3 py-1.5 uppercase tracking-widest flex items-center gap-1.5 ${
                           isLight
                             ? "text-white bg-black border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
-                            : "text-[#c4ffff] bg-black/95 border border-[#c4ffff] shadow-[0_0_12px_rgba(196,255,255,0.6)]"
+                            : "text-white bg-black/95 border border-white shadow-[0_0_12px_rgba(255, 255, 255,0.6)]"
                         }`}>
                           <ZoomIn size={12} />
                           <span>{t("modal.expand")} [ZOOM]</span>
@@ -599,8 +599,8 @@ export default function ProjectModal({
                             key={hIdx}
                             className={`absolute z-20 w-3 h-3 md:w-4 md:h-4 border ${
                               isLight 
-                                ? "border-[#0055ff] bg-white/90 shadow-[0_0_10px_rgba(0,85,255,0.8)]" 
-                                : "border-[#c4ffff] bg-black/80 shadow-[0_0_10px_rgba(196,255,255,0.8)]"
+                                ? "border-black bg-white/90 shadow-[0_0_10px_rgba(255, 255, 255,0.8)]" 
+                                : "border-white bg-black/80 shadow-[0_0_10px_rgba(255, 255, 255,0.8)]"
                             }`}
                             style={{
                               top: `${hotspot.y}%`,
@@ -641,7 +641,7 @@ export default function ProjectModal({
             >
               {/* Left: Look Identifier */}
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                <span className={`w-2 h-2 animate-pulse ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+                <span className={`w-2 h-2 animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
                 <span className={`font-mono text-[9px] sm:text-xs font-bold uppercase tracking-widest ${
                   isLight ? "text-black" : "text-white"
                 }`}>
@@ -650,7 +650,7 @@ export default function ProjectModal({
                     : `HD LOOKBOOK // LOOK ${(selectedImageIndex + 1).toString().padStart(2, '0')} / ${project.images.length.toString().padStart(2, '0')}`}
                 </span>
                 <span className={`hidden md:inline font-mono text-[9px] border px-1.5 py-0.5 uppercase ${
-                  isLight ? "text-[#0055ff] border-[#0055ff]/40" : "text-[#c4ffff]/80 border-[#c4ffff]/30"
+                  isLight ? "text-black border-black/40" : "text-white/80 border-white/30"
                 }`}>
                   {project.title}
                 </span>
@@ -666,7 +666,7 @@ export default function ProjectModal({
                   disabled={zoomLevel <= 1}
                   title={isES ? "Alejar zoom (-)" : "Zoom out (-)"}
                   className={`font-mono text-xs sm:text-sm px-2 py-0.5 disabled:opacity-30 cursor-crosshair font-bold transition-colors ${
-                    isLight ? "text-black hover:text-[#0055ff]" : "text-white hover:text-[#c4ffff]"
+                    isLight ? "text-black hover:text-black" : "text-white hover:text-white"
                   }`}
                 >
                   -
@@ -678,7 +678,7 @@ export default function ProjectModal({
                   className={`font-mono text-[9px] sm:text-[10px] px-2 py-0.5 border font-bold tracking-wider transition-colors ${
                     isLight
                       ? "bg-white border-black text-black hover:bg-black hover:text-white"
-                      : "bg-black border-white/40 text-[#c4ffff] hover:bg-white hover:text-black"
+                      : "bg-black border-white/40 text-white hover:bg-white hover:text-black"
                   }`}
                 >
                   {Math.round(zoomLevel * 100)}%
@@ -689,7 +689,7 @@ export default function ProjectModal({
                   disabled={zoomLevel >= 4}
                   title={isES ? "Acercar zoom (+)" : "Zoom in (+)"}
                   className={`font-mono text-xs sm:text-sm px-2 py-0.5 disabled:opacity-30 cursor-crosshair font-bold transition-colors ${
-                    isLight ? "text-black hover:text-[#0055ff]" : "text-white hover:text-[#c4ffff]"
+                    isLight ? "text-black hover:text-black" : "text-white hover:text-white"
                   }`}
                 >
                   +
@@ -707,7 +707,7 @@ export default function ProjectModal({
                   <div
                     onClick={closeGallery}
                     className={`font-mono text-[10px] sm:text-xs px-3 sm:px-4 py-1 sm:py-1.5 uppercase font-bold transition-colors cursor-crosshair flex items-center gap-1.5 ${
-                      isLight ? "text-white bg-black hover:bg-[#0055ff]" : "text-black bg-white hover:bg-[#c4ffff]"
+                      isLight ? "text-white bg-black hover:bg-black" : "text-black bg-white hover:bg-white"
                     }`}
                   >
                     <span>{isES ? "CERRAR" : "CLOSE"}</span>
@@ -740,7 +740,7 @@ export default function ProjectModal({
                     className={`cursor-target absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] cursor-crosshair ${
                       isLight
                         ? "bg-white hover:bg-black text-black hover:text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
-                        : "bg-black/85 border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                        : "bg-black/85 border-white hover:border-white hover:bg-white hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]"
                     }`}
                   >
                     &lt;
@@ -752,7 +752,7 @@ export default function ProjectModal({
                     className={`cursor-target absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] cursor-crosshair ${
                       isLight
                         ? "bg-white hover:bg-black text-black hover:text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
-                        : "bg-black/85 border-white hover:border-[#c4ffff] hover:bg-[#c4ffff] hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]"
+                        : "bg-black/85 border-white hover:border-white hover:bg-white hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]"
                     }`}
                   >
                     &gt;
@@ -814,21 +814,21 @@ export default function ProjectModal({
                             className={`w-6 h-6 border-2 rounded-full flex items-center justify-center transition-colors ${
                               isLight
                                 ? isActive 
-                                  ? "border-[#0055ff] bg-[#0055ff]/30 shadow-[0_0_12px_rgba(0,85,255,0.7)]" 
+                                  ? "border-black bg-black/30 shadow-[0_0_12px_rgba(255, 255, 255,0.7)]" 
                                   : "border-black bg-white/90 shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
                                 : isActive 
-                                  ? "border-[#c4ffff] bg-[#c4ffff]/30 shadow-[0_0_12px_rgba(196,255,255,0.7)]" 
+                                  ? "border-white bg-white/30 shadow-[0_0_12px_rgba(255, 255, 255,0.7)]" 
                                   : "border-white bg-black/70 shadow-[0_0_12px_rgba(255,255,255,0.4)]"
                             }`}
                           >
-                            <span className={`w-2 h-2 rounded-full animate-ping ${isLight ? "bg-[#0055ff]" : "bg-[#c4ffff]"}`}></span>
+                            <span className={`w-2 h-2 rounded-full animate-ping ${isLight ? "bg-black" : "bg-white"}`}></span>
                           </div>
                           {isActive && (
                             <div
                               className={`absolute top-1/2 left-8 -translate-y-1/2 w-64 border p-3 pointer-events-auto z-30 ${
                                 isLight
                                   ? "bg-white border-black text-black shadow-[6px_6px_0px_rgba(0,0,0,0.9)]"
-                                  : "bg-black/95 border-[#c4ffff] text-white shadow-2xl"
+                                  : "bg-black/95 border-white text-white shadow-2xl"
                               }`}
                               onClick={(e) => e.stopPropagation()}
                             >
@@ -836,7 +836,7 @@ export default function ProjectModal({
                                 isLight ? "border-black/20" : "border-white/30"
                               }`}>
                                 <h4 className={`font-mono text-xs font-bold uppercase pr-2 ${
-                                  isLight ? "text-[#0055ff]" : "text-[#c4ffff]"
+                                  isLight ? "text-black" : "text-white"
                                 }`}>
                                   {hotspot.title}
                                 </h4>
@@ -886,7 +886,7 @@ export default function ProjectModal({
                         isActive
                           ? isLight
                             ? "border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)] scale-105 bg-white"
-                            : "border-[#c4ffff] shadow-[0_0_10px_#c4ffff] scale-105 bg-black/80"
+                            : "border-white shadow-[0_0_10px_#ffffff] scale-105 bg-black/80"
                           : isLight
                           ? "border-black/30 hover:border-black opacity-70 hover:opacity-100 bg-neutral-100"
                           : "border-white/30 hover:border-white opacity-60 hover:opacity-100 bg-black/80"
@@ -916,7 +916,7 @@ export default function ProjectModal({
                 })}
               </div>
 
-              <div className="font-mono text-[9px] text-[#c4ffff] uppercase tracking-wider shrink-0 hidden sm:block">
+              <div className="font-mono text-[9px] text-white uppercase tracking-wider shrink-0 hidden sm:block">
                 [ {selectedImageIndex + 1} / {project.images.length} ARCHIVOS ]
               </div>
             </div>
