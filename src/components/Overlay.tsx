@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ArrowRight, Compass } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AsciiTree from './AsciiTree';
 import SystemLog from './SystemLog';
@@ -78,7 +78,7 @@ export default function Overlay({
           <div className="text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider text-black bg-white px-2 py-1 sm:px-2.5 sm:py-1.5 flex items-center gap-1.5 shrink-0 whitespace-nowrap pulse-tactile">
             <span className="w-1.5 h-1.5 bg-black rounded-full animate-ping"></span>
             <span className="hidden sm:inline">{t('overlay.target.select')}</span>
-            <span className="sm:hidden">{language === 'es' ? 'OBJETIVO' : 'TARGET'}</span>
+            <span className="sm:hidden">{language === 'es' ? 'SELECCIÓN' : 'SELECT'}</span>
           </div>
 
           {/* Show [ MAPA_CODEX ] and [ PROY3CTOS ] only on universe mode (not on home/terminal page) */}
@@ -168,14 +168,13 @@ export default function Overlay({
         {/* Right: System Mode Indicator (Universe Mode) placed right next to Language Switcher */}
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto shrink-0">
           {appMode === 'universe' && (
-            <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-xs tracking-widest uppercase text-white/90 bg-white/10 px-2 sm:px-2.5 py-1 sm:py-1.5 border border-white/40 shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-              <Compass size={12} className="text-[#c4ffff] animate-spin shrink-0" style={{ animationDuration: '12s' }} />
-              <span className="whitespace-nowrap">
-                SYS: {activeUniverse === 'all'
+            <div className="cursor-default font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white">
+              <span>
+                [ {activeUniverse === 'all'
                   ? (language === 'es' ? 'SYS.TODOS' : 'SYS.ALL')
                   : activeUniverse === 'creative'
                     ? (language === 'es' ? 'CREATIVO.SYS' : 'CREATIVE.SYS')
-                    : (language === 'es' ? 'INDUSTRIA.SYS' : 'INDUSTRY.SYS')}
+                    : (language === 'es' ? 'INDUSTRIA.SYS' : 'INDUSTRY.SYS')} ]
               </span>
             </div>
           )}
@@ -239,22 +238,31 @@ export default function Overlay({
 
         {/* Left: Designer Brand & Profile */}
         <div className="flex flex-row items-center gap-2 sm:gap-3 md:gap-4 relative pl-2 sm:pl-3 md:pl-4 border-l-2 border-white min-w-0">
-          <h1 className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold tracking-wider sm:tracking-tight uppercase text-white shadow-[#ffffff]/50 drop-shadow-md leading-none whitespace-nowrap shrink-0">
-            {t('overlay.title')}
-          </h1>
+          {appMode === 'terminal' ? (
+            <>
+              <h1 className="text-sm sm:text-base md:text-xl lg:text-2xl font-bold tracking-wider sm:tracking-tight uppercase text-white shadow-[#ffffff]/50 drop-shadow-md leading-none whitespace-nowrap shrink-0">
+                {t('overlay.title')}
+              </h1>
 
-          <p className="hidden md:inline-block text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase bg-white/10 px-2 py-1 pointer-events-none border border-white whitespace-nowrap truncate max-w-[130px] sm:max-w-none">
-            {t('overlay.subtitle')}
-          </p>
+              <p className="hidden md:inline-block text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase bg-white/10 px-2 py-1 pointer-events-none border border-white whitespace-nowrap truncate max-w-[130px] sm:max-w-none">
+                {t('overlay.subtitle')}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-[10px] sm:text-xs font-mono text-white tracking-widest uppercase bg-white/10 px-2 py-1 pointer-events-none border border-white whitespace-nowrap truncate max-w-[160px] sm:max-w-none">
+                {t('overlay.subtitle')}
+              </p>
 
-          {appMode !== 'terminal' && (
-            <button
-              onClick={onOpenDesigner}
-              className="pointer-events-auto font-mono text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-2.5 sm:py-1.5 text-black bg-white hover:bg-[#c4ffff] active:bg-[#c4ffff] transition-colors uppercase cursor-crosshair flex items-center gap-1.5 border border-white whitespace-nowrap shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.15)] pulse-tactile"
-            >
-              <span className="w-1.5 h-1.5 bg-black animate-pulse"></span>
-              <span>{t('overlay.btn.profile')}</span>
-            </button>
+              <button
+                onClick={onOpenDesigner}
+                className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:text-[#c4ffff] transition-colors uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
+                title={language === 'es' ? 'Ver Perfil' : 'View Profile'}
+              >
+                <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+                <span>[ {t('overlay.btn.profile')} ]</span>
+              </button>
+            </>
           )}
         </div>
 

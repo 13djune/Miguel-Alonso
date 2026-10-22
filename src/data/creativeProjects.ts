@@ -1,12 +1,13 @@
 import { Project } from '../types';
-import regnum5 from '../assets/img/REGNUM/regnum_1.png';
-import regnum4 from '../assets/img/REGNUM/regnum_2.png';
-import regnum7 from '../assets/img/REGNUM/regnum_3.png';
-import regnum3 from '../assets/img/REGNUM/regnum_4.png';
-import regnum1 from '../assets/img/REGNUM/regnum_5.png';
-import regnum6 from '../assets/img/REGNUM/regnum_6.png';
-import regnum2 from '../assets/img/REGNUM/regnum_7.png';
-import regnum8 from '../assets/img/REGNUM/regnum_8.png';
+const regnum5 = '/assets/img/REGNUM/regnum_1.png';
+const regnum4 = '/assets/img/REGNUM/regnum_2.png';
+const regnum7 = '/assets/img/REGNUM/regnum_3.png';
+const regnum3 = '/assets/img/REGNUM/regnum_4.png';
+const regnum1 = '/assets/img/REGNUM/regnum_5.png';
+const regnum6 = '/assets/img/REGNUM/regnum_6.png';
+const regnum2 = '/assets/img/REGNUM/regnum_7.png';
+const regnum8 = '/assets/img/REGNUM/regnum_8.png';
+
 
 import p3rmfrst1 from '../assets/img/P3RMFRST/p3rmfrst_1.png';
 import p3rmfrst3 from '../assets/img/P3RMFRST/p3rmfrst_2.png';
