@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { ArrowRight, Compass } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import AsciiTree from './AsciiTree';
 import SystemLog from './SystemLog';
@@ -168,9 +168,8 @@ export default function Overlay({
         {/* Right: System Mode Indicator (Universe Mode) placed right next to Language Switcher */}
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto shrink-0">
           {appMode === 'universe' && (
-            <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-[10px] sm:text-xs tracking-widest uppercase text-white/90 bg-white/10 px-2 sm:px-2.5 py-1 sm:py-1.5 border border-white/40 shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-              <Compass size={12} className="text-[#c4ffff] animate-spin shrink-0" style={{ animationDuration: '12s' }} />
-              <span className="whitespace-nowrap">
+            <div className="font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white">
+              <span>
                 SYS: {activeUniverse === 'all'
                   ? (language === 'es' ? 'SYS.TODOS' : 'SYS.ALL')
                   : activeUniverse === 'creative'
@@ -257,10 +256,11 @@ export default function Overlay({
 
               <button
                 onClick={onOpenDesigner}
-                className="pointer-events-auto font-mono text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-2.5 sm:py-1.5 text-black bg-white hover:bg-[#c4ffff] active:bg-[#c4ffff] transition-colors uppercase cursor-crosshair flex items-center gap-1.5 border border-white whitespace-nowrap shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.15)] pulse-tactile"
+                className="cursor-crosshair pointer-events-auto shrink-0 font-mono text-[10px] sm:text-xs font-bold px-1.5 py-1 text-white hover:text-[#c4ffff] transition-colors uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none"
+                title={t('overlay.btn.profile')}
               >
-                <span className="w-1.5 h-1.5 bg-black animate-pulse"></span>
-                <span>{t('overlay.btn.profile')}</span>
+                <span className="w-1.5 h-1.5 bg-[#c4ffff] animate-pulse"></span>
+                <span>[ {t('overlay.btn.profile')} ]</span>
               </button>
             </>
           )}
@@ -269,15 +269,14 @@ export default function Overlay({
         {/* Right: Inspect Target Hint (swapped from top bar to bottom bar) */}
         <div className="flex items-center justify-end pointer-events-auto shrink-0">
           {/* Desktop full hint */}
-          <div className="hidden sm:flex text-[10px] md:text-xs tracking-wider md:tracking-widest uppercase text-white font-mono items-center gap-1.5 bg-black/80 px-2.5 py-1 sm:px-3 sm:py-1.5 border border-white/60 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.15)] pointer-events-none">
-            <span className="animate-pulse text-[#c4ffff]">_</span>
+          <div className="hidden sm:flex text-[10px] md:text-xs font-mono font-bold tracking-wider uppercase text-white items-center gap-1.5 px-1.5 py-1 whitespace-nowrap pointer-events-none bg-transparent border-0 shadow-none">
             <span>{t('overlay.target.inspect')}</span>
             <ArrowRight size={12} className="text-[#c4ffff] shrink-0" />
           </div>
           {/* Mobile compact hint */}
-          <div className="sm:hidden text-[9px] font-mono tracking-wider uppercase text-white/90 flex items-center gap-1 bg-black/80 px-2 py-1 border border-white/40 whitespace-nowrap pointer-events-none shrink-0">
-            <span className="text-[#c4ffff] animate-pulse">●</span>
+          <div className="sm:hidden text-[9px] font-mono font-bold tracking-wider uppercase text-white flex items-center gap-1 px-1.5 py-1 whitespace-nowrap pointer-events-none bg-transparent border-0 shadow-none">
             <span>{language === 'es' ? 'SIS 3D' : '3D SYS'}</span>
+            <ArrowRight size={10} className="text-[#c4ffff] shrink-0" />
           </div>
         </div>
       </footer>
