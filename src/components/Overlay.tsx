@@ -214,6 +214,7 @@ export default function Overlay({
               onSetUniverse={onSetUniverse}
               onEnterUniverse={onEnterUniverse}
               onOpenDesigner={onOpenDesigner}
+              onOpenCollections={onOpenCollections}
               onSelectProject={(idx) => {
                 if (onEnterUniverse) onEnterUniverse();
                 if (onSelectProject) onSelectProject(idx);

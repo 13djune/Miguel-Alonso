@@ -8,6 +8,7 @@ interface AsciiTreeProps {
   onSetUniverse?: (universe: 'all' | 'creative' | 'industry') => void;
   onEnterUniverse?: () => void;
   onOpenDesigner?: () => void;
+  onOpenCollections?: () => void;
 }
 
 const Clickable = ({
@@ -184,10 +185,10 @@ const MainMenuButton = ({
             </span>
           )}
           <span
-            className={`font-mono text-[10px] sm:text-xs font-bold px-1.5 py-0.5 border transition-all ${
+            className={`font-mono text-[7px] sm:text-[8px] font-bold leading-none transition-all ${
               isLit
-                ? 'border-black text-black bg-black/10'
-                : 'border-white/50 text-[#ffffff] bg-white/5 group-hover:border-white'
+                ? 'text-black'
+                : 'text-white'
             }`}
           >
             {icon}
@@ -216,10 +217,10 @@ export default function AsciiTree({
   onSetUniverse,
   onEnterUniverse,
   onOpenDesigner,
+  onOpenCollections,
 }: AsciiTreeProps) {
   const { language } = useLanguage();
   const isES = language === 'es';
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Clicking NÚCLEO goes directly to the 2 systems in 3D
   const handleNucleo = () => {
@@ -457,47 +458,29 @@ export default function AsciiTree({
           </div>
         </div>
 
-        {/* Central Vertical Stack: SYS.VOID CORE -> Dropdown (displaces down) -> PERFIL */}
+        {/* Central Vertical Stack: PROYECTOS -> PERFIL */}
         <div className="w-full flex flex-col items-center">
-          {/* 1. Primary Button: SYS.VOID CORE */}
+          {/* 1. Primary Button: PROJECTS */}
           <MainMenuButton
-            title={isES ? '[ SYS.VOID NÚCLEO ]' : '[ SYS.VOID CORE ]'}
-            actionLabel={isES ? (isDropdownOpen ? 'CERRAR' : 'DESPLEGAR') : (isDropdownOpen ? 'CLOSE' : 'EXPAND')}
-            icon={isDropdownOpen ? '▲' : '▼'}
-            isOpen={isDropdownOpen}
-            onClick={() => setIsDropdownOpen((prev) => !prev)}
-            tooltip={isES ? 'Desplegar navegación del universo 3D' : 'Expand 3D universe navigation'}
+            title={isES ? '[ PROYECTOS // VER TODOS ]' : '[ PROJECTS // VIEW ALL ]'}
+            actionLabel={isES ? 'COLECCIONES' : 'COLLECTIONS'}
+            icon="▶"
+            onClick={() => {
+              if (onOpenCollections) onOpenCollections();
+            }}
+            tooltip={isES ? 'Abrir galería completa de proyectos y colecciones' : 'Open complete gallery of projects and collections'}
           />
 
-          {/* 2. Collapsible Dropdown: Unfolds downwards, smoothly displacing the button below */}
-          <div
-            className={`w-full overflow-hidden transition-all duration-400 ease-in-out flex flex-col items-center ${
-              isDropdownOpen
-                ? 'max-h-[500px] opacity-100 my-1 scale-100'
-                : 'max-h-0 opacity-0 my-0 scale-95 pointer-events-none'
-            }`}
-          >
-            {renderBranches(false)}
-
-            {/* Stem connecting downwards to the displaced Profile button */}
-            <div className="flex flex-col items-center text-white/60 font-mono text-[10px] select-none leading-none my-0.5">
-              <span>│</span>
-              <span className="text-[#ffffff] font-bold">▼</span>
-            </div>
+          {/* Stem between buttons */}
+          <div className="flex flex-col items-center text-white/50 font-mono text-[10px] select-none my-1">
+            <span>│</span>
           </div>
 
-          {/* Stem when closed */}
-          {!isDropdownOpen && (
-            <div className="flex flex-col items-center text-white/50 font-mono text-[10px] select-none my-1">
-              <span>│</span>
-            </div>
-          )}
-
-          {/* 3. Secondary Button: PERFIL (Same design as SYS.VOID CORE, displaced downwards when dropdown expands) */}
+          {/* 2. Secondary Button: PERFIL */}
           <MainMenuButton
             title={isES ? '[ PERFIL // VER PERFIL ]' : '[ PROFILE // VIEW PROFILE ]'}
             actionLabel={isES ? 'EL_DISEÑADOR' : 'THE_DESIGNER'}
-            icon="→"
+            icon="▶"
             onClick={() => {
               if (onOpenDesigner) onOpenDesigner();
             }}
@@ -508,8 +491,8 @@ export default function AsciiTree({
         {/* Bottom Helper Hint */}
         <div className="mt-2 pt-1 border-t border-white/20 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] text-center font-mono text-[8px] sm:text-[9px] text-white/50 tracking-wider uppercase select-none">
           {isES
-            ? '> CLICK EN SYS.VOID PARA DESPLEGAR PROYECTOS // PERFIL PARA DATOS'
-            : '> CLICK SYS.VOID TO EXPAND PROJECTS // PROFILE FOR DETAILS'}
+            ? '> CLICK EN PROYECTOS PARA VER COLECCIONES // PERFIL PARA DATOS'
+            : '> CLICK PROJECTS TO VIEW COLLECTIONS // PROFILE FOR DETAILS'}
         </div>
       </div>
     );
