@@ -175,16 +175,13 @@ export default function DesignerModal({ onClose, isLight = false }: DesignerModa
           <span className={`w-1.5 h-1.5 ${isLight ? 'bg-black' : 'bg-white'} animate-pulse shrink-0`}></span>
           <span className="truncate">{t('sys.viewer')}</span>
         </div>
-        <StarBorder as="button" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="p-0 shrink-0">
-          <div
-            onClick={handleClose}
-            className={`font-mono text-[10px] sm:text-xs px-3 sm:px-4 py-1.5 sm:py-2 uppercase font-bold transition-colors flex items-center cursor-crosshair whitespace-nowrap ${
-              isLight ? 'bg-black text-white hover:bg-black' : 'bg-white text-black hover:bg-white'
-            }`}
-          >
-            <span>{t('modal.terminate')}</span>
-          </div>
-        </StarBorder>
+        <button
+          onClick={handleClose}
+          className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+          title={language === 'es' ? 'Cerrar perfil' : 'Close profile'}
+        >
+          [ X ]
+        </button>
       </header>
 
       {/* Content */}

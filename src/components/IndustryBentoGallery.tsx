@@ -762,9 +762,10 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
                 </span>
                 <button
                   onClick={(e) => toggleTechSheet(garment.id, e)}
-                  className={`p-0.5 ${isLight ? 'text-black/60 hover:text-black' : 'text-white/60 hover:text-white'}`}
+                  className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono text-[9px] font-bold px-1.5 py-0.5 leading-none transition-colors shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                  title={isES ? "Cerrar" : "Close"}
                 >
-                  <X size={13} />
+                  [ X ]
                 </button>
               </div>
 
@@ -1050,14 +1051,10 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               <button
                 type="button"
                 onClick={() => setSelectedGarment(null)}
-                className={`cursor-target absolute top-3.5 right-3.5 p-2 border transition-colors z-20 ${
-                  isLight
-                    ? 'text-black hover:text-white hover:bg-black border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                    : 'text-white/70 hover:text-black hover:bg-white border-white/30 hover:border-white bg-black/80'
-                }`}
+                className="cursor-target cursor-crosshair pulse-tactile absolute top-3.5 right-3.5 px-2 py-1 border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors z-20 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
-                <X size={20} />
+                [ X ]
               </button>
 
               {/* Left Column: Image with Zoom Toggle */}

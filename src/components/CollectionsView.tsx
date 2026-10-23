@@ -42,6 +42,27 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
 
+  // Auto-hiding header on scroll down, reappearing on scroll up
+  const [isHeaderVisible, setIsHeaderVisible] = useState<boolean>(true);
+  const lastScrollTopRef = useRef<number>(0);
+
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const currentScrollTop = e.currentTarget.scrollTop;
+    const delta = currentScrollTop - lastScrollTopRef.current;
+
+    if (currentScrollTop <= 15) {
+      setIsHeaderVisible(true);
+    } else if (delta > 8) {
+      // Scrolling down: slide up and hide
+      setIsHeaderVisible(false);
+    } else if (delta < -8) {
+      // Scrolling up: slide down and show
+      setIsHeaderVisible(true);
+    }
+
+    lastScrollTopRef.current = currentScrollTop;
+  }, []);
+
   // All industry garments flattened
   const allIndustryGarments = useMemo(() => {
     const list: IndustryGarment[] = [];
@@ -668,14 +689,16 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
     <div className={`fixed inset-0 z-[60] flex items-center justify-center p-0 pointer-events-auto animate-fade-in-up ${
       isLight ? 'bg-white/98 text-black' : 'bg-black/95 text-white'
     }`}>
-      <div className={`w-full h-full flex flex-col font-mono ${
+      <div className={`relative w-full h-full flex flex-col font-mono overflow-hidden ${
         isLight 
           ? 'bg-[#f7f7fa] text-black shadow-[0_0_30px_rgba(0,0,0,0.15)]' 
           : 'bg-black/90 text-white shadow-[0_0_30px_rgba(255,255,255,0.1)]'
       }`}>
         {/* Header */}
-        <div className={`flex items-center justify-between p-3 sm:p-4 md:px-8 border-b gap-2 shrink-0 ${
-          isLight ? 'border-black bg-white text-black' : 'border-white bg-black text-white'
+        <div className={`absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-3 sm:p-4 md:px-8 border-b gap-2 transition-transform duration-300 ease-in-out ${
+          isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+        } ${
+          isLight ? 'border-black bg-white/95 text-black backdrop-blur-md' : 'border-white bg-black/95 text-white backdrop-blur-md'
         }`}>
           <div className="uppercase tracking-widest text-xs sm:text-sm font-bold flex items-center gap-2 sm:gap-3 truncate">
             <span className={`w-2 h-2 ${isLight ? 'bg-black' : 'bg-white'} animate-pulse shrink-0`}></span>
@@ -683,25 +706,24 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
           </div>
           <button
             onClick={onClose}
-            className={`border font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2.5 sm:px-3 py-1 sm:py-1.5 transition-colors shrink-0 whitespace-nowrap cursor-crosshair pulse-tactile ${
-              isLight
-                ? 'border-black bg-black text-white hover:bg-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                : 'border-white bg-black text-white hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.15)]'
-            }`}
-            title={isES ? "Cerrar Vista" : "Close View"}
+            className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+            title={isES ? "Cerrar" : "Close"}
           >
-            {t('modal.close.view')}
+            [ X ]
           </button>
         </div>
 
         {/* Main Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-8 scrollbar-hide space-y-10">
+        <div 
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto pt-16 sm:pt-20 px-3 sm:px-4 md:px-8 pb-3 sm:pb-4 md:pb-8 scrollbar-hide space-y-10"
+        >
           {/* 1. CREATIVE UNIVERSE */}
           <div>
             <h2 className={`tracking-widest uppercase text-base sm:text-xl font-bold mb-4 border-b pb-2 break-words flex items-center justify-between ${
               isLight ? 'text-black border-black' : 'text-white border-white'
             }`}>
-              <span>[ {isES ? 'UNIVERSO: CREATIVO' : 'UNIVERSE: CREATIVE'} ]</span>
+              <span>[ SYS.CREATIVE ]</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {creativeProjects.map((project, idx) => (
@@ -773,7 +795,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   isLight ? 'text-black' : 'text-white'
                 }`}>
                   <span className={`w-2.5 h-2.5 ${isLight ? "bg-black" : "bg-white"} animate-pulse`}></span>
-                  <span>[ {isES ? 'UNIVERSO: INDUSTRIA // BENTO LOOKBOOK DENSE' : 'UNIVERSE: INDUSTRY // DENSE BENTO LOOKBOOK'} ]</span>
+                  <span>[ SYS.INDUSTRY ]</span>
                 </h2>
                 <p className={`text-xs mt-1 ${isLight ? 'text-black/70' : 'text-white/60'}`}>
                   {isES
@@ -1215,14 +1237,10 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               <button
                 type="button"
                 onClick={() => setInspectedGarment(null)}
-                className={`cursor-target absolute top-3.5 right-3.5 p-2 border transition-colors z-20 ${
-                  isLight 
-                    ? 'text-black hover:text-white hover:bg-black border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-                    : 'text-white/70 hover:text-black hover:bg-white border-white/30 hover:border-white bg-black/80'
-                }`}
+                className="cursor-target cursor-crosshair pulse-tactile absolute top-3.5 right-3.5 px-2 py-1 border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors z-20 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
-                <X size={20} />
+                [ X ]
               </button>
 
               {/* Left Column: Image with Zoom Toggle */}

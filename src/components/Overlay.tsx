@@ -124,10 +124,10 @@ export default function Overlay({
                       </div>
                       <button
                         onClick={() => setIsSidebarOpen(false)}
-                        className="font-mono text-xs px-1.5 py-0.5 text-white/70 hover:text-white transition-colors cursor-crosshair shrink-0 pulse-tactile whitespace-nowrap bg-transparent border-0"
+                        className="cursor-target cursor-crosshair pulse-tactile font-mono text-xs px-2 py-0.5 text-black hover:text-white hover:bg-black border border-white bg-white transition-colors shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.4)] font-bold"
                         title={language === 'es' ? 'Cerrar' : 'Close'}
                       >
-                        [ ✕ ]
+                        [ X ]
                       </button>
                     </div>
 

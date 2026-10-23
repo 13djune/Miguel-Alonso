@@ -236,21 +236,15 @@ export default function ProjectModal({
           {onPrevProject && onNextProject && (
             <div
               tabIndex={-1}
-              className={`flex items-center gap-1 sm:gap-3 font-mono text-[9px] sm:text-xs border px-1.5 sm:px-3 py-0.5 sm:py-1 outline-none focus:outline-none select-none cursor-default ${
-                isLight 
-                  ? "text-black bg-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]" 
-                  : "text-white bg-black/50 border-white shadow-[2px_2px_0px_rgba(255,255,255,0.2)]"
+              className={`flex items-center gap-1 sm:gap-2.5 font-mono text-[9px] sm:text-xs px-1 sm:px-2 py-0.5 outline-none focus:outline-none select-none cursor-default bg-transparent border-0 shadow-none ${
+                isLight ? "text-black" : "text-white"
               }`}
             >
               <button
                 type="button"
                 onClick={onPrevProject}
                 aria-label="Previous project"
-                className={`cursor-target border transition-all duration-[400ms] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none ${
-                  isLight
-                    ? "bg-black/5 hover:bg-black hover:text-white border-black text-black"
-                    : "bg-white/10 hover:bg-white hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                }`}
+                className="transition-all duration-200 active:scale-90 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none bg-transparent border-0 shadow-none text-current hover:opacity-60"
               >
                 &lt;
               </button>
@@ -261,27 +255,19 @@ export default function ProjectModal({
                 type="button"
                 onClick={onNextProject}
                 aria-label="Next project"
-                className={`cursor-target border transition-all duration-[400ms] active:scale-95 active:opacity-80 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none ${
-                  isLight
-                    ? "bg-black/5 hover:bg-black hover:text-white border-black text-black"
-                    : "bg-white/10 hover:bg-white hover:text-black border-white text-white hover:shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                }`}
+                className="transition-all duration-200 active:scale-90 cursor-crosshair text-[10px] sm:text-sm md:text-base font-bold flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 leading-none focus:outline-none bg-transparent border-0 shadow-none text-current hover:opacity-60"
               >
                 &gt;
               </button>
             </div>
           )}
-          <StarBorder as="button" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="p-0 shrink-0">
-            <div
-              onClick={handleClose}
-              className={`font-mono text-[9px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-2 uppercase font-bold transition-colors cursor-crosshair flex items-center whitespace-nowrap ${
-                isLight ? "text-white bg-black hover:bg-black" : "text-black bg-white hover:bg-white"
-              }`}
-            >
-              <span className="hidden sm:inline">{t("modal.terminate")}</span>
-              <span className="sm:hidden">{language === 'es' ? 'SALIR' : 'EXIT'}</span>
-            </div>
-          </StarBorder>
+          <button
+            onClick={handleClose}
+            className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+            title={language === 'es' ? 'Cerrar' : 'Close'}
+          >
+            [ X ]
+          </button>
         </div>
       </header>
       <div
@@ -703,17 +689,13 @@ export default function ProjectModal({
 
               {/* Right: Close Button */}
               <div className="shrink-0">
-                <StarBorder as="button" color={isLight ? "#000000" : "#ffffff"} speed="3s" className="p-0">
-                  <div
-                    onClick={closeGallery}
-                    className={`font-mono text-[10px] sm:text-xs px-3 sm:px-4 py-1 sm:py-1.5 uppercase font-bold transition-colors cursor-crosshair flex items-center gap-1.5 ${
-                      isLight ? "text-white bg-black hover:bg-black" : "text-black bg-white hover:bg-white"
-                    }`}
-                  >
-                    <span>{isES ? "CERRAR" : "CLOSE"}</span>
-                    <span>✕</span>
-                  </div>
-                </StarBorder>
+                <button
+                  onClick={closeGallery}
+                  className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                  title={isES ? "Cerrar" : "Close"}
+                >
+                  [ X ]
+                </button>
               </div>
             </div>
 
@@ -842,13 +824,14 @@ export default function ProjectModal({
                                 </h4>
                                 <button
                                   type="button"
-                                  className={isLight ? "text-black/60 hover:text-black" : "text-white/60 hover:text-white"}
+                                  className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono text-[9px] font-bold px-1.5 py-0.5 leading-none transition-colors shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setActiveHotspot(null);
                                   }}
+                                  title={language === 'es' ? "Cerrar" : "Close"}
                                 >
-                                  <X size={12} />
+                                  [ X ]
                                 </button>
                               </div>
                               <p className={`font-mono text-[10px] leading-relaxed ${
