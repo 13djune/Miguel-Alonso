@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import StarBorder from './StarBorder';
+import GarmentLightboxModal from './GarmentLightboxModal';
 
 interface CollectionsViewProps {
   projects: Project[];
@@ -39,8 +40,12 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
 
   // Inspection modal state
   const [inspectedGarment, setInspectedGarment] = useState<IndustryGarment | null>(null);
+  const [inspectedImageIndex, setInspectedImageIndex] = useState<number>(0);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
+
+  // Fullscreen garment lightbox state
+  const [isGarmentLightboxOpen, setIsGarmentLightboxOpen] = useState<boolean>(false);
 
   // Auto-hiding header on scroll down, reappearing on scroll up
   const [isHeaderVisible, setIsHeaderVisible] = useState<boolean>(true);
@@ -591,6 +596,7 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
   const handleGarmentClick = (garment: IndustryGarment) => {
     if (hasMoved.current || isDragging) return;
     setInspectedGarment(garment);
+    setInspectedImageIndex(0);
     setIsZoomed(false);
   };
 
@@ -602,6 +608,7 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
 
   const goToPrevGarment = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    setInspectedImageIndex(0);
     if (currentGarmentIndex > 0) {
       setInspectedGarment(displayedGarments[currentGarmentIndex - 1]);
     } else if (displayedGarments.length > 0) {
@@ -611,6 +618,7 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
 
   const goToNextGarment = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    setInspectedImageIndex(0);
     if (currentGarmentIndex < displayedGarments.length - 1) {
       setInspectedGarment(displayedGarments[currentGarmentIndex + 1]);
     } else if (displayedGarments.length > 0) {
@@ -730,7 +738,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 <div
                   key={project.id}
                   onClick={() => onSelectProject(project)}
-                  className={`group relative flex flex-col border transition-all cursor-crosshair ${
+                  className={`group relative flex flex-col border transition-all cursor-target cursor-crosshair pulse-tactile ${
                     isLight 
                       ? 'border-black bg-white hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]' 
                       : 'border-white hover:border-white bg-white/5'
@@ -985,7 +993,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       <div
                         key={garment.id}
                         onClick={() => handleGarmentClick(garment)}
-                        className={`bento-grid-item group relative border overflow-hidden flex flex-col justify-between ${spanConfig.colSpan} ${spanConfig.rowSpan} ${spanConfig.widthClass} cursor-crosshair snap-start shrink-0 ${
+                        className={`bento-grid-item group relative border overflow-hidden flex flex-col justify-between ${spanConfig.colSpan} ${spanConfig.rowSpan} ${spanConfig.widthClass} cursor-target cursor-crosshair pulse-tactile snap-start shrink-0 ${
                           isLight
                             ? 'border-black/40 hover:border-black bg-white text-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[3px_3px_0px_rgba(255, 255, 255,0.8)]'
                             : 'border-white/30 hover:border-white bg-neutral-950 text-white shadow-[0_0_15px_rgba(0,0,0,0.8)] hover:shadow-[0_0_20px_rgba(255, 255, 255,0.25)]'
@@ -1168,11 +1176,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
         </div>
       </div>
 
-      {/* FULLSCREEN GARMENT INSPECTION LIGHTBOX (PORTALED TO BODY WITH MAX Z-INDEX) */}
+      {/* FULLSCREEN GARMENT INSPECTION LIGHTBOX (PORTALED TO BODY WITH SAFE Z-INDEX) */}
       {inspectedGarment &&
         createPortal(
           <div
-            className={`fixed inset-0 z-[2147483646] backdrop-blur-md flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 ${
+            className={`fixed inset-0 z-[99999] backdrop-blur-md flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 ${
               isLight ? 'bg-black/40 text-black' : 'bg-black/95 text-white'
             }`}
             onClick={() => setInspectedGarment(null)}
@@ -1182,12 +1190,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
             {/* Left Prev Arrow Button */}
             {displayedGarments.length > 1 && (
-              <div className="absolute left-2 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-[2147483647]">
+              <div className="absolute left-2 sm:left-4 md:left-8 top-1/2 -translate-y-1/2 z-[100000]">
                 <button
                   type="button"
                   onClick={goToPrevGarment}
                   title={isES ? 'Prenda anterior (←)' : 'Previous piece (←)'}
-                  className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
+                  className={`cursor-target cursor-crosshair pulse-tactile p-2.5 sm:p-3.5 transition-all duration-200 ${
                     isLight 
                       ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
                       : 'bg-black/90 hover:bg-white text-white hover:text-black border border-white/50 hover:border-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
@@ -1200,12 +1208,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
             {/* Right Next Arrow Button */}
             {displayedGarments.length > 1 && (
-              <div className="absolute right-2 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-[2147483647]">
+              <div className="absolute right-2 sm:right-4 md:right-8 top-1/2 -translate-y-1/2 z-[100000]">
                 <button
                   type="button"
                   onClick={goToNextGarment}
                   title={isES ? 'Siguiente prenda (→)' : 'Next piece (→)'}
-                  className={`cursor-target p-2.5 sm:p-3.5 transition-all duration-200 ${
+                  className={`cursor-target cursor-crosshair pulse-tactile p-2.5 sm:p-3.5 transition-all duration-200 ${
                     isLight 
                       ? 'bg-white hover:bg-black text-black hover:text-white border border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
                       : 'bg-black/90 hover:bg-white text-white hover:text-black border border-white/50 hover:border-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
@@ -1216,20 +1224,20 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               </div>
             )}
 
-            {/* Main Inspection Dialog */}
+            {/* Main Inspection Dialog (Enlarged Monolithic Size) */}
             <div
-              className={`relative w-full max-w-4xl border-2 p-5 sm:p-7 md:p-9 flex flex-col md:flex-row gap-6 sm:gap-8 max-h-[92vh] overflow-y-auto scrollbar-hide z-[2147483647] ${
+              className={`relative w-full max-w-6xl xl:max-w-7xl border-2 p-6 sm:p-8 md:p-10 flex flex-col lg:flex-row gap-7 sm:gap-9 lg:gap-12 max-h-[94vh] overflow-y-auto scrollbar-hide z-[100001] ${
                 isLight 
-                  ? 'bg-white border-black text-black shadow-[8px_8px_0px_rgba(0,0,0,0.9)]'
-                  : 'bg-black border-white/60 text-white shadow-[0_0_50px_rgba(0,0,0,0.95)]'
+                  ? 'bg-white border-black text-black shadow-[10px_10px_0px_rgba(0,0,0,0.9)]'
+                  : 'bg-black border-white/60 text-white shadow-[0_0_60px_rgba(0,0,0,0.95)]'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner Accents */}
-              <div className={`absolute top-0 right-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none ${
+              <div className={`absolute top-0 right-0 w-3.5 h-3.5 border-b-2 border-l-2 pointer-events-none ${
                 isLight ? "border-black" : "border-white"
               }`} />
-              <div className={`absolute bottom-0 left-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none ${
+              <div className={`absolute bottom-0 left-0 w-3.5 h-3.5 border-t-2 border-r-2 pointer-events-none ${
                 isLight ? "border-black" : "border-white"
               }`} />
 
@@ -1237,54 +1245,109 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
               <button
                 type="button"
                 onClick={() => setInspectedGarment(null)}
-                className="cursor-target cursor-crosshair pulse-tactile absolute top-3.5 right-3.5 px-2 py-1 border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors z-20 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                className="cursor-target cursor-crosshair pulse-tactile absolute top-4 right-4 px-2.5 py-1.5 border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors z-20 shadow-[0_0_12px_rgba(255,255,255,0.5)]"
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
                 [ X ]
               </button>
 
-              {/* Left Column: Image with Zoom Toggle */}
-              <div className="w-full md:w-1/2 flex flex-col gap-2.5">
-                <div
-                  className={`w-full aspect-[3/4] relative border overflow-hidden flex items-center justify-center cursor-target ${
-                    isLight ? 'bg-[#f0f0f4] border-black/30' : 'bg-neutral-950 border-white/30'
-                  } ${
-                    isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
-                  }`}
-                  onClick={() => setIsZoomed(!isZoomed)}
-                >
-                  <img
-                    src={inspectedGarment.image}
-                    alt={inspectedGarment.name}
-                    referrerPolicy="no-referrer"
-                    className={`w-full h-full object-cover transition-transform duration-300 ease-out select-none ${
-                      isZoomed ? 'scale-150 object-center' : 'scale-100'
-                    }`}
-                  />
+              {/* Left Column: Image with Multi-Image Carousel */}
+              {(() => {
+                const inspectedImages = inspectedGarment.images && inspectedGarment.images.length > 0
+                  ? inspectedGarment.images
+                  : [inspectedGarment.image];
+                const currentImg = inspectedImages[inspectedImageIndex % inspectedImages.length];
 
-                  {/* Zoom Badge Indicator */}
-                  <div className={`absolute bottom-2.5 left-2.5 z-10 border px-2.5 py-1 text-xs font-mono flex items-center gap-1.5 pointer-events-none ${
-                    isLight 
-                      ? 'bg-white/95 border-black/40 text-black shadow-[2px_2px_0px_rgba(0,0,0,0.6)]'
-                      : 'bg-black/85 border-white/40 text-white'
-                  }`}>
-                    {isZoomed ? <ZoomOut size={12} /> : <ZoomIn size={12} />}
-                    <span>{isZoomed ? (isES ? 'ALEJAR' : 'ZOOM OUT') : (isES ? 'AMPLIAR' : 'ZOOM IN')}</span>
+                return (
+                  <div className="w-full lg:w-[50%] flex flex-col gap-3.5">
+                    <div
+                      className={`w-full aspect-[3/4] md:aspect-[4/5] lg:aspect-auto lg:h-[58vh] max-h-[64vh] relative border overflow-hidden flex items-center justify-center cursor-zoom-in group/garment-img ${
+                        isLight ? 'bg-[#f0f0f4] border-black/30' : 'bg-neutral-950 border-white/30'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsGarmentLightboxOpen(true);
+                      }}
+                      title={isES ? "Clic para abrir en pantalla completa HD" : "Click to open in fullscreen HD"}
+                    >
+                      <img
+                        src={currentImg}
+                        alt={inspectedGarment.name}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover/garment-img:scale-105 transition-transform duration-500 ease-out select-none"
+                      />
+
+                      {/* Top-Left Look Index */}
+                      <div className={`absolute top-3 left-3 z-10 border px-2.5 py-1 text-[10px] sm:text-xs font-mono font-bold tracking-wider pointer-events-none uppercase ${
+                        isLight
+                          ? 'bg-white/95 border-black text-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                          : 'bg-black/90 border-white/60 text-white shadow-[0_0_10px_rgba(0,0,0,0.8)]'
+                      }`}>
+                        LOOK {((inspectedImageIndex % inspectedImages.length) + 1).toString().padStart(2, '0')} / {inspectedImages.length.toString().padStart(2, '0')}
+                      </div>
+
+                      {/* Bottom-Left Fullscreen Click Indicator Badge */}
+                      <div className={`absolute bottom-3 left-3 z-10 border px-3 py-1.5 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 pointer-events-none ${
+                        isLight
+                          ? 'bg-white/95 border-black text-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                          : 'bg-black/90 border-white/60 text-white shadow-[0_0_12px_rgba(0,0,0,0.8)]'
+                      }`}>
+                        <Maximize2 size={13} className="animate-pulse" />
+                        <span>{isES ? 'CLICK // PANTALLA COMPLETA' : 'CLICK // FULLSCREEN'}</span>
+                      </div>
+                    </div>
+
+                    {/* Multi-view thumbnail carousel (Large pure thumbnails, no text) */}
+                    {inspectedImages.length > 1 && (
+                      <div className={`p-2 sm:p-2.5 border overflow-hidden ${
+                        isLight ? 'border-black/20 bg-black/[0.02]' : 'border-white/20 bg-white/[0.02]'
+                      }`}>
+                        <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide py-1 w-full">
+                          {inspectedImages.map((img, i) => {
+                            const isSelected = (inspectedImageIndex % inspectedImages.length) === i;
+                            return (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setInspectedImageIndex(i);
+                                }}
+                                className={`cursor-target cursor-crosshair pulse-tactile group/thumb relative flex-shrink-0 w-20 h-24 sm:w-24 sm:h-28 md:w-28 md:h-32 border transition-all overflow-hidden ${
+                                  isSelected
+                                    ? isLight
+                                      ? 'border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.9)] scale-105 bg-white'
+                                      : 'border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.8)] scale-105 bg-black'
+                                    : isLight
+                                    ? 'border border-black/30 hover:border-black opacity-75 hover:opacity-100 bg-neutral-100'
+                                    : 'border border-white/30 hover:border-white opacity-65 hover:opacity-100 bg-neutral-900'
+                                }`}
+                              >
+                                <img src={img} alt="" className="w-full h-full object-cover select-none" />
+                                <span className="absolute bottom-0 right-0 bg-black/85 text-[8px] font-mono text-white px-1.5 py-0.5 pointer-events-none">
+                                  {(i + 1).toString().padStart(2, '0')}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sub-label under photo */}
+                    <div className={`flex items-center justify-between text-xs font-mono px-1 pt-0.5 ${
+                      isLight ? 'text-black/70' : 'text-white/60'
+                    }`}>
+                      <span className="font-bold">REF: {inspectedGarment.refCode}</span>
+                      {currentGarmentIndex !== -1 && (
+                        <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
+                          [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(displayedGarments.length).padStart(2, '0')} ]
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-
-                {/* Sub-label under photo */}
-                <div className={`flex items-center justify-between text-xs font-mono px-1 pt-0.5 ${
-                  isLight ? 'text-black/70' : 'text-white/60'
-                }`}>
-                  <span className="font-bold">REF: {inspectedGarment.refCode}</span>
-                  {currentGarmentIndex !== -1 && (
-                    <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
-                      [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(displayedGarments.length).padStart(2, '0')} ]
-                    </span>
-                  )}
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Right Column: Specification Dossier */}
               <div className="w-full md:w-1/2 flex flex-col justify-between gap-5 font-mono">
@@ -1409,6 +1472,16 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
           </div>,
           document.body
         )}
+
+      {/* Garment Fullscreen Interactive Lightbox Gallery (Unified shared component matching SYS.CREATIVE) */}
+      {isGarmentLightboxOpen && inspectedGarment && (
+        <GarmentLightboxModal
+          garment={inspectedGarment}
+          initialIndex={inspectedImageIndex}
+          onClose={() => setIsGarmentLightboxOpen(false)}
+          isLight={isLight}
+        />
+      )}
     </div>
   );
 }

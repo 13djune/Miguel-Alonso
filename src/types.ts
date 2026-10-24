@@ -30,6 +30,7 @@ export interface IndustryGarment {
   category: string;
   tags: string[]; // e.g. ["DENIM", "CARGO", "LARGO"], ["DENIM", "CORTO"]
   image: string;
+  images?: string[];
   material?: string;
   silhouette?: string;
   details?: string;

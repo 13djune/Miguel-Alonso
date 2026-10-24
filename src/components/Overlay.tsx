@@ -155,7 +155,7 @@ export default function Overlay({
                   e.preventDefault();
                   onOpenCollections?.();
                 }}
-                className="cursor-crosshair font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                className="cursor-target cursor-crosshair pulse-tactile font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                 title={t('overlay.nav.collections')}
               >
                 <span>[ {t('overlay.nav.collections')} ]</span>

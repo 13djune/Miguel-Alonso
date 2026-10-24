@@ -35,10 +35,16 @@ export default function IntroCurtain({
   const handleStart = () => {
     if (onComplete) onComplete();
     if (curtainRef.current) {
+      curtainRef.current.style.pointerEvents = 'none';
       gsap.to(curtainRef.current, {
         yPercent: -100,
         duration: 1.5,
-        ease: 'power4.inOut'
+        ease: 'power4.inOut',
+        onComplete: () => {
+          if (curtainRef.current) {
+            curtainRef.current.style.display = 'none';
+          }
+        }
       });
     }
   };

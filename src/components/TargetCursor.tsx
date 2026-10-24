@@ -332,15 +332,6 @@ const TargetCursor = ({
         return;
       }
 
-      // In terminal mode, focus interaction on terminal modal if present
-      if (appModeRef.current === 'terminal') {
-        const terminalEl = document.getElementById('terminal-modal');
-        if (terminalEl && !terminalEl.contains(elUnderPointer)) {
-          if (stateRef.current === 'interaction') setCursorToIdle();
-          return;
-        }
-      }
-
       // Check if hovering an interactive target
       const interactiveEl = findInteractiveElement(elUnderPointer);
 

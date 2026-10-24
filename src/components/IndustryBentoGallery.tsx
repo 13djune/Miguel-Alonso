@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, X, Maximize2, Download, FileText, ChevronDow
 import { IndustryGarment } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import StarBorder from './StarBorder';
+import GarmentLightboxModal from './GarmentLightboxModal';
 
 interface IndustryBentoGalleryProps {
   garments: IndustryGarment[];
@@ -39,10 +40,145 @@ export default function IndustryBentoGallery({
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
-  // Reset zoom when switching inspected garment
+  // Active image per card for garments with multiple photos
+  const [activeCardImage, setActiveCardImage] = useState<Record<string, number>>({});
+  const [inspectedImageIndex, setInspectedImageIndex] = useState<number>(0);
+
+  // Full-screen interactive lightbox gallery (matching SYS.CREATIVE project galleries)
+  const [lightboxGarment, setLightboxGarment] = useState<IndustryGarment | null>(null);
+  const [lightboxImageIndex, setLightboxImageIndex] = useState<number>(0);
+  const [lightboxZoomLevel, setLightboxZoomLevel] = useState<number>(1);
+  const [lightboxPanOffset, setLightboxPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isLightboxPanning, setIsLightboxPanning] = useState<boolean>(false);
+  const lightboxPanStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // Reset zoom & inspected image when switching inspected garment
   useEffect(() => {
     setIsZoomed(false);
+    setInspectedImageIndex(0);
   }, [selectedGarment?.id]);
+
+  const openLightbox = (garment: IndustryGarment, initialIndex = 0, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setLightboxGarment(garment);
+    setLightboxImageIndex(initialIndex);
+    setLightboxZoomLevel(1);
+    setLightboxPanOffset({ x: 0, y: 0 });
+  };
+
+  const closeLightbox = () => {
+    setLightboxGarment(null);
+    setLightboxZoomLevel(1);
+    setLightboxPanOffset({ x: 0, y: 0 });
+  };
+
+  const lightboxImages = useMemo(() => {
+    if (!lightboxGarment) return [];
+    return lightboxGarment.images && lightboxGarment.images.length > 0
+      ? lightboxGarment.images
+      : [lightboxGarment.image];
+  }, [lightboxGarment]);
+
+  const handleLightboxZoomIn = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setLightboxZoomLevel((prev) => Math.min(prev + 0.5, 4));
+  };
+
+  const handleLightboxZoomOut = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setLightboxZoomLevel((prev) => {
+      const next = Math.max(prev - 0.5, 1);
+      if (next === 1) setLightboxPanOffset({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const resetLightboxZoom = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setLightboxZoomLevel(1);
+    setLightboxPanOffset({ x: 0, y: 0 });
+  };
+
+  const nextLightboxImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (lightboxImages.length <= 1) return;
+    setLightboxImageIndex((prev) => (prev + 1) % lightboxImages.length);
+    setLightboxZoomLevel(1);
+    setLightboxPanOffset({ x: 0, y: 0 });
+  };
+
+  const prevLightboxImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (lightboxImages.length <= 1) return;
+    setLightboxImageIndex((prev) => (prev - 1 + lightboxImages.length) % lightboxImages.length);
+    setLightboxZoomLevel(1);
+    setLightboxPanOffset({ x: 0, y: 0 });
+  };
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!lightboxGarment) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowRight') {
+        nextLightboxImage();
+      } else if (e.key === 'ArrowLeft') {
+        prevLightboxImage();
+      } else if (e.key === '+' || e.key === '=') {
+        handleLightboxZoomIn();
+      } else if (e.key === '-') {
+        handleLightboxZoomOut();
+      } else if (e.key === '0') {
+        resetLightboxZoom();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxGarment, lightboxImages.length]);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
+    if (e.deltaY < 0) {
+      setLightboxZoomLevel((prev) => Math.min(prev + 0.25, 4));
+    } else {
+      setLightboxZoomLevel((prev) => {
+        const next = Math.max(prev - 0.25, 1);
+        if (next === 1) setLightboxPanOffset({ x: 0, y: 0 });
+        return next;
+      });
+    }
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (lightboxZoomLevel > 1) {
+      resetLightboxZoom();
+    } else {
+      setLightboxZoomLevel(2.2);
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (lightboxZoomLevel <= 1) return;
+    setIsLightboxPanning(true);
+    lightboxPanStartRef.current = {
+      x: e.clientX - lightboxPanOffset.x,
+      y: e.clientY - lightboxPanOffset.y,
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isLightboxPanning || lightboxZoomLevel <= 1) return;
+    setLightboxPanOffset({
+      x: e.clientX - lightboxPanStartRef.current.x,
+      y: e.clientY - lightboxPanStartRef.current.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsLightboxPanning(false);
+  };
 
   // Filter garments based on active tag
   const filteredGarments = useMemo(() => {
@@ -597,6 +733,10 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
     const isDownloaded = downloadSuccessId === garment.id;
     const hasError = imageErrors[garment.id];
 
+    const cardImages = garment.images && garment.images.length > 0 ? garment.images : [garment.image];
+    const currentImgIdx = (activeCardImage[garment.id] || 0) % cardImages.length;
+    const currentImgSrc = cardImages[currentImgIdx];
+
     return (
       <div
         key={garment.id}
@@ -624,18 +764,25 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
           </div>
         </div>
 
-        {/* Garment Image Frame */}
-        <div className={`w-full flex-1 relative overflow-hidden min-h-0 select-none ${
-          isLight ? 'bg-neutral-100' : 'bg-neutral-950'
-        }`}>
+        {/* Garment Image Frame with In-Card Gallery & Expandable Lightbox */}
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            openLightbox(garment, currentImgIdx, e);
+          }}
+          className={`w-full flex-1 relative overflow-hidden min-h-0 select-none cursor-zoom-in group/img ${
+            isLight ? 'bg-neutral-100' : 'bg-neutral-950'
+          }`}
+          title={isES ? "Clic para desplegar galería completa" : "Click to deploy full gallery"}
+        >
           {!hasError ? (
             <img
-              src={garment.image}
+              src={currentImgSrc}
               alt={garment.name}
               draggable={false}
               referrerPolicy="no-referrer"
               onError={() => setImageErrors((prev) => ({ ...prev, [garment.id]: true }))}
-              className="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none select-none"
+              className="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out select-none"
             />
           ) : (
             <div className={`w-full h-full flex flex-col items-center justify-center p-4 text-center ${
@@ -649,6 +796,97 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               </span>
             </div>
           )}
+
+          {/* Multiple Image In-Card Controls */}
+          {cardImages.length > 1 && (
+            <>
+              {/* Prev / Next Arrows */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCardImage((prev) => ({
+                    ...prev,
+                    [garment.id]: (currentImgIdx - 1 + cardImages.length) % cardImages.length,
+                  }));
+                }}
+                title={isES ? "Vista anterior" : "Previous view"}
+                className={`cursor-target absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-8 sm:h-8 border font-mono text-xs font-bold flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 ${
+                  isLight
+                    ? 'bg-white/95 text-black hover:bg-black hover:text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                    : 'bg-black/90 text-white hover:bg-white hover:text-black border-white/70 shadow-[0_0_10px_rgba(0,0,0,0.9)]'
+                }`}
+              >
+                &lt;
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCardImage((prev) => ({
+                    ...prev,
+                    [garment.id]: (currentImgIdx + 1) % cardImages.length,
+                  }));
+                }}
+                title={isES ? "Siguiente vista" : "Next view"}
+                className={`cursor-target absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 sm:w-8 sm:h-8 border font-mono text-xs font-bold flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 ${
+                  isLight
+                    ? 'bg-white/95 text-black hover:bg-black hover:text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                    : 'bg-black/90 text-white hover:bg-white hover:text-black border-white/70 shadow-[0_0_10px_rgba(0,0,0,0.9)]'
+                }`}
+              >
+                &gt;
+              </button>
+
+              {/* View Selector Mini-Carousel (Bottom Left) */}
+              <div className="absolute bottom-2 left-2 z-20 flex items-center gap-1.5 max-w-[80%] overflow-x-auto scrollbar-hide py-0.5">
+                {cardImages.map((img, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveCardImage((prev) => ({ ...prev, [garment.id]: i }));
+                    }}
+                    title={isES ? `Ver foto ${(i + 1).toString().padStart(2, '0')}` : `View photo ${(i + 1).toString().padStart(2, '0')}`}
+                    className={`cursor-target flex items-center gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-mono font-bold tracking-wider uppercase border transition-all shrink-0 ${
+                      currentImgIdx === i
+                        ? isLight
+                          ? 'bg-black text-white border-black shadow-[1px_1px_0px_rgba(0,0,0,0.8)] scale-105'
+                          : 'bg-white text-black border-white shadow-[0_0_8px_rgba(255,255,255,0.7)] scale-105'
+                        : isLight
+                        ? 'bg-white/90 text-black/70 border-black/30 hover:border-black hover:text-black'
+                        : 'bg-black/80 text-white/70 border-white/30 hover:border-white hover:text-white'
+                    }`}
+                  >
+                    <div className="w-2.5 h-3 overflow-hidden bg-neutral-900 border shrink-0">
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <span>{(i + 1).toString().padStart(2, '0')}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Expand Full Lightbox Gallery Button (Top Right) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              openLightbox(garment, currentImgIdx, e);
+            }}
+            className={`cursor-target cursor-crosshair pulse-tactile absolute top-2 right-2 z-20 px-2 py-0.5 border font-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all ${
+              isLight
+                ? 'bg-white/95 text-black border-black hover:bg-black hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                : 'bg-black/90 text-white border-white/70 hover:bg-white hover:text-black shadow-[0_0_10px_rgba(0,0,0,0.8)]'
+            }`}
+            title={isES ? "Desplegar galería de imágenes" : "Open image gallery"}
+          >
+            <Maximize2 size={10} />
+            <span>{isES ? 'GALERÍA' : 'GALLERY'}</span>
+            {cardImages.length > 1 && <span>[{cardImages.length}]</span>}
+          </button>
 
           {/* Scrim */}
           <div className={`absolute inset-0 transition-opacity pointer-events-none ${
@@ -1030,20 +1268,20 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               </div>
             )}
 
-            {/* Main Inspection Modal Dialog */}
+            {/* Main Inspection Modal Dialog (Enlarged Monumental Size) */}
             <div
-              className={`relative w-full max-w-4xl border-2 p-5 sm:p-7 md:p-9 flex flex-col md:flex-row gap-6 sm:gap-8 max-h-[92vh] overflow-y-auto scrollbar-hide z-[100001] ${
+              className={`relative w-full max-w-6xl xl:max-w-7xl border-2 p-6 sm:p-8 md:p-10 flex flex-col lg:flex-row gap-7 sm:gap-9 lg:gap-12 max-h-[94vh] overflow-y-auto scrollbar-hide z-[100001] ${
                 isLight
-                  ? 'bg-white border-black text-black shadow-[8px_8px_0px_rgba(0,0,0,0.9)]'
-                  : 'bg-black border-white/60 text-white shadow-[0_0_50px_rgba(0,0,0,0.95)]'
+                  ? 'bg-white border-black text-black shadow-[10px_10px_0px_rgba(0,0,0,0.9)]'
+                  : 'bg-black border-white/60 text-white shadow-[0_0_60px_rgba(0,0,0,0.95)]'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Corner Accents */}
-              <div className={`absolute top-0 right-0 w-3 h-3 border-b-2 border-l-2 pointer-events-none ${
+              <div className={`absolute top-0 right-0 w-3.5 h-3.5 border-b-2 border-l-2 pointer-events-none ${
                 isLight ? "border-black" : "border-white"
               }`} />
-              <div className={`absolute bottom-0 left-0 w-3 h-3 border-t-2 border-r-2 pointer-events-none ${
+              <div className={`absolute bottom-0 left-0 w-3.5 h-3.5 border-t-2 border-r-2 pointer-events-none ${
                 isLight ? "border-black" : "border-white"
               }`} />
 
@@ -1051,65 +1289,178 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
               <button
                 type="button"
                 onClick={() => setSelectedGarment(null)}
-                className="cursor-target cursor-crosshair pulse-tactile absolute top-3.5 right-3.5 px-2 py-1 border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors z-20 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                className="cursor-target cursor-crosshair pulse-tactile absolute top-4 right-4 px-2.5 py-1.5 border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors z-20 shadow-[0_0_12px_rgba(255,255,255,0.5)]"
                 title={isES ? 'Cerrar (ESC)' : 'Close (ESC)'}
               >
                 [ X ]
               </button>
 
-              {/* Left Column: Image with Zoom Toggle */}
-              <div className="w-full md:w-1/2 flex flex-col gap-2.5">
-                <div
-                  className={`w-full aspect-[3/4] relative border overflow-hidden flex items-center justify-center cursor-target ${
-                    isLight ? 'bg-neutral-100 border-black/30' : 'bg-neutral-950 border-white/30'
-                  } ${
-                    isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
-                  }`}
-                  onClick={() => setIsZoomed(!isZoomed)}
-                >
-                  {!imageErrors[selectedGarment.id] ? (
-                    <img
-                      src={selectedGarment.image}
-                      alt={selectedGarment.name}
-                      referrerPolicy="no-referrer"
-                      className={`w-full h-full object-cover transition-transform duration-300 ease-out select-none ${
-                        isZoomed ? 'scale-150 object-center' : 'scale-100'
+              {/* Left Column: Image with Direct Fullscreen Open and Multi-Image Carousel */}
+              {(() => {
+                const inspectedImages = selectedGarment.images && selectedGarment.images.length > 0
+                  ? selectedGarment.images
+                  : [selectedGarment.image];
+                const currentInspectedIdx = inspectedImageIndex % inspectedImages.length;
+                const currentInspectedSrc = inspectedImages[currentInspectedIdx];
+
+                return (
+                  <div className="w-full lg:w-[50%] flex flex-col gap-3.5">
+                    {/* Main Garment Preview Frame: Clicking opens fullscreen gallery */}
+                    <div
+                      className={`w-full aspect-[3/4] md:aspect-[4/5] lg:aspect-auto lg:h-[58vh] max-h-[64vh] relative border overflow-hidden flex items-center justify-center cursor-zoom-in group/main-preview ${
+                        isLight ? 'bg-neutral-100 border-black/30' : 'bg-neutral-950 border-white/30'
                       }`}
-                    />
-                  ) : (
-                    <div className={`flex flex-col items-center justify-center p-6 text-center ${
-                      isLight ? 'text-black/60' : 'text-white/60'
-                    }`}>
-                      <Layers size={40} className={`mb-3 ${isLight ? "text-black" : "text-white"}`} />
-                      <span className={`text-xs uppercase font-bold ${isLight ? 'text-black' : 'text-white'}`}>
-                        {selectedGarment.refCode} // CAD BLUEPRINT
-                      </span>
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openLightbox(selectedGarment, currentInspectedIdx, e);
+                      }}
+                      title={isES ? "Clic para abrir en pantalla completa HD" : "Click to open in fullscreen HD"}
+                    >
+                      {!imageErrors[selectedGarment.id] ? (
+                        <img
+                          src={currentInspectedSrc}
+                          alt={selectedGarment.name}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover/main-preview:scale-105 transition-transform duration-500 ease-out select-none"
+                        />
+                      ) : (
+                        <div className={`flex flex-col items-center justify-center p-6 text-center ${
+                          isLight ? 'text-black/60' : 'text-white/60'
+                        }`}>
+                          <Layers size={44} className={`mb-3 ${isLight ? "text-black" : "text-white"}`} />
+                          <span className={`text-xs uppercase font-bold ${isLight ? 'text-black' : 'text-white'}`}>
+                            {selectedGarment.refCode} // CAD BLUEPRINT
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Top-Left Look Index */}
+                      <div className={`absolute top-3 left-3 z-10 border px-2.5 py-1 text-[10px] sm:text-xs font-mono font-bold tracking-wider pointer-events-none uppercase ${
+                        isLight
+                          ? 'bg-white/95 border-black text-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                          : 'bg-black/90 border-white/60 text-white shadow-[0_0_10px_rgba(0,0,0,0.8)]'
+                      }`}>
+                        LOOK {(currentInspectedIdx + 1).toString().padStart(2, '0')} / {inspectedImages.length.toString().padStart(2, '0')}
+                      </div>
+
+                      {/* Bottom-Left Fullscreen Click Indicator Badge */}
+                      <div className={`absolute bottom-3 left-3 z-10 border px-3 py-1.5 text-[10px] sm:text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2 pointer-events-none ${
+                        isLight
+                          ? 'bg-white/95 border-black text-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                          : 'bg-black/90 border-white/60 text-white shadow-[0_0_12px_rgba(0,0,0,0.8)]'
+                      }`}>
+                        <Maximize2 size={13} className="animate-pulse" />
+                        <span>{isES ? 'CLICK // PANTALLA COMPLETA' : 'CLICK // FULLSCREEN'}</span>
+                      </div>
                     </div>
-                  )}
 
-                  {/* Zoom Badge Indicator */}
-                  <div className={`absolute bottom-2.5 left-2.5 z-10 border px-2.5 py-1 text-xs font-mono flex items-center gap-1.5 pointer-events-none ${
-                    isLight
-                      ? 'bg-white/95 border-black/40 text-black shadow-[2px_2px_0px_rgba(0,0,0,0.6)]'
-                      : 'bg-black/85 border-white/40 text-white'
-                  }`}>
-                    {isZoomed ? <ZoomOut size={12} /> : <ZoomIn size={12} />}
-                    <span>{isZoomed ? (isES ? 'ALEJAR' : 'ZOOM OUT') : (isES ? 'AMPLIAR' : 'ZOOM IN')}</span>
+                    {/* Multi-Image Thumbnail Carousel Filmstrip (Large pure thumbnails, no text) */}
+                    {inspectedImages.length > 1 && (
+                      <div className={`p-2 sm:p-2.5 border overflow-hidden ${
+                        isLight ? 'border-black/20 bg-black/[0.02]' : 'border-white/20 bg-white/[0.02]'
+                      }`}>
+                        <div className="relative flex items-center gap-2">
+                          {inspectedImages.length > 3 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setInspectedImageIndex((prev) => (prev - 1 + inspectedImages.length) % inspectedImages.length);
+                              }}
+                              title={isES ? "Imagen anterior" : "Previous image"}
+                              className={`cursor-target p-2 border transition-all shrink-0 ${
+                                isLight
+                                  ? 'bg-white hover:bg-black text-black hover:text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                                  : 'bg-black/80 hover:bg-white text-white hover:text-black border-white/50 shadow-[0_0_8px_rgba(0,0,0,0.8)]'
+                              }`}
+                            >
+                              <ChevronLeft size={18} />
+                            </button>
+                          )}
+
+                          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide py-1 w-full">
+                            {inspectedImages.map((img, i) => {
+                              const isSelected = currentInspectedIdx === i;
+                              return (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setInspectedImageIndex(i);
+                                  }}
+                                  className={`cursor-target group/thumb relative flex-shrink-0 w-20 h-24 sm:w-24 sm:h-28 md:w-28 md:h-32 border transition-all overflow-hidden ${
+                                    isSelected
+                                      ? isLight
+                                        ? 'border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.9)] scale-105 bg-white'
+                                        : 'border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.8)] scale-105 bg-black'
+                                      : isLight
+                                      ? 'border border-black/30 hover:border-black opacity-75 hover:opacity-100 bg-neutral-100'
+                                      : 'border border-white/30 hover:border-white opacity-65 hover:opacity-100 bg-neutral-900'
+                                  }`}
+                                >
+                                  <img src={img} alt="" className="w-full h-full object-cover select-none" />
+                                  <span className="absolute bottom-0 right-0 bg-black/85 text-[8px] font-mono text-white px-1.5 py-0.5 pointer-events-none">
+                                    {(i + 1).toString().padStart(2, '0')}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {inspectedImages.length > 3 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setInspectedImageIndex((prev) => (prev + 1) % inspectedImages.length);
+                              }}
+                              title={isES ? "Siguiente imagen" : "Next image"}
+                              className={`cursor-target p-2 border transition-all shrink-0 ${
+                                isLight
+                                  ? 'bg-white hover:bg-black text-black hover:text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
+                                  : 'bg-black/80 hover:bg-white text-white hover:text-black border-white/50 shadow-[0_0_8px_rgba(0,0,0,0.8)]'
+                              }`}
+                            >
+                              <ChevronRight size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Deploy Fullscreen Lightbox Gallery Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openLightbox(selectedGarment, currentInspectedIdx, e);
+                      }}
+                      className={`cursor-target cursor-crosshair pulse-tactile w-full py-2.5 sm:py-3 border font-mono text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 transition-all ${
+                        isLight
+                          ? 'bg-black text-white hover:bg-neutral-800 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)]'
+                          : 'bg-white text-black hover:bg-neutral-200 border-white shadow-[0_0_20px_rgba(255,255,255,0.4)]'
+                      }`}
+                      title={isES ? "Desplegar galería interactiva con zoom y navegación" : "Open interactive gallery with zoom & navigation"}
+                    >
+                      <Maximize2 size={15} />
+                      <span>{isES ? 'ABRIR EN PANTALLA COMPLETA // GALERÍA HD [ZOOM]' : 'OPEN FULLSCREEN // HD GALLERY [ZOOM]'}</span>
+                    </button>
+
+                    {/* Sub-label under photo */}
+                    <div className={`flex items-center justify-between text-xs font-mono px-1 pt-0.5 ${
+                      isLight ? 'text-black/70' : 'text-white/60'
+                    }`}>
+                      <span className="font-bold">REF: {selectedGarment.refCode}</span>
+                      {currentGarmentIndex !== -1 && (
+                        <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
+                          [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(filteredGarments.length).padStart(2, '0')} ]
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-
-                {/* Sub-label under photo */}
-                <div className={`flex items-center justify-between text-xs font-mono px-1 pt-0.5 ${
-                  isLight ? 'text-black/70' : 'text-white/60'
-                }`}>
-                  <span className="font-bold">REF: {selectedGarment.refCode}</span>
-                  {currentGarmentIndex !== -1 && (
-                    <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
-                      [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(filteredGarments.length).padStart(2, '0')} ]
-                    </span>
-                  )}
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Right Column: Specification Dossier */}
               <div className="w-full md:w-1/2 flex flex-col justify-between gap-5 font-mono">
@@ -1234,6 +1585,16 @@ GENERATION:     ${new Date().toISOString()} // VERIFIED SPEC
           </div>,
           document.body
         )}
+
+      {/* 5. FULLSCREEN INTERACTIVE LIGHTBOX GALLERY (PORTALED TO ROOT BODY) */}
+      {lightboxGarment && (
+        <GarmentLightboxModal
+          garment={lightboxGarment}
+          initialIndex={lightboxImageIndex}
+          onClose={closeLightbox}
+          isLight={isLight}
+        />
+      )}
     </div>
   );
 }

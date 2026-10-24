@@ -142,7 +142,7 @@ const MainMenuButton = ({
       onMouseUp={() => setActive(false)}
       onTouchStart={() => setActive(true)}
       onTouchEnd={() => setActive(false)}
-      className="cursor-crosshair w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] select-none transition-all duration-200 flex flex-col items-center group font-mono pulse-tactile text-left"
+      className="cursor-target cursor-crosshair w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] select-none transition-all duration-200 flex flex-col items-center group font-mono pulse-tactile text-left"
     >
       {/* Top ASCII border line with corners */}
       <div
