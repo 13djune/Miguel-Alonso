@@ -406,6 +406,12 @@ function AppContent() {
               setCollectionsModalActive(false);
               handlePlanetClick(project);
             }}
+            onNavigateTo3D={() => {
+              setCollectionsModalActive(false);
+              setModalActive(false);
+              setSelectedProject(null);
+              setAppMode("universe");
+            }}
             isLight={isLight}
           />
         )}

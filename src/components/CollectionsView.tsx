@@ -25,10 +25,17 @@ interface CollectionsViewProps {
   projects: Project[];
   onClose: () => void;
   onSelectProject: (project: Project) => void;
+  onNavigateTo3D?: () => void;
   isLight?: boolean;
 }
 
-export default function CollectionsView({ projects, onClose, onSelectProject, isLight = false }: CollectionsViewProps) {
+export default function CollectionsView({
+  projects,
+  onClose,
+  onSelectProject,
+  onNavigateTo3D,
+  isLight = false,
+}: CollectionsViewProps) {
   const { t, language } = useLanguage();
   const isES = language === 'es';
 
@@ -759,15 +766,36 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
           : 'bg-black/90 text-white shadow-[0_0_30px_rgba(255,255,255,0.1)]'
       }`}>
         {/* Header */}
-        <div className={`absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-3 sm:p-4 md:px-8 border-b gap-2 transition-transform duration-300 ease-in-out ${
+        <div className={`absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-3 sm:p-4 md:px-8 border-b gap-3 transition-transform duration-300 ease-in-out ${
           isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
         } ${
           isLight ? 'border-black bg-white/95 text-black backdrop-blur-md' : 'border-white bg-black/95 text-white backdrop-blur-md'
         }`}>
-          <div className="uppercase tracking-widest text-xs sm:text-sm font-bold flex items-center gap-2 sm:gap-3 truncate">
-            <span className={`w-2 h-2 ${isLight ? 'bg-black' : 'bg-white'} animate-pulse shrink-0`}></span>
-            <span className="truncate">{t('overlay.nav.collections')}</span>
+          <div className="flex items-center gap-3 sm:gap-5 md:gap-6 min-w-0">
+            <div className="uppercase tracking-widest text-xs sm:text-sm font-bold flex items-center gap-2 sm:gap-3 shrink-0">
+              <span className={`w-2 h-2 ${isLight ? 'bg-black' : 'bg-white'} animate-pulse shrink-0`}></span>
+              <span>{t('overlay.nav.collections')}</span>
+            </div>
+
+            <button
+              onClick={() => {
+                if (onNavigateTo3D) {
+                  onNavigateTo3D();
+                } else {
+                  onClose();
+                }
+              }}
+              className={`cursor-target cursor-crosshair pulse-tactile font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 sm:px-2 py-1 flex items-center transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none ${
+                isLight
+                  ? 'text-black hover:drop-shadow-[0_0_6px_rgba(0,0,0,0.6)]'
+                  : 'text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+              }`}
+              title="3D PROJECTS VIEWER"
+            >
+              <span>[ 3D PROJECTS VIEWER ]</span>
+            </button>
           </div>
+
           <button
             onClick={onClose}
             className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.4)]"
