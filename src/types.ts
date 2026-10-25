@@ -22,6 +22,23 @@ export interface TechSheet {
   downloadFileName: string;
 }
 
+export interface GarmentColorway {
+  id: string;
+  name: string;
+  nameEs?: string;
+  colorName: string;
+  colorNameEs?: string;
+  primaryColor: string;
+  secondaryColor?: string;
+  refCode?: string;
+  image: string;
+  images: string[];
+  material?: string;
+  fabricCode?: string;
+  details?: string;
+  sheetId?: string;
+}
+
 export interface IndustryGarment {
   id: string;
   name: string;
@@ -36,6 +53,7 @@ export interface IndustryGarment {
   details?: string;
   bentoSpan?: 'wide' | 'tall' | 'standard' | 'large';
   techSheet?: TechSheet;
+  colorways?: GarmentColorway[];
 }
 
 export interface Project {

@@ -3,39 +3,163 @@ import { createPortal } from 'react-dom';
 import { IndustryGarment } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
+export interface SectorLightboxItem {
+  id: string;
+  garment: IndustryGarment;
+  imageUrl: string;
+  imageIndexInGarment: number;
+  totalImagesInGarment: number;
+  globalIndex: number;
+}
+
 export interface GarmentLightboxModalProps {
   garment: IndustryGarment;
   initialIndex?: number;
+  sectorGarments?: IndustryGarment[];
+  sectorTitle?: string;
   onClose: () => void;
+  onGarmentChange?: (newGarment: IndustryGarment, newImageIndex: number) => void;
   isLight?: boolean;
 }
 
 export default function GarmentLightboxModal({
   garment,
   initialIndex = 0,
+  sectorGarments,
+  sectorTitle,
   onClose,
+  onGarmentChange,
   isLight = false,
 }: GarmentLightboxModalProps) {
   const { language } = useLanguage();
   const isES = language === 'es';
 
-  const images = useMemo(() => {
-    if (!garment) return [];
-    return garment.images && garment.images.length > 0 ? garment.images : [garment.image];
-  }, [garment]);
+  // Construct flattened list of all images across all garments in the current sector
+  const items: SectorLightboxItem[] = useMemo(() => {
+    const list: SectorLightboxItem[] = [];
+    const sourceGarments =
+      sectorGarments && sectorGarments.length > 0 ? sectorGarments : [garment];
 
-  const [currentIndex, setCurrentIndex] = useState<number>(initialIndex % (images.length || 1));
+    let globalIdx = 0;
+    sourceGarments.forEach((g) => {
+      // Gather images: if garment has colorways and no explicit override images, include all colorways uniquely
+      let gImages: string[];
+      if (g.images && g.images.length > 0) {
+        gImages = g.images;
+      } else if (g.colorways && g.colorways.length > 0) {
+        const collected: string[] = [];
+        g.colorways.forEach((cw) => {
+          (cw.images || [cw.image]).forEach((img) => {
+            if (!collected.includes(img)) collected.push(img);
+          });
+        });
+        gImages = collected.length > 0 ? collected : [g.image];
+      } else {
+        gImages = [g.image];
+      }
+
+      gImages.forEach((imgUrl, imgIdx) => {
+        list.push({
+          id: `${g.id}_${imgIdx}`,
+          garment: g,
+          imageUrl: imgUrl,
+          imageIndexInGarment: imgIdx,
+          totalImagesInGarment: gImages.length,
+          globalIndex: globalIdx,
+        });
+        globalIdx++;
+      });
+    });
+
+    return list;
+  }, [sectorGarments, garment]);
+
+  // Helper to find index in sector items matching garment and photo index
+  const findItemIndex = (targetGarment: IndustryGarment, targetImgIdx: number): number => {
+    if (!items.length) return 0;
+    const targetImages =
+      targetGarment.images && targetGarment.images.length > 0
+        ? targetGarment.images
+        : [targetGarment.image];
+    const targetImgUrl = targetImages[targetImgIdx];
+
+    // Priority 1: Match by exact image URL
+    if (targetImgUrl) {
+      const matchByUrl = items.findIndex((item) => item.imageUrl === targetImgUrl);
+      if (matchByUrl !== -1) return matchByUrl;
+    }
+
+    // Priority 2: Match by garment ID and index
+    const match = items.findIndex(
+      (item) =>
+        item.garment.id === targetGarment.id &&
+        item.imageIndexInGarment === targetImgIdx
+    );
+    if (match !== -1) return match;
+
+    const fallbackGarmentMatch = items.findIndex(
+      (item) => item.garment.id === targetGarment.id
+    );
+    return fallbackGarmentMatch !== -1 ? fallbackGarmentMatch : 0;
+  };
+
+  const [currentIndex, setCurrentIndex] = useState<number>(() =>
+    findItemIndex(garment, initialIndex)
+  );
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState<boolean>(false);
   const panStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Sync index if initialIndex changes
+  const carouselScrollRef = useRef<HTMLDivElement | null>(null);
+  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Ref-based callback to avoid infinite loops from function reference changes
+  const onGarmentChangeRef = useRef(onGarmentChange);
   useEffect(() => {
-    setCurrentIndex(initialIndex % (images.length || 1));
+    onGarmentChangeRef.current = onGarmentChange;
+  }, [onGarmentChange]);
+
+  // Sync index only when garment.id or initialIndex externally changes
+  const lastGarmentIdRef = useRef(garment.id);
+  const lastInitialIndexRef = useRef(initialIndex);
+  useEffect(() => {
+    if (lastGarmentIdRef.current !== garment.id || lastInitialIndexRef.current !== initialIndex) {
+      lastGarmentIdRef.current = garment.id;
+      lastInitialIndexRef.current = initialIndex;
+      const idx = findItemIndex(garment, initialIndex);
+      setCurrentIndex(idx);
+      setZoomLevel(1);
+      setPanOffset({ x: 0, y: 0 });
+    }
+  }, [garment.id, initialIndex]);
+
+  // Dedicated user-driven selection function (never called unconditionally on mount)
+  const selectItem = (index: number) => {
+    if (!items.length || index < 0 || index >= items.length) return;
+    setCurrentIndex(index);
     setZoomLevel(1);
     setPanOffset({ x: 0, y: 0 });
-  }, [initialIndex, images.length]);
+
+    const targetItem = items[index];
+    if (targetItem && onGarmentChangeRef.current) {
+      onGarmentChangeRef.current(targetItem.garment, targetItem.imageIndexInGarment);
+    }
+  };
+
+  // Auto-scroll carousel so the active thumbnail is centered
+  useEffect(() => {
+    const activeThumb = thumbnailRefs.current[currentIndex];
+    if (activeThumb) {
+      activeThumb.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [currentIndex]);
+
+  const activeItem = items[currentIndex] || items[0];
 
   const handleZoomIn = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -59,18 +183,16 @@ export default function GarmentLightboxModal({
 
   const nextImage = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (images.length <= 1) return;
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-    setZoomLevel(1);
-    setPanOffset({ x: 0, y: 0 });
+    if (items.length <= 1) return;
+    const nextIdx = (currentIndex + 1) % items.length;
+    selectItem(nextIdx);
   };
 
   const prevImage = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (images.length <= 1) return;
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-    setZoomLevel(1);
-    setPanOffset({ x: 0, y: 0 });
+    if (items.length <= 1) return;
+    const prevIdx = (currentIndex - 1 + items.length) % items.length;
+    selectItem(prevIdx);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -135,9 +257,9 @@ export default function GarmentLightboxModal({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [images.length, onClose]);
+  }, [items.length, onClose]);
 
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined' || !activeItem) return null;
 
   return createPortal(
     <div
@@ -159,25 +281,38 @@ export default function GarmentLightboxModal({
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Left: Garment Identifier */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <span className={`w-2 h-2 animate-pulse ${isLight ? 'bg-black' : 'bg-white'}`} />
-          <span
-            className={`font-mono text-[9px] sm:text-xs font-bold uppercase tracking-widest ${
-              isLight ? 'text-black' : 'text-white'
-            }`}
-          >
-            {isES
-              ? `GALERÍA HD // ${garment.refCode} // VISTA ${(currentIndex + 1).toString().padStart(2, '0')} / ${images.length.toString().padStart(2, '0')}`
-              : `HD GALLERY // ${garment.refCode} // VIEW ${(currentIndex + 1).toString().padStart(2, '0')} / ${images.length.toString().padStart(2, '0')}`}
-          </span>
-          <span
-            className={`hidden md:inline font-mono text-[9px] border px-1.5 py-0.5 uppercase ${
-              isLight ? 'text-black border-black/40' : 'text-white/80 border-white/30'
-            }`}
-          >
-            {garment.name}
-          </span>
+        {/* Left: Garment Identifier & Sector Context */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 max-w-[65vw]">
+          <span className={`w-2 h-2 animate-pulse shrink-0 ${isLight ? 'bg-black' : 'bg-white'}`} />
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 truncate">
+            <span
+              className={`font-mono text-[9px] sm:text-xs font-bold uppercase tracking-widest whitespace-nowrap ${
+                isLight ? 'text-black' : 'text-white'
+              }`}
+            >
+              {isES
+                ? `GALERÍA HD // ${activeItem.garment.refCode} // VISTA ${(activeItem.imageIndexInGarment + 1).toString().padStart(2, '0')}/${activeItem.totalImagesInGarment.toString().padStart(2, '0')}`
+                : `HD GALLERY // ${activeItem.garment.refCode} // VIEW ${(activeItem.imageIndexInGarment + 1).toString().padStart(2, '0')}/${activeItem.totalImagesInGarment.toString().padStart(2, '0')}`}
+            </span>
+
+            <span
+              className={`hidden md:inline font-mono text-[9px] border px-1.5 py-0.5 uppercase truncate max-w-[200px] ${
+                isLight ? 'text-black border-black/40 bg-black/5' : 'text-white/80 border-white/30 bg-white/5'
+              }`}
+            >
+              {activeItem.garment.name}
+            </span>
+
+            {sectorTitle && (
+              <span
+                className={`hidden lg:inline font-mono text-[8.5px] border px-1.5 py-0.5 uppercase tracking-wider ${
+                  isLight ? 'text-black/60 border-black/20' : 'text-white/60 border-white/20'
+                }`}
+              >
+                {sectorTitle.replace(/^[0-9]+ /, '')}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Center: Zoom Controls Toolbar */}
@@ -256,7 +391,7 @@ export default function GarmentLightboxModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Previous / Next Arrow Controls */}
-        {images.length > 1 && (
+        {items.length > 1 && (
           <>
             <button
               type="button"
@@ -294,8 +429,8 @@ export default function GarmentLightboxModal({
           }}
         >
           <img
-            src={images[currentIndex]}
-            alt={`${garment.name} - View ${currentIndex + 1}`}
+            src={activeItem.imageUrl}
+            alt={`${activeItem.garment.name} - View ${activeItem.imageIndexInGarment + 1}`}
             className={`max-w-[90vw] max-h-[72vh] object-contain border pointer-events-none select-none ${
               isLight
                 ? 'border-black shadow-[8px_8px_0px_rgba(0,0,0,0.9)]'
@@ -307,52 +442,71 @@ export default function GarmentLightboxModal({
 
       {/* Bottom Thumbnails Strip Bar (Lower-Left Carousel Matching SYS.CREATIVE) */}
       <div
-        className={`relative z-[120] w-full border-t px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3 overflow-x-auto ${
+        className={`relative z-[120] w-full border-t px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3 ${
           isLight
             ? 'bg-white/95 border-black shadow-[0_-4px_20px_rgba(0,0,0,0.1)] text-black'
             : 'bg-black/95 border-white/30 shadow-[0_-4px_20px_rgba(0,0,0,0.8)] text-white'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Carousel on Lower-Left corner */}
-        <div className="flex items-center gap-2">
-          {images.map((img, idx) => {
+        {/* Carousel on Lower-Left corner displaying all images in the sector */}
+        <div
+          ref={carouselScrollRef}
+          className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 max-w-[80vw] sm:max-w-[70vw] md:max-w-[75vw]"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {items.map((item, idx) => {
             const isActive = currentIndex === idx;
+            const prevItem = idx > 0 ? items[idx - 1] : null;
+            const isNewGarment = prevItem && prevItem.garment.id !== item.garment.id;
+
             return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => {
-                  setCurrentIndex(idx);
-                  setZoomLevel(1);
-                  setPanOffset({ x: 0, y: 0 });
-                }}
-                className={`cursor-target cursor-crosshair pulse-tactile relative w-11 h-11 sm:w-13 sm:h-13 border transition-all shrink-0 overflow-hidden ${
-                  isActive
-                    ? isLight
-                      ? 'border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)] scale-105 bg-white'
-                      : 'border-2 border-white shadow-[0_0_12px_#ffffff] scale-105 bg-black/80'
-                    : isLight
-                    ? 'border border-black/30 hover:border-black opacity-70 hover:opacity-100 bg-neutral-100'
-                    : 'border border-white/30 hover:border-white opacity-60 hover:opacity-100 bg-black/80'
-                }`}
-              >
-                <img
-                  src={img}
-                  alt={`Look ${idx + 1}`}
-                  className="w-full h-full object-cover pointer-events-none"
-                />
-                <span className="absolute bottom-0 right-0 bg-black/80 text-[7px] font-mono text-white px-1 pointer-events-none">
-                  {(idx + 1).toString().padStart(2, '0')}
-                </span>
-              </button>
+              <React.Fragment key={item.id}>
+                {isNewGarment && (
+                  <div
+                    className={`h-8 w-px mx-0.5 shrink-0 opacity-40 ${
+                      isLight ? 'bg-black' : 'bg-white'
+                    }`}
+                  />
+                )}
+                <button
+                  ref={(el) => {
+                    thumbnailRefs.current[idx] = el;
+                  }}
+                  type="button"
+                  onClick={() => {
+                    selectItem(idx);
+                  }}
+                  title={`${item.garment.refCode} - ${item.garment.name} (${item.imageIndexInGarment + 1}/${item.totalImagesInGarment})`}
+                  className={`cursor-target cursor-crosshair pulse-tactile relative w-12 h-12 sm:w-14 sm:h-14 border transition-all shrink-0 overflow-hidden ${
+                    isActive
+                      ? isLight
+                        ? 'border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)] scale-105 bg-white'
+                        : 'border-2 border-white shadow-[0_0_14px_#ffffff] scale-105 bg-black/80'
+                      : isLight
+                      ? 'border border-black/30 hover:border-black opacity-70 hover:opacity-100 bg-neutral-100'
+                      : 'border border-white/30 hover:border-white opacity-60 hover:opacity-100 bg-black/80'
+                  }`}
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={`${item.garment.name} - View ${item.imageIndexInGarment + 1}`}
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                  <div className="absolute bottom-0 inset-x-0 bg-black/85 text-[7px] font-mono text-white px-1 flex items-center justify-between pointer-events-none leading-tight">
+                    <span className="truncate max-w-[32px]">{item.garment.refCode}</span>
+                    <span>{(item.imageIndexInGarment + 1).toString().padStart(2, '0')}</span>
+                  </div>
+                </button>
+              </React.Fragment>
             );
           })}
         </div>
 
-        <div className="font-mono text-[9px] uppercase tracking-wider shrink-0 hidden sm:block">
-          <span className={isLight ? 'text-black/70' : 'text-white/70'}>
-            [ {currentIndex + 1} / {images.length} {isES ? 'VISTAS' : 'VIEWS'} ]
+        {/* Global sector image counter */}
+        <div className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider shrink-0 whitespace-nowrap hidden sm:block pl-2">
+          <span className={`font-bold ${isLight ? 'text-black' : 'text-white'}`}>
+            [ {(currentIndex + 1).toString().padStart(2, '0')} / {items.length.toString().padStart(2, '0')} {isES ? 'FOTOS SECTOR' : 'SECTOR PHOTOS'} ]
           </span>
         </div>
       </div>

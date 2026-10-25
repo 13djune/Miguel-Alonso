@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Layers,
   Sparkles,
+  Palette,
 } from 'lucide-react';
 import StarBorder from './StarBorder';
 import GarmentLightboxModal from './GarmentLightboxModal';
@@ -43,6 +44,24 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
   const [inspectedImageIndex, setInspectedImageIndex] = useState<number>(0);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
   const [downloadSuccessId, setDownloadSuccessId] = useState<string | null>(null);
+
+  // Active colorway mapping per garment id
+  const [activeColorwayIdMap, setActiveColorwayIdMap] = useState<Record<string, string>>({});
+
+  // Active colorway for inspected garment
+  const activeColorway = useMemo(() => {
+    if (!inspectedGarment || !inspectedGarment.colorways || inspectedGarment.colorways.length === 0) {
+      return null;
+    }
+    const id = activeColorwayIdMap[inspectedGarment.id] || inspectedGarment.colorways[0].id;
+    return inspectedGarment.colorways.find((c) => c.id === id) || inspectedGarment.colorways[0];
+  }, [inspectedGarment, activeColorwayIdMap]);
+
+  // Reset zoom & inspected image when switching inspected garment
+  useEffect(() => {
+    setIsZoomed(false);
+    setInspectedImageIndex(0);
+  }, [inspectedGarment?.id]);
 
   // Fullscreen garment lightbox state
   const [isGarmentLightboxOpen, setIsGarmentLightboxOpen] = useState<boolean>(false);
@@ -643,23 +662,35 @@ export default function CollectionsView({ projects, onClose, onSelectProject, is
   }, [inspectedGarment, currentGarmentIndex, displayedGarments]);
 
   // Technical spec sheet text download
-  const handleDownloadTechSheet = (garment: IndustryGarment, e?: React.MouseEvent) => {
+  const handleDownloadTechSheet = (
+    garment: IndustryGarment,
+    e?: React.MouseEvent,
+    colorwayOverride?: any
+  ) => {
     if (e) e.stopPropagation();
     if (!garment.techSheet) return;
 
     const sheet = garment.techSheet;
+    const refCode = colorwayOverride?.refCode || garment.refCode;
+    const fabricCode = colorwayOverride?.fabricCode || sheet.fabricCode;
+    const material = colorwayOverride?.material || garment.material;
+    const details = colorwayOverride?.details || garment.details;
+    const colorwayLabel = colorwayOverride?.name
+      ? `\nCOLORWAY      : ${colorwayOverride.name}`
+      : '';
+
     const content = `=====================================================
 VALENTINA ARCHIVE // TECHNICAL SPECIFICATION SHEET
 =====================================================
-DOCUMENT ID   : ${sheet.sheetId}
-GARMENT REF   : ${garment.refCode}
-ITEM NAME     : ${garment.name}
+DOCUMENT ID   : ${colorwayOverride?.sheetId || sheet.sheetId}
+GARMENT REF   : ${refCode}
+ITEM NAME     : ${garment.name}${colorwayLabel}
 CATEGORY      : ${garment.category.toUpperCase()}
 SEASON        : ${sheet.season}
 DATE EXPORTED : ${new Date().toISOString().split('T')[0]}
 
 [TEXTILE SPECIFICATION]
-FABRIC CODE   : ${sheet.fabricCode}
+FABRIC CODE   : ${fabricCode}
 WEIGHT        : ${sheet.weight}
 COMPOSITION   : ${sheet.composition}
 FINISH/TREAT  : ${sheet.treatment}
@@ -671,7 +702,7 @@ ${garment.silhouette || 'Standard ergonomic industrial pattern'}
 ${sheet.specs.map((s) => `• ${s.label.padEnd(24, ' ')}: ${s.value}`).join('\n')}
 
 [INDUSTRIAL MANUFACTURING DETAILS]
-${garment.details || 'Double safety stitch throughout with taped seam reinforcement.'}
+${details || 'Double safety stitch throughout with taped seam reinforcement.'}
 
 =====================================================
 AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
@@ -681,7 +712,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${garment.refCode}_TECH_SHEET.txt`;
+    link.download = `${refCode}_TECH_SHEET.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -691,7 +722,32 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
     setTimeout(() => setDownloadSuccessId(null), 3000);
   };
 
+  const currentGarmentSectorProject = useMemo(() => {
+    if (typeof selectedSector === 'number') {
+      return industryProjects[selectedSector];
+    }
+    if (inspectedGarment) {
+      return industryProjects.find((p) => p.garments?.some((g) => g.id === inspectedGarment.id)) || null;
+    }
+    return null;
+  }, [selectedSector, industryProjects, inspectedGarment]);
+
   const activeSectorProject = typeof selectedSector === 'number' ? industryProjects[selectedSector] : null;
+
+  const sectorGarments = useMemo(() => {
+    if (typeof selectedSector === 'number') {
+      return displayedGarments.length > 0 ? displayedGarments : industryProjects[selectedSector]?.garments || [];
+    }
+    if (currentGarmentSectorProject?.garments && currentGarmentSectorProject.garments.length > 0) {
+      return currentGarmentSectorProject.garments;
+    }
+    return displayedGarments;
+  }, [selectedSector, displayedGarments, currentGarmentSectorProject, industryProjects]);
+
+  const handleLightboxGarmentChange = useCallback((newGarment: IndustryGarment, newIndex: number) => {
+    setInspectedGarment((prev) => (prev?.id === newGarment.id ? prev : newGarment));
+    setInspectedImageIndex((prev) => (prev === newIndex ? prev : newIndex));
+  }, []);
 
   return (
     <div className={`fixed inset-0 z-[60] flex items-center justify-center p-0 pointer-events-auto animate-fade-in-up ${
@@ -1094,15 +1150,33 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setInspectedGarment(garment);
+                                  setInspectedImageIndex(0);
+                                  setIsGarmentLightboxOpen(true);
                                 }}
-                                className={`cursor-target px-2 sm:px-2.5 py-1 border transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 ${
+                                className={`cursor-target cursor-crosshair pulse-tactile px-2 sm:px-2.5 py-1 border transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 ${
+                                  isLight
+                                    ? 'border-black bg-black text-white hover:bg-neutral-800 shadow-[1px_1px_0px_rgba(0,0,0,0.8)]'
+                                    : 'border-white bg-white text-black hover:bg-neutral-200 shadow-[0_0_8px_rgba(255,255,255,0.5)]'
+                                }`}
+                                title={isES ? 'Abrir visor HD Gallery' : 'Open HD Gallery'}
+                              >
+                                <Maximize2 size={11} className="shrink-0" />
+                                <span className="whitespace-nowrap">HD</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setInspectedGarment(garment);
+                                }}
+                                className={`cursor-target cursor-crosshair pulse-tactile px-2 sm:px-2.5 py-1 border transition-colors uppercase text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 ${
                                   isLight
                                     ? 'border-black bg-white text-black hover:bg-black hover:text-white'
                                     : 'border-white/80 hover:border-white text-white hover:bg-white hover:text-black'
                                 }`}
-                                title={isES ? 'Ver información' : 'View info'}
+                                title={isES ? 'Ver información técnica' : 'View info'}
                               >
-                                <Maximize2 size={11} className="shrink-0" />
                                 <span className="whitespace-nowrap">INFO</span>
                               </button>
 
@@ -1253,9 +1327,11 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
               {/* Left Column: Image with Multi-Image Carousel */}
               {(() => {
-                const inspectedImages = inspectedGarment.images && inspectedGarment.images.length > 0
-                  ? inspectedGarment.images
-                  : [inspectedGarment.image];
+                const inspectedImages = activeColorway
+                  ? activeColorway.images
+                  : inspectedGarment.images && inspectedGarment.images.length > 0
+                    ? inspectedGarment.images
+                    : [inspectedGarment.image];
                 const currentImg = inspectedImages[inspectedImageIndex % inspectedImages.length];
 
                 return (
@@ -1338,7 +1414,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     <div className={`flex items-center justify-between text-xs font-mono px-1 pt-0.5 ${
                       isLight ? 'text-black/70' : 'text-white/60'
                     }`}>
-                      <span className="font-bold">REF: {inspectedGarment.refCode}</span>
+                      <span className="font-bold">REF: {activeColorway?.refCode || inspectedGarment.refCode}</span>
                       {currentGarmentIndex !== -1 && (
                         <span className={`font-bold ${isLight ? "text-black" : "text-white"}`}>
                           [ {String(currentGarmentIndex + 1).padStart(2, '0')} / {String(displayedGarments.length).padStart(2, '0')} ]
@@ -1356,7 +1432,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     isLight ? "text-black" : "text-white"
                   }`}>
                     <span className={`w-2 h-2 animate-pulse ${isLight ? "bg-black" : "bg-white"}`}></span>
-                    <span>{inspectedGarment.refCode}</span>
+                    <span>{activeColorway?.refCode || inspectedGarment.refCode}</span>
                     <span>·</span>
                     <span>{inspectedGarment.category.toUpperCase()}</span>
                   </div>
@@ -1364,7 +1440,9 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   <h2 className={`text-xl sm:text-2xl md:text-3xl font-extrabold uppercase tracking-wider leading-snug ${
                     isLight ? 'text-black' : 'text-white'
                   }`}>
-                    {isES && inspectedGarment.nameEs ? inspectedGarment.nameEs : inspectedGarment.name}
+                    {activeColorway?.name
+                      ? (isES && activeColorway.nameEs ? activeColorway.nameEs : activeColorway.name)
+                      : (isES && inspectedGarment.nameEs ? inspectedGarment.nameEs : inspectedGarment.name)}
                   </h2>
 
                   {inspectedGarment.silhouette && (
@@ -1382,7 +1460,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                     </div>
                   )}
 
-                  {inspectedGarment.material && (
+                  {(activeColorway?.material || inspectedGarment.material) && (
                     <div className="flex flex-col gap-1 text-sm">
                       <span className={`text-[10px] sm:text-xs uppercase tracking-widest font-bold ${
                         isLight ? 'text-black/50' : 'text-white/50'
@@ -1390,12 +1468,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         {isES ? 'COMPOSICIÓN TEXTIL' : 'TEXTILE COMPOSITION'}
                       </span>
                       <span className={`text-sm sm:text-base font-medium ${isLight ? 'text-black' : 'text-white'}`}>
-                        {inspectedGarment.material}
+                        {activeColorway?.material || inspectedGarment.material}
                       </span>
                     </div>
                   )}
 
-                  {inspectedGarment.details && (
+                  {(activeColorway?.details || inspectedGarment.details) && (
                     <div className="flex flex-col gap-1 text-sm">
                       <span className={`text-[10px] sm:text-xs uppercase tracking-widest font-bold ${
                         isLight ? 'text-black/50' : 'text-white/50'
@@ -1403,7 +1481,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         {isES ? 'ESPECIFICACIONES INDUSTRIALES' : 'INDUSTRIAL SPECIFICATIONS'}
                       </span>
                       <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-black/85' : 'text-white/85'}`}>
-                        {inspectedGarment.details}
+                        {activeColorway?.details || inspectedGarment.details}
                       </p>
                     </div>
                   )}
@@ -1421,7 +1499,9 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                           <FileText size={14} />
                           {isES ? 'FICHA TÉCNICA OFICIAL DISPONIBLE' : 'OFFICIAL TECH PACK AVAILABLE'}
                         </span>
-                        <span className={isLight ? 'text-black/80' : 'text-white/80'}>{inspectedGarment.techSheet.sheetId}</span>
+                        <span className={isLight ? 'text-black/80' : 'text-white/80'}>
+                          {activeColorway?.sheetId || (activeColorway?.refCode ? `TS-${activeColorway.refCode}` : inspectedGarment.techSheet.sheetId)}
+                        </span>
                       </div>
 
                       <div className={`grid grid-cols-2 gap-3 text-xs sm:text-sm pt-1.5 border-t ${
@@ -1429,7 +1509,9 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       }`}>
                         <div>
                           <span className={`block text-[10px] sm:text-xs ${isLight ? 'text-black/50' : 'text-white/40'}`}>FABRIC:</span>
-                          <span className="font-bold">{inspectedGarment.techSheet.fabricCode}</span>
+                          <span className="font-bold">
+                            {activeColorway?.fabricCode || inspectedGarment.techSheet.fabricCode}
+                          </span>
                         </div>
                         <div>
                           <span className={`block text-[10px] sm:text-xs ${isLight ? 'text-black/50' : 'text-white/40'}`}>WEIGHT:</span>
@@ -1439,7 +1521,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
                       <button
                         type="button"
-                        onClick={(e) => handleDownloadTechSheet(inspectedGarment, e)}
+                        onClick={(e) => handleDownloadTechSheet(inspectedGarment, e, activeColorway)}
                         className={`cursor-target w-full mt-2 py-2.5 font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-colors ${
                           isLight
                             ? 'bg-black text-white hover:bg-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
@@ -1449,6 +1531,100 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         <Download size={15} />
                         <span>{isES ? 'DESCARGAR FICHA TÉCNICA COMPLETA (.TXT)' : 'DOWNLOAD FULL TECH PACK (.TXT)'}</span>
                       </button>
+                    </div>
+                  )}
+
+                  {/* COLORWAY SELECTION - IN THE ZONE CIRCLED IN BLUE BELOW TECH PACK */}
+                  {inspectedGarment.colorways && inspectedGarment.colorways.length > 0 && (
+                    <div className={`mt-2 p-3.5 border space-y-3 ${
+                      isLight
+                        ? 'border-black/30 bg-black/[0.03] text-black'
+                        : 'border-white/60 bg-white/[0.04] text-white'
+                    }`}>
+                      <div className="flex items-center justify-between text-xs sm:text-sm font-bold uppercase tracking-wider">
+                        <span className="flex items-center gap-1.5">
+                          <Palette size={14} />
+                          {isES ? 'COLORWAY // SELECCIONAR TONALIDAD' : 'COLORWAY // SELECT COLORWAY'}
+                        </span>
+                        <span className={`text-[10px] sm:text-xs font-mono px-1.5 py-0.5 border ${
+                          isLight ? 'border-black/30 bg-black/5 text-black' : 'border-white/30 bg-white/10 text-white'
+                        }`}>
+                          {isES ? `${inspectedGarment.colorways.length} TONOS DISPONIBLES` : `${inspectedGarment.colorways.length} TONES AVAILABLE`}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                        {inspectedGarment.colorways.map((cw) => {
+                          const isSelected = (activeColorway?.id || inspectedGarment.colorways![0].id) === cw.id;
+                          return (
+                            <button
+                              key={cw.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveColorwayIdMap((prev) => ({
+                                  ...prev,
+                                  [inspectedGarment.id]: cw.id,
+                                }));
+                                setInspectedImageIndex(0);
+                              }}
+                              className={`cursor-target p-2.5 border text-left flex flex-col gap-2 transition-all group ${
+                                isSelected
+                                  ? isLight
+                                    ? 'border-2 border-black bg-white shadow-[3px_3px_0px_rgba(0,0,0,0.9)] ring-1 ring-black'
+                                    : 'border-2 border-white bg-black shadow-[0_0_15px_rgba(255,255,255,0.4)] ring-1 ring-white'
+                                  : isLight
+                                  ? 'border-black/20 hover:border-black/60 bg-white/50 hover:bg-white'
+                                  : 'border-white/20 hover:border-white/60 bg-black/40 hover:bg-white/10'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-5 h-5 rounded-full border border-black/40 overflow-hidden relative shadow-sm shrink-0"
+                                    style={{
+                                      background: cw.secondaryColor
+                                        ? `linear-gradient(135deg, ${cw.primaryColor} 50%, ${cw.secondaryColor} 50%)`
+                                        : cw.primaryColor,
+                                    }}
+                                    title={cw.colorName}
+                                  />
+                                  <span className={`text-[9.5px] font-mono tracking-wider uppercase font-bold ${
+                                    isSelected
+                                      ? isLight ? 'text-black' : 'text-white'
+                                      : isLight ? 'text-black/60' : 'text-white/60'
+                                  }`}>
+                                    {cw.refCode?.split('-').pop() || cw.id}
+                                  </span>
+                                </div>
+
+                                {isSelected && (
+                                  <span className={`text-[8.5px] font-mono px-1.5 py-0.5 border uppercase font-bold ${
+                                    isLight ? 'bg-black text-white border-black' : 'bg-white text-black border-white'
+                                  }`}>
+                                    {isES ? 'ACTIVO' : 'ACTIVE'}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex flex-col">
+                                <span className={`text-xs font-bold uppercase tracking-wider leading-tight ${
+                                  isSelected
+                                    ? isLight ? 'text-black' : 'text-white'
+                                    : isLight ? 'text-black/80' : 'text-white/80'
+                                }`}>
+                                  {isES && cw.nameEs ? cw.nameEs : cw.name}
+                                </span>
+                                <span className={`text-[9.5px] font-mono truncate mt-0.5 ${
+                                  isLight ? 'text-black/55' : 'text-white/50'
+                                }`}>
+                                  {isES && cw.colorNameEs ? cw.colorNameEs : cw.colorName}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1476,9 +1652,22 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
       {/* Garment Fullscreen Interactive Lightbox Gallery (Unified shared component matching SYS.CREATIVE) */}
       {isGarmentLightboxOpen && inspectedGarment && (
         <GarmentLightboxModal
-          garment={inspectedGarment}
+          garment={(() => {
+            if (!activeColorway) return inspectedGarment;
+            return {
+              ...inspectedGarment,
+              image: activeColorway.images[0] || inspectedGarment.image,
+              images: activeColorway.images,
+              refCode: activeColorway.refCode || inspectedGarment.refCode,
+              material: activeColorway.material || inspectedGarment.material,
+              details: activeColorway.details || inspectedGarment.details,
+            };
+          })()}
+          sectorGarments={sectorGarments}
+          sectorTitle={currentGarmentSectorProject ? currentGarmentSectorProject.title : undefined}
           initialIndex={inspectedImageIndex}
           onClose={() => setIsGarmentLightboxOpen(false)}
+          onGarmentChange={handleLightboxGarmentChange}
           isLight={isLight}
         />
       )}
