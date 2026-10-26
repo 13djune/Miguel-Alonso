@@ -34,15 +34,19 @@ export default function GarmentLightboxModal({
   const { language } = useLanguage();
   const isES = language === 'es';
 
-  // Construct flattened list of all images across all garments in the current sector
-  const items: SectorLightboxItem[] = useMemo(() => {
-    const list: SectorLightboxItem[] = [];
+  // Grouped images by card (garment)
+  const garmentGroups = useMemo(() => {
+    const groups: {
+      garment: IndustryGarment;
+      images: SectorLightboxItem[];
+      primaryImage: SectorLightboxItem;
+    }[] = [];
+
     const sourceGarments =
       sectorGarments && sectorGarments.length > 0 ? sectorGarments : [garment];
 
     let globalIdx = 0;
     sourceGarments.forEach((g) => {
-      // Gather images: if garment has colorways and no explicit override images, include all colorways uniquely
       let gImages: string[];
       if (g.images && g.images.length > 0) {
         gImages = g.images;
@@ -58,21 +62,29 @@ export default function GarmentLightboxModal({
         gImages = [g.image];
       }
 
-      gImages.forEach((imgUrl, imgIdx) => {
-        list.push({
-          id: `${g.id}_${imgIdx}`,
-          garment: g,
-          imageUrl: imgUrl,
-          imageIndexInGarment: imgIdx,
-          totalImagesInGarment: gImages.length,
-          globalIndex: globalIdx,
-        });
-        globalIdx++;
+      const gItems: SectorLightboxItem[] = gImages.map((imgUrl, imgIdx) => ({
+        id: `${g.id}_${imgIdx}`,
+        garment: g,
+        imageUrl: imgUrl,
+        imageIndexInGarment: imgIdx,
+        totalImagesInGarment: gImages.length,
+        globalIndex: globalIdx++,
+      }));
+
+      groups.push({
+        garment: g,
+        images: gItems,
+        primaryImage: gItems[0],
       });
     });
 
-    return list;
+    return groups;
   }, [sectorGarments, garment]);
+
+  // Construct flattened list of all images across all garments in the current sector
+  const items: SectorLightboxItem[] = useMemo(() => {
+    return garmentGroups.flatMap((group) => group.images);
+  }, [garmentGroups]);
 
   // Helper to find index in sector items matching garment and photo index
   const findItemIndex = (targetGarment: IndustryGarment, targetImgIdx: number): number => {
@@ -449,55 +461,107 @@ export default function GarmentLightboxModal({
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Carousel on Lower-Left corner displaying all images in the sector */}
+        {/* Carousel on Lower-Left corner displaying card thumbnails with single-collapsed / active-expanded behavior */}
         <div
           ref={carouselScrollRef}
           className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 max-w-[80vw] sm:max-w-[70vw] md:max-w-[75vw]"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {items.map((item, idx) => {
-            const isActive = currentIndex === idx;
-            const prevItem = idx > 0 ? items[idx - 1] : null;
-            const isNewGarment = prevItem && prevItem.garment.id !== item.garment.id;
+          {garmentGroups.map((group, groupIdx) => {
+            const isGroupActive = activeItem.garment.id === group.garment.id;
 
             return (
-              <React.Fragment key={item.id}>
-                {isNewGarment && (
+              <React.Fragment key={group.garment.id}>
+                {groupIdx > 0 && (
                   <div
-                    className={`h-8 w-px mx-0.5 shrink-0 opacity-40 ${
+                    className={`h-8 w-px mx-0.5 shrink-0 opacity-30 ${
                       isLight ? 'bg-black' : 'bg-white'
                     }`}
                   />
                 )}
-                <button
-                  ref={(el) => {
-                    thumbnailRefs.current[idx] = el;
-                  }}
-                  type="button"
-                  onClick={() => {
-                    selectItem(idx);
-                  }}
-                  title={`${item.garment.refCode} - ${item.garment.name} (${item.imageIndexInGarment + 1}/${item.totalImagesInGarment})`}
-                  className={`cursor-target cursor-crosshair pulse-tactile relative w-12 h-12 sm:w-14 sm:h-14 border transition-all shrink-0 overflow-hidden ${
-                    isActive
-                      ? isLight
-                        ? 'border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)] scale-105 bg-white'
-                        : 'border-2 border-white shadow-[0_0_14px_#ffffff] scale-105 bg-black/80'
-                      : isLight
-                      ? 'border border-black/30 hover:border-black opacity-70 hover:opacity-100 bg-neutral-100'
-                      : 'border border-white/30 hover:border-white opacity-60 hover:opacity-100 bg-black/80'
-                  }`}
-                >
-                  <img
-                    src={item.imageUrl}
-                    alt={`${item.garment.name} - View ${item.imageIndexInGarment + 1}`}
-                    className="w-full h-full object-cover pointer-events-none"
-                  />
-                  <div className="absolute bottom-0 inset-x-0 bg-black/85 text-[7px] font-mono text-white px-1 flex items-center justify-between pointer-events-none leading-tight">
-                    <span className="truncate max-w-[32px]">{item.garment.refCode}</span>
-                    <span>{(item.imageIndexInGarment + 1).toString().padStart(2, '0')}</span>
+
+                {isGroupActive ? (
+                  // EXPANDED CARD: shows all images belonging to this card
+                  <div
+                    className={`flex items-center gap-1.5 p-1 border transition-all duration-300 shrink-0 ${
+                      isLight
+                        ? 'border-black/50 bg-black/[0.04] shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+                        : 'border-white/50 bg-white/[0.05] shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                    }`}
+                  >
+                    {group.images.map((item) => {
+                      const isActive = currentIndex === item.globalIndex;
+
+                      return (
+                        <button
+                          key={item.id}
+                          ref={(el) => {
+                            thumbnailRefs.current[item.globalIndex] = el;
+                          }}
+                          type="button"
+                          onClick={() => {
+                            selectItem(item.globalIndex);
+                          }}
+                          title={`${item.garment.refCode} - ${item.garment.name} (${item.imageIndexInGarment + 1}/${item.totalImagesInGarment})`}
+                          className={`cursor-target cursor-crosshair pulse-tactile relative w-12 h-12 sm:w-14 sm:h-14 border transition-all shrink-0 overflow-hidden ${
+                            isActive
+                              ? isLight
+                                ? 'border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.9)] scale-105 bg-white ring-2 ring-black/20'
+                                : 'border-2 border-white shadow-[0_0_14px_#ffffff] scale-105 bg-black/90 ring-2 ring-white/30'
+                              : isLight
+                              ? 'border border-black/30 hover:border-black opacity-75 hover:opacity-100 bg-neutral-100'
+                              : 'border border-white/30 hover:border-white opacity-65 hover:opacity-100 bg-black/80'
+                          }`}
+                        >
+                          <img
+                            src={item.imageUrl}
+                            alt={`${item.garment.name} - View ${item.imageIndexInGarment + 1}`}
+                            className="w-full h-full object-cover pointer-events-none"
+                          />
+                          <div className="absolute bottom-0 inset-x-0 bg-black/85 text-[7px] font-mono text-white px-1 flex items-center justify-between pointer-events-none leading-tight">
+                            <span className="truncate max-w-[32px]">{item.garment.refCode}</span>
+                            <span>{(item.imageIndexInGarment + 1).toString().padStart(2, '0')}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
-                </button>
+                ) : (
+                  // CONTRACTED CARD: shows ONLY ONE image for this card
+                  <button
+                    ref={(el) => {
+                      thumbnailRefs.current[group.primaryImage.globalIndex] = el;
+                    }}
+                    type="button"
+                    onClick={() => {
+                      selectItem(group.primaryImage.globalIndex);
+                    }}
+                    title={`${group.garment.refCode} - ${group.garment.name} (${group.images.length} ${isES ? 'imágenes' : 'images'} - ${isES ? 'Click para expandir' : 'Click to expand'})`}
+                    className={`cursor-target cursor-crosshair pulse-tactile relative w-12 h-12 sm:w-14 sm:h-14 border transition-all shrink-0 overflow-hidden group ${
+                      isLight
+                        ? 'border border-black/30 hover:border-black opacity-60 hover:opacity-100 bg-neutral-100 hover:shadow-[2px_2px_0px_rgba(0,0,0,0.4)]'
+                        : 'border border-white/30 hover:border-white opacity-55 hover:opacity-100 bg-black/80 hover:shadow-[0_0_10px_rgba(255,255,255,0.3)]'
+                    }`}
+                  >
+                    <img
+                      src={group.primaryImage.imageUrl}
+                      alt={group.garment.name}
+                      className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform"
+                    />
+
+                    {/* Multi-image count indicator badge in top-right */}
+                    {group.images.length > 1 && (
+                      <div className="absolute top-0.5 right-0.5 bg-black/90 text-[7.5px] font-mono font-bold text-white px-1 py-0.5 border border-white/40 leading-none shadow-sm">
+                        +{group.images.length}
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-0 inset-x-0 bg-black/85 text-[7px] font-mono text-white px-1 flex items-center justify-between pointer-events-none leading-tight">
+                      <span className="truncate max-w-[34px]">{group.garment.refCode}</span>
+                      <span className="text-white/80">01</span>
+                    </div>
+                  </button>
+                )}
               </React.Fragment>
             );
           })}

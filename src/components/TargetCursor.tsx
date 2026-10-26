@@ -15,7 +15,7 @@ export interface TargetCursorProps {
 type CursorState = 'idle' | 'interaction';
 
 const TargetCursor = ({
-  targetSelector = 'a, button, [role="button"], [role="tab"], [role="link"], [role="menuitem"], [role="checkbox"], .cursor-target, .cursor-crosshair, .cursor-pointer, .star-border-container, .pulse-tactile, [data-interactive], [data-clickable], .radar-vertex-hitbox, .radar-vertex-group, input, select, textarea',
+  targetSelector = 'a, button, [role="button"], [role="tab"], [role="link"], [role="menuitem"], [role="checkbox"], .cursor-target, .cursor-crosshair, .cursor-pointer, .star-border-container, .pulse-tactile, [data-interactive], [data-clickable], .radar-vertex-hitbox, .radar-vertex-group, input, select, textarea, .bento-grid-item, .creative-card, .creative-cover, [data-cursor-target]',
   hideDefaultCursor = true,
   cursorColor = '#ffffff',
   cursorColorOnTarget = '#ffffff',
@@ -184,26 +184,71 @@ const TargetCursor = ({
           const targetCenterX = rect.left + rect.width / 2;
           const targetCenterY = rect.top + rect.height / 2;
 
-          // Magnetic suction: 88% pulled towards target center, 12% slight elastic pointer give
-          desiredX = targetCenterX + (pointerPos.current.x - targetCenterX) * 0.12;
-          desiredY = targetCenterY + (pointerPos.current.y - targetCenterY) * 0.12;
+          const isCoverOrCard =
+            activeTargetRef.current.classList.contains('creative-cover') ||
+            activeTargetRef.current.classList.contains('creative-card') ||
+            activeTargetRef.current.getAttribute('data-cursor-target') === 'cover' ||
+            rect.width > 420;
 
-          // Inner dot tactile displacement inside the magnetic box
-          desiredDotX = (pointerPos.current.x - targetCenterX) * 0.22;
-          desiredDotY = (pointerPos.current.y - targetCenterY) * 0.22;
+          const isLargeElement = rect.width > 340 || rect.height > 180;
 
-          // Corners wrap around element with 4px padding
-          const padding = constants.targetPadding;
-          const cornerSize = constants.cornerSize;
-          const wHalf = rect.width / 2 + padding;
-          const hHalf = rect.height / 2 + padding;
+          if (isCoverOrCard) {
+            // Large project cards & covers (SYS.CREATIVE covers & cards):
+            // Smoothly track pointer position with soft magnetic damping
+            desiredX = pointerPos.current.x;
+            desiredY = pointerPos.current.y;
+            desiredDotX = 0;
+            desiredDotY = 0;
 
-          targetCornerPos = [
-            { x: -wHalf, y: -hHalf },
-            { x: wHalf - cornerSize, y: -hHalf },
-            { x: wHalf - cornerSize, y: hHalf - cornerSize },
-            { x: -wHalf, y: hHalf - cornerSize }
-          ];
+            // Expand corners into a tactical target viewfinder around the pointer
+            const cornerSize = constants.cornerSize;
+            const targetSpread = 36; // 72px x 72px tactical frame
+
+            targetCornerPos = [
+              { x: -targetSpread, y: -targetSpread },
+              { x: targetSpread - cornerSize, y: -targetSpread },
+              { x: targetSpread - cornerSize, y: targetSpread - cornerSize },
+              { x: -targetSpread, y: targetSpread - cornerSize }
+            ];
+          } else if (isLargeElement) {
+            // Medium-large elements (e.g. bento grid tiles):
+            // Frame element with soft 35% suction so user can move freely
+            desiredX = targetCenterX + (pointerPos.current.x - targetCenterX) * 0.35;
+            desiredY = targetCenterY + (pointerPos.current.y - targetCenterY) * 0.35;
+            desiredDotX = (pointerPos.current.x - targetCenterX) * 0.15;
+            desiredDotY = (pointerPos.current.y - targetCenterY) * 0.15;
+
+            const padding = constants.targetPadding;
+            const cornerSize = constants.cornerSize;
+            const wHalf = Math.min(rect.width / 2 + padding, 220);
+            const hHalf = Math.min(rect.height / 2 + padding, 220);
+
+            targetCornerPos = [
+              { x: -wHalf, y: -hHalf },
+              { x: wHalf - cornerSize, y: -hHalf },
+              { x: wHalf - cornerSize, y: hHalf - cornerSize },
+              { x: -wHalf, y: hHalf - cornerSize }
+            ];
+          } else {
+            // Standard buttons, chips, tabs:
+            desiredX = targetCenterX + (pointerPos.current.x - targetCenterX) * 0.12;
+            desiredY = targetCenterY + (pointerPos.current.y - targetCenterY) * 0.12;
+
+            desiredDotX = (pointerPos.current.x - targetCenterX) * 0.22;
+            desiredDotY = (pointerPos.current.y - targetCenterY) * 0.22;
+
+            const padding = constants.targetPadding;
+            const cornerSize = constants.cornerSize;
+            const wHalf = rect.width / 2 + padding;
+            const hHalf = rect.height / 2 + padding;
+
+            targetCornerPos = [
+              { x: -wHalf, y: -hHalf },
+              { x: wHalf - cornerSize, y: -hHalf },
+              { x: wHalf - cornerSize, y: hHalf - cornerSize },
+              { x: -wHalf, y: hHalf - cornerSize }
+            ];
+          }
         } else {
           setCursorToIdle();
         }
@@ -253,6 +298,14 @@ const TargetCursor = ({
     // Start RAF loop
     rafIdRef.current = requestAnimationFrame(updateCursorPhysics);
 
+    // Validation helper: rejects zero-size elements and full-screen backdrop containers
+    const isValidTarget = (rect: DOMRect): boolean => {
+      if (rect.width <= 4 || rect.height <= 4) return false;
+      const isFullViewport = rect.width >= window.innerWidth * 0.98 && rect.height >= window.innerHeight * 0.95;
+      if (isFullViewport) return false;
+      return true;
+    };
+
     // Universal interactive target finder: catches buttons, links, cards, icons, tabs, radar points, modals
     const findInteractiveElement = (el: Element | null): Element | null => {
       if (!el || el === document.body || el === document.documentElement) return null;
@@ -262,7 +315,7 @@ const TargetCursor = ({
       if (matched) {
         if (!matched.hasAttribute('disabled') && matched.getAttribute('aria-disabled') !== 'true') {
           const rect = matched.getBoundingClientRect();
-          if (rect.width > 4 && rect.height > 4 && rect.width < window.innerWidth * 0.95 && rect.height < window.innerHeight * 0.95) {
+          if (isValidTarget(rect)) {
             return matched;
           }
         }
@@ -278,19 +331,22 @@ const TargetCursor = ({
           curr.classList.contains('cursor-crosshair') ||
           curr.classList.contains('cursor-pointer') ||
           curr.classList.contains('star-border-container') ||
-          curr.classList.contains('pulse-tactile')
+          curr.classList.contains('pulse-tactile') ||
+          curr.classList.contains('creative-card') ||
+          curr.classList.contains('creative-cover') ||
+          curr.classList.contains('bento-grid-item')
         ) {
           const rect = curr.getBoundingClientRect();
-          if (rect.width > 4 && rect.height > 4 && rect.width < window.innerWidth * 0.95 && rect.height < window.innerHeight * 0.95) {
+          if (isValidTarget(rect)) {
             return curr;
           }
         }
 
         try {
           const style = window.getComputedStyle(curr);
-          if (style.cursor === 'pointer' || style.cursor === 'crosshair') {
+          if (style.cursor === 'pointer' || style.cursor === 'crosshair' || style.cursor === 'grab') {
             const rect = curr.getBoundingClientRect();
-            if (rect.width > 6 && rect.height > 6 && rect.width < window.innerWidth * 0.95 && rect.height < window.innerHeight * 0.95) {
+            if (isValidTarget(rect)) {
               return curr;
             }
           }
@@ -391,7 +447,7 @@ const TargetCursor = ({
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('mousemove', handlePointerMove, { passive: true });
     window.addEventListener('pointerdown', handlePointerDown, { capture: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
     window.addEventListener('cursor-lock', handleCursorLock);
     window.addEventListener('cursor-unlock', handleCursorUnlock);
     document.documentElement.addEventListener('mouseleave', handlePointerLeave);
@@ -403,7 +459,7 @@ const TargetCursor = ({
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('mousemove', handlePointerMove);
       window.removeEventListener('pointerdown', handlePointerDown, { capture: true } as any);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll, { capture: true } as any);
       window.removeEventListener('cursor-lock', handleCursorLock);
       window.removeEventListener('cursor-unlock', handleCursorUnlock);
       document.documentElement.removeEventListener('mouseleave', handlePointerLeave);

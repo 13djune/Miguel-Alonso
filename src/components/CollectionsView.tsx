@@ -36,7 +36,7 @@ export default function CollectionsView({
   onNavigateTo3D,
   isLight = false,
 }: CollectionsViewProps) {
-  const { t, language } = useLanguage();
+  const { t, language, toggleLanguage } = useLanguage();
   const isES = language === 'es';
 
   const creativeProjects = useMemo(() => projects.slice(0, 4), [projects]);
@@ -796,13 +796,32 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
             </button>
           </div>
 
-          <button
-            onClick={onClose}
-            className="cursor-target cursor-crosshair pulse-tactile border border-white bg-white text-black hover:bg-black hover:text-white font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-            title={isES ? "Cerrar" : "Close"}
-          >
-            [ X ]
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button
+              onClick={toggleLanguage}
+              className={`cursor-target cursor-crosshair pulse-tactile font-mono text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-1 transition-all uppercase whitespace-nowrap flex items-center gap-1.5 bg-transparent border-0 shadow-none ${
+                isLight
+                  ? 'text-black hover:drop-shadow-[0_0_6px_rgba(0,0,0,0.6)]'
+                  : 'text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+              }`}
+              title={isES ? 'Cambiar a Inglés' : 'Switch to Spanish'}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${isLight ? 'bg-black' : 'bg-white'}`}></span>
+              <span>[ {language.toUpperCase()} ]</span>
+            </button>
+
+            <button
+              onClick={onClose}
+              className={`cursor-target cursor-crosshair pulse-tactile border font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 whitespace-nowrap ${
+                isLight
+                  ? 'border-black bg-black text-white hover:bg-white hover:text-black shadow-[0_0_10px_rgba(0,0,0,0.2)]'
+                  : 'border-white bg-white text-black hover:bg-black hover:text-white shadow-[0_0_10px_rgba(255,255,255,0.4)]'
+              }`}
+              title={isES ? "Cerrar" : "Close"}
+            >
+              [ X ]
+            </button>
+          </div>
         </div>
 
         {/* Main Scrollable Content */}
@@ -822,19 +841,23 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                 <div
                   key={project.id}
                   onClick={() => onSelectProject(project)}
-                  className={`group relative flex flex-col w-full border transition-all cursor-target cursor-crosshair pulse-tactile ${
+                  className={`creative-card group relative flex flex-col w-full border transition-all cursor-target cursor-crosshair pulse-tactile ${
                     isLight 
-                      ? 'border-black bg-white/80 hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] backdrop-blur-md' 
-                      : 'border-white hover:border-white bg-white/5 shadow-[0_0_15px_rgba(0,0,0,0.7)] backdrop-blur-sm'
+                      ? 'border-black bg-white hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]' 
+                      : 'border-white hover:border-white bg-black'
                   }`}
+                  data-cursor-target="card"
                 >
-                  <div className={`w-full h-64 sm:h-80 md:h-[380px] lg:h-[460px] overflow-hidden border-b relative ${
-                    isLight ? 'border-black group-hover:border-black' : 'border-white group-hover:border-white'
-                  }`}>
+                  <div 
+                    className={`creative-cover w-full h-72 sm:h-84 md:h-[400px] lg:h-[460px] overflow-hidden border-b relative cursor-target cursor-crosshair pulse-tactile ${
+                      isLight ? 'border-black' : 'border-white'
+                    }`}
+                    data-cursor-target="cover"
+                  >
                     <img
                       src={project.images[0]}
                       alt={project.title}
-                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
                       onError={(e) => {
                         const target = e.currentTarget;
                         if (target.dataset.triedFallback) return;
@@ -846,20 +869,20 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         }
                       }}
                     />
-                    <div className={`absolute inset-0 bg-gradient-to-t opacity-100 group-hover:opacity-0 transition-opacity duration-500 ${
-                      isLight ? 'from-white/60 to-transparent' : 'from-black/80 to-transparent'
+                    <div className={`absolute inset-0 bg-gradient-to-t opacity-90 group-hover:opacity-60 transition-opacity duration-500 pointer-events-none ${
+                      isLight ? 'from-white/30 via-transparent to-transparent' : 'from-black/50 via-transparent to-transparent'
                     }`} />
                   </div>
-                  <div className={`p-3 sm:p-4 md:p-5 flex flex-col gap-1.5 relative z-10 transition-colors backdrop-blur-md ${
-                    isLight 
-                      ? 'bg-white/65 group-hover:bg-white/80 text-black border-t border-black/15' 
-                      : 'bg-black/40 group-hover:bg-black/30 text-white border-t border-white/15'
-                  }`}>
+                  <div 
+                    className={`p-3.5 sm:p-4 md:p-5 flex flex-col gap-1.5 relative z-10 transition-colors ${
+                      isLight ? 'bg-white text-black' : 'bg-black text-white'
+                    }`}
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <div className={`text-[10px] sm:text-xs tracking-widest uppercase font-bold shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>
                         IDX_{String(idx + 1).padStart(2, '0')}
                       </div>
-                      <div className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${isLight ? "text-black/80" : "text-white/80"}`}>
+                      <div className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${isLight ? "text-black/85" : "text-white/85"}`}>
                         {project.tags?.[0] || (isES ? 'CONCEPTO' : 'CONCEPT')}
                       </div>
                     </div>
