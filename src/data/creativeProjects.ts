@@ -136,9 +136,7 @@ export const CREATIVE_PROJECTS: Project[] = [
     description:
       "Mallas digitales etéreas que intersectan con la anatomía humana. Un estudio sobre siluetas traslúcidas que reaccionan a la luz volumétrica creando una segunda piel bio-computacional.",
     images: [
-      "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=1200",
-      "https://images.unsplash.com/photo-1618244972963-dbee1a7edc95?auto=format&fit=crop&q=80&w=1200",
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200",
+      "/assets/aistudio/IMG_0244_a4ea2f72.PNG",
     ],
     position: [-10, 2, -2],
     color: "#9933ff",
