@@ -824,8 +824,8 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   onClick={() => onSelectProject(project)}
                   className={`group relative flex flex-col w-full border transition-all cursor-target cursor-crosshair pulse-tactile ${
                     isLight 
-                      ? 'border-black bg-white hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]' 
-                      : 'border-white hover:border-white bg-white/5 shadow-[0_0_15px_rgba(0,0,0,0.7)]'
+                      ? 'border-black bg-white/80 hover:border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] backdrop-blur-md' 
+                      : 'border-white hover:border-white bg-white/5 shadow-[0_0_15px_rgba(0,0,0,0.7)] backdrop-blur-sm'
                   }`}
                 >
                   <div className={`w-full h-64 sm:h-80 md:h-[380px] lg:h-[460px] overflow-hidden border-b relative ${
@@ -850,40 +850,21 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                       isLight ? 'from-white/60 to-transparent' : 'from-black/80 to-transparent'
                     }`} />
                   </div>
-                  <div className={`p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10 transition-colors ${
-                    isLight ? 'bg-white group-hover:bg-black/5 text-black' : 'bg-black/60 group-hover:bg-transparent text-white'
+                  <div className={`p-3 sm:p-4 md:p-5 flex flex-col gap-1.5 relative z-10 transition-colors backdrop-blur-md ${
+                    isLight 
+                      ? 'bg-white/65 group-hover:bg-white/80 text-black border-t border-black/15' 
+                      : 'bg-black/40 group-hover:bg-black/30 text-white border-t border-white/15'
                   }`}>
-                    <div className="flex flex-col gap-1.5 min-w-0">
-                      <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-                        <div className={`text-[10px] sm:text-xs tracking-widest uppercase font-bold shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>
-                          IDX_{String(idx + 1).padStart(2, '0')}
-                        </div>
-                        <div className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${isLight ? "text-black/80" : "text-white/80"}`}>
-                          [ {project.tags?.[0] || (isES ? 'CONCEPTO' : 'CONCEPT')} ]
-                        </div>
-                        {project.tags?.[1] && (
-                          <div className={`hidden sm:inline-block text-[9px] sm:text-[10px] uppercase tracking-wider font-mono ${isLight ? "text-black/60" : "text-white/60"}`}>
-                            // {project.tags[1]}
-                          </div>
-                        )}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className={`text-[10px] sm:text-xs tracking-widest uppercase font-bold shrink-0 ${isLight ? 'text-black' : 'text-white'}`}>
+                        IDX_{String(idx + 1).padStart(2, '0')}
                       </div>
-                      <div className={`text-base sm:text-lg md:text-xl font-bold uppercase tracking-wider break-words ${isLight ? 'text-black' : 'text-white'}`}>
-                        {project.title.replace(/^[0-9]+ /, '')}
+                      <div className={`text-[9px] sm:text-[10px] uppercase tracking-wider font-bold ${isLight ? "text-black/80" : "text-white/80"}`}>
+                        {project.tags?.[0] || (isES ? 'CONCEPTO' : 'CONCEPT')}
                       </div>
-                      {project.description && (
-                        <p className={`text-xs md:text-sm line-clamp-2 mt-0.5 ${isLight ? 'text-black/70' : 'text-white/70'}`}>
-                          {project.description}
-                        </p>
-                      )}
                     </div>
-                    <div className="flex items-center gap-2 shrink-0 self-start sm:self-center mt-2 sm:mt-0">
-                      <span className={`text-[10px] sm:text-xs font-mono uppercase font-bold tracking-wider border px-3 py-1.5 transition-all whitespace-nowrap ${
-                        isLight 
-                          ? 'border-black bg-white text-black group-hover:bg-black group-hover:text-white' 
-                          : 'border-white bg-black/80 text-white group-hover:bg-white group-hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]'
-                      }`}>
-                        [ {isES ? 'EXPEDIENTE COMPLETO' : 'VIEW DOSSIER'} → ]
-                      </span>
+                    <div className={`text-base sm:text-lg md:text-xl font-bold uppercase tracking-wider break-words ${isLight ? 'text-black' : 'text-white'}`}>
+                      {project.title.replace(/^[0-9]+ /, '')}
                     </div>
                   </div>
                   <div
