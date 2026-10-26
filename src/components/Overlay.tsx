@@ -11,6 +11,7 @@ interface OverlayProps {
   onOpenDesigner?: () => void;
   onSelectProject?: (index: number) => void;
   onOpenCollections?: () => void;
+  onClose3D?: () => void;
   activeUniverse?: 'all' | 'creative' | 'industry';
   onSetUniverse?: (universe: 'all' | 'creative' | 'industry') => void;
   projects?: Project[];
@@ -26,6 +27,7 @@ export default function Overlay({
   onOpenDesigner,
   onSelectProject,
   onOpenCollections,
+  onClose3D,
   activeUniverse = 'all',
   onSetUniverse,
   projects = [],
@@ -83,7 +85,7 @@ export default function Overlay({
           {/* Show [ MAPA_CODEX ] and [ PROY3CTOS ] only on universe mode (not on home/terminal page) */}
           {appMode !== 'terminal' && (
             <>
-              {/* Unified single [ VOID_MAP ] button with centered dropdown */}
+              {/* Unified single [ 3D NAVIGATOR ] button with centered dropdown */}
               <div className="relative">
                 <button
                   onClick={() => {
@@ -94,17 +96,17 @@ export default function Overlay({
                       ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]'
                       : 'text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
                   }`}
-                  title={isSidebarOpen ? (language === 'es' ? "Cerrar Mapa" : "Close Map") : (language === 'es' ? "Abrir VOID_MAP" : "Open VOID_MAP")}
+                  title={isSidebarOpen ? (language === 'es' ? "Cerrar 3D NAVIGATOR" : "Close 3D NAVIGATOR") : (language === 'es' ? "Abrir 3D NAVIGATOR" : "Open 3D NAVIGATOR")}
                 >
                   <span className="hidden sm:inline">
                     [ {isSidebarOpen
                       ? (language === 'es' ? 'CERRAR_MAPA' : 'CLOSE_MAP')
-                      : 'VOID_MAP'} ]
+                      : '3D NAVIGATOR'} ]
                   </span>
                   <span className="sm:hidden">
                     [ {isSidebarOpen
                       ? (language === 'es' ? 'CERRAR' : 'CLOSE')
-                      : 'VOID_MAP'} ]
+                      : '3D NAVIGATOR'} ]
                   </span>
                   <span className="text-[9px] sm:text-[10px]">
                     {isSidebarOpen ? '▲' : '▼'}
@@ -120,7 +122,7 @@ export default function Overlay({
                     <div className="border-b border-white/20 pb-1 flex justify-between items-center w-full px-1">
                       <div className="font-mono text-[11px] sm:text-xs text-white uppercase tracking-widest flex items-center gap-2 truncate font-bold">
                         <span className="w-1.5 h-1.5 bg-white animate-pulse shrink-0"></span>
-                        <span className="truncate whitespace-nowrap">[ VOID_MAP // SYS.NAV ]</span>
+                        <span className="truncate whitespace-nowrap">[ 3D NAVIGATOR // SYS.NAV ]</span>
                       </div>
                       <button
                         onClick={() => setIsSidebarOpen(false)}
@@ -131,7 +133,7 @@ export default function Overlay({
                       </button>
                     </div>
 
-                    {/* Interactive VOID_MAP tree matching SYS.VOID CORE dropdown design */}
+                    {/* Interactive 3D NAVIGATOR tree matching SYS.VOID CORE dropdown design */}
                     <div className="w-full flex justify-center overflow-hidden">
                       <AsciiTree
                         appMode="universe"
@@ -146,25 +148,11 @@ export default function Overlay({
                   </div>
                 )}
               </div>
-
-              {/* PROJECTS / PROYECTOS Button - clean borderless styling leaving brackets */}
-              <a
-                href="#"
-                role="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onOpenCollections?.();
-                }}
-                className="cursor-target cursor-crosshair pulse-tactile font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                title={t('overlay.nav.collections')}
-              >
-                <span>[ {t('overlay.nav.collections')} ]</span>
-              </a>
             </>
           )}
         </div>
 
-        {/* Right: System Mode Indicator (Universe Mode) placed right next to Language Switcher */}
+        {/* Right: System Mode Indicator (Universe Mode), Language Switcher, and Close 3D Map Button */}
         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto shrink-0">
           {appMode === 'universe' && (
             <div className="font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 py-1 flex items-center whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none text-white">
@@ -186,6 +174,27 @@ export default function Overlay({
             <span className="w-1.5 h-1.5 bg-white animate-pulse"></span>
             <span>[ {language.toUpperCase()} ]</span>
           </button>
+
+          {/* Close 3D Map Button -> Returns to PROJECTS modal */}
+          {appMode === 'universe' && (
+            <button
+              onClick={() => {
+                if (onClose3D) {
+                  onClose3D();
+                } else if (onOpenCollections) {
+                  onOpenCollections();
+                }
+              }}
+              className={`cursor-target cursor-crosshair pulse-tactile border font-mono font-bold text-xs uppercase tracking-wider px-2 py-1 transition-colors shrink-0 whitespace-nowrap ${
+                isLight
+                  ? 'border-black bg-black text-white hover:bg-white hover:text-black shadow-[0_0_10px_rgba(0,0,0,0.2)]'
+                  : 'border-white bg-white text-black hover:bg-black hover:text-white shadow-[0_0_10px_rgba(255,255,255,0.4)]'
+              }`}
+              title={language === 'es' ? 'Volver a PROYECTOS' : 'Back to PROJECTS'}
+            >
+              [ X ]
+            </button>
+          )}
         </div>
       </header>
 

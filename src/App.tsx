@@ -359,6 +359,10 @@ function AppContent() {
               onOpenDesigner={() => setDesignerModalActive(true)}
               onSelectProject={(index) => handlePlanetClick(PROJECTS[index])}
               onOpenCollections={() => setCollectionsModalActive(true)}
+              onClose3D={() => {
+                setCollectionsModalActive(true);
+                setAppMode("terminal");
+              }}
               isLight={isLight}
               theme={theme}
               onToggleTheme={toggleTheme}
@@ -401,7 +405,10 @@ function AppContent() {
         {collectionsModalActive && (
           <CollectionsView
             projects={PROJECTS}
-            onClose={() => setCollectionsModalActive(false)}
+            onClose={() => {
+              setCollectionsModalActive(false);
+              setAppMode("terminal");
+            }}
             onSelectProject={(project) => {
               setCollectionsModalActive(false);
               handlePlanetClick(project);
