@@ -654,6 +654,88 @@ export default function CollectionsView({
     }
   };
 
+  // Mobile swipe navigation for inspected garment preview (SYS.INDUSTRY)
+  const [mobileDragOffset, setMobileDragOffset] = useState<number>(0);
+  const [isMobileSwiping, setIsMobileSwiping] = useState<boolean>(false);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const touchMovedRef = useRef<boolean>(false);
+
+  const handleMobileTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: performance.now(),
+    };
+    touchMovedRef.current = false;
+    setIsMobileSwiping(false);
+    setMobileDragOffset(0);
+  };
+
+  const handleMobileTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+
+    if (!touchMovedRef.current) {
+      // Prioritize horizontal swipe over vertical scroll
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.1) {
+        touchMovedRef.current = true;
+        setIsMobileSwiping(true);
+      } else if (Math.abs(dy) > 10) {
+        touchStartRef.current = null;
+        return;
+      }
+    }
+
+    if (touchMovedRef.current) {
+      setMobileDragOffset(dx * 0.7);
+    }
+  };
+
+  const handleMobileTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) {
+      setMobileDragOffset(0);
+      setIsMobileSwiping(false);
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    const dt = performance.now() - touchStartRef.current.time;
+    const velocity = Math.abs(dx) / Math.max(1, dt);
+
+    const isHorizontalSwipe = Math.abs(dx) > Math.abs(dy) * 1.1;
+    const thresholdPassed = Math.abs(dx) > 40 || (Math.abs(dx) > 20 && velocity > 0.35);
+
+    if (touchMovedRef.current && isHorizontalSwipe && thresholdPassed) {
+      if (dx < 0) {
+        // Swiped left -> Next piece in filtered industry collection
+        goToNextGarment();
+      } else {
+        // Swiped right -> Previous piece in filtered industry collection
+        goToPrevGarment();
+      }
+    }
+
+    setMobileDragOffset(0);
+    setIsMobileSwiping(false);
+    touchStartRef.current = null;
+    setTimeout(() => {
+      touchMovedRef.current = false;
+    }, 60);
+  };
+
+  const handleMobileTouchCancel = () => {
+    setMobileDragOffset(0);
+    setIsMobileSwiping(false);
+    touchStartRef.current = null;
+    touchMovedRef.current = false;
+  };
+
   // Keyboard navigation inside lightbox
   useEffect(() => {
     if (!inspectedGarment) return;
@@ -669,6 +751,17 @@ export default function CollectionsView({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [inspectedGarment, currentGarmentIndex, displayedGarments]);
+
+  // Keep inspected garment synced if user switches sector/filters while modal is open
+  useEffect(() => {
+    if (inspectedGarment && displayedGarments.length > 0) {
+      const stillInFiltered = displayedGarments.some((g) => g.id === inspectedGarment.id);
+      if (!stillInFiltered) {
+        setInspectedGarment(displayedGarments[0]);
+        setInspectedImageIndex(0);
+      }
+    }
+  }, [displayedGarments, inspectedGarment]);
 
   // Technical spec sheet text download
   const handleDownloadTechSheet = (
@@ -743,15 +836,10 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
   const activeSectorProject = typeof selectedSector === 'number' ? industryProjects[selectedSector] : null;
 
+  // Sector garments for Lightbox Modal strictly respect sector & filters applied
   const sectorGarments = useMemo(() => {
-    if (typeof selectedSector === 'number') {
-      return displayedGarments.length > 0 ? displayedGarments : industryProjects[selectedSector]?.garments || [];
-    }
-    if (currentGarmentSectorProject?.garments && currentGarmentSectorProject.garments.length > 0) {
-      return currentGarmentSectorProject.garments;
-    }
-    return displayedGarments;
-  }, [selectedSector, displayedGarments, currentGarmentSectorProject, industryProjects]);
+    return displayedGarments.length > 0 ? displayedGarments : allIndustryGarments;
+  }, [displayedGarments, allIndustryGarments]);
 
   const handleLightboxGarmentChange = useCallback((newGarment: IndustryGarment, newIndex: number) => {
     setInspectedGarment((prev) => (prev?.id === newGarment.id ? prev : newGarment));
@@ -1394,12 +1482,36 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
 
                 return (
                   <div className="w-full lg:w-[50%] flex flex-col gap-3.5">
+                    {/* Mobile Swipe Notice Bar with Filtered Counter */}
+                    <div className={`flex lg:hidden items-center justify-between text-[10px] font-mono tracking-wider py-1.5 px-2.5 border select-none ${
+                      isLight ? 'bg-black/5 border-black/20 text-black/80' : 'bg-white/5 border-white/20 text-white/80'
+                    }`}>
+                      <span className="flex items-center gap-1 font-bold">
+                        <ChevronLeft size={13} className="animate-pulse" />
+                        <span>{isES ? 'DESLIZAR PRENDAS' : 'SWIPE PIECES'}</span>
+                        <ChevronRight size={13} className="animate-pulse" />
+                      </span>
+                      <span className="font-bold">
+                        {currentGarmentIndex !== -1 ? `[ ${currentGarmentIndex + 1} / ${displayedGarments.length} ]` : ''}
+                      </span>
+                    </div>
+
                     <div
-                      className={`w-full aspect-[3/4] md:aspect-[4/5] lg:aspect-auto lg:h-[58vh] max-h-[64vh] relative border overflow-hidden flex items-center justify-center cursor-zoom-in group/garment-img ${
+                      onTouchStart={handleMobileTouchStart}
+                      onTouchMove={handleMobileTouchMove}
+                      onTouchEnd={handleMobileTouchEnd}
+                      onTouchCancel={handleMobileTouchCancel}
+                      style={{
+                        transform: `translateX(${mobileDragOffset}px)`,
+                        transition: isMobileSwiping ? 'none' : 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease',
+                        opacity: isMobileSwiping ? Math.max(0.65, 1 - Math.abs(mobileDragOffset) / 280) : 1,
+                      }}
+                      className={`w-full aspect-[3/4] md:aspect-[4/5] lg:aspect-auto lg:h-[58vh] max-h-[64vh] relative border overflow-hidden flex items-center justify-center cursor-zoom-in group/garment-img select-none will-change-transform ${
                         isLight ? 'bg-[#f0f0f4] border-black/30' : 'bg-neutral-950 border-white/30'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (touchMovedRef.current || Math.abs(mobileDragOffset) > 6) return;
                         setIsGarmentLightboxOpen(true);
                       }}
                       title={isES ? "Clic para abrir en pantalla completa HD" : "Click to open in fullscreen HD"}
@@ -1408,7 +1520,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         src={currentImg}
                         alt={inspectedGarment.name}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover/garment-img:scale-105 transition-transform duration-500 ease-out select-none"
+                        className="w-full h-full object-cover group-hover/garment-img:scale-105 transition-transform duration-500 ease-out select-none pointer-events-none"
                       />
 
                       {/* Top-Left Look Index */}

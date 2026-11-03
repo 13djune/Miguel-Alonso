@@ -250,6 +250,69 @@ export default function GarmentLightboxModal({
     setIsPanning(false);
   };
 
+  // Mobile touch swipe gestures when unzoomed
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const [touchDeltaX, setTouchDeltaX] = useState<number>(0);
+  const [isSwiping, setIsSwiping] = useState<boolean>(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1 || zoomLevel > 1) return;
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      time: performance.now(),
+    };
+    setIsSwiping(false);
+    setTouchDeltaX(0);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.touches.length !== 1 || zoomLevel > 1) return;
+    const dx = e.touches[0].clientX - touchStartRef.current.x;
+    const dy = e.touches[0].clientY - touchStartRef.current.y;
+
+    if (!isSwiping) {
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 1.1) {
+        setIsSwiping(true);
+      } else if (Math.abs(dy) > 10) {
+        touchStartRef.current = null;
+        return;
+      }
+    }
+
+    if (isSwiping) {
+      setTouchDeltaX(dx * 0.7);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || zoomLevel > 1) {
+      setTouchDeltaX(0);
+      setIsSwiping(false);
+      return;
+    }
+
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+    const dt = performance.now() - touchStartRef.current.time;
+    const velocity = Math.abs(dx) / Math.max(1, dt);
+
+    const isHorizontalSwipe = Math.abs(dx) > Math.abs(dy) * 1.1;
+    const thresholdPassed = Math.abs(dx) > 40 || (Math.abs(dx) > 20 && velocity > 0.35);
+
+    if (isSwiping && isHorizontalSwipe && thresholdPassed) {
+      if (dx < 0) {
+        nextImage();
+      } else {
+        prevImage();
+      }
+    }
+
+    setTouchDeltaX(0);
+    setIsSwiping(false);
+    touchStartRef.current = null;
+  };
+
   // Keyboard navigation & zoom shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -389,9 +452,9 @@ export default function GarmentLightboxModal({
         </div>
       </div>
 
-      {/* Central Interactive Zoom Viewport */}
+      {/* Central Interactive Zoom Viewport with Mobile Touch Swipe Navigation */}
       <div
-        className={`relative flex-1 w-full h-full flex items-center justify-center overflow-hidden ${
+        className={`relative flex-1 w-full h-full flex items-center justify-center overflow-hidden select-none ${
           zoomLevel > 1 ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
         }`}
         onWheel={handleWheel}
@@ -400,6 +463,10 @@ export default function GarmentLightboxModal({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Previous / Next Arrow Controls */}
@@ -432,12 +499,15 @@ export default function GarmentLightboxModal({
           </>
         )}
 
-        {/* Scalable and Pannable Image Container */}
+        {/* Scalable and Pannable Image Container with Mobile Lateral Swipe Transform */}
         <div
           className="relative inline-block max-w-[90vw] max-h-[72vh] flex items-center justify-center will-change-transform"
           style={{
-            transform: `scale(${zoomLevel}) translate(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px)`,
-            transition: isPanning ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            transform: zoomLevel > 1
+              ? `scale(${zoomLevel}) translate(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px)`
+              : `translateX(${touchDeltaX}px)`,
+            transition: (isPanning || isSwiping) ? 'none' : 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease',
+            opacity: isSwiping ? Math.max(0.65, 1 - Math.abs(touchDeltaX) / 280) : 1,
           }}
         >
           <img
