@@ -179,12 +179,7 @@ export default function ProjectModal({
     return () => ctx.revert();
   }, []);
   const handleClose = () => {
-    gsap.to(containerRef.current, {
-      opacity: 0,
-      duration: 0.15,
-      ease: "power2.inOut",
-      onComplete: onClose,
-    });
+    onClose();
   };
   const openGallery = (index: number) => setSelectedImageIndex(index);
   const closeGallery = () => setSelectedImageIndex(null);

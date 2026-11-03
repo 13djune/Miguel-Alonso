@@ -200,6 +200,7 @@ function AppContent() {
   const [modalActive, setModalActive] = useState(false);
   const [designerModalActive, setDesignerModalActive] = useState(false);
   const [collectionsModalActive, setCollectionsModalActive] = useState(false);
+  const [projectOrigin, setProjectOrigin] = useState<"collections" | "universe">("universe");
   const [appMode, setAppMode] = useState<"loading" | "terminal" | "universe">(
     "loading",
   );
@@ -209,48 +210,164 @@ function AppContent() {
 
   const universeContainerRef = useRef<HTMLDivElement>(null);
   const modalContainerRef = useRef<HTMLDivElement>(null);
+  const collectionsContainerRef = useRef<HTMLDivElement>(null);
 
-  const handlePlanetClick = (project: Project) => {
+  // Smooth entrance for Collections View when first opened
+  useEffect(() => {
+    if (collectionsModalActive && collectionsContainerRef.current && !modalActive) {
+      collectionsContainerRef.current.style.pointerEvents = "auto";
+      gsap.fromTo(
+        collectionsContainerRef.current,
+        { opacity: 0, scale: 0.98, y: 15 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "power2.out" },
+      );
+    }
+  }, [collectionsModalActive]);
+
+  const handlePlanetClick = (
+    project: Project,
+    origin: "collections" | "universe" = "universe",
+  ) => {
+    setProjectOrigin(origin);
     setAppMode("universe");
     setModalActive(true);
     setSelectedProject(project);
 
+    if (origin === "collections" && collectionsContainerRef.current) {
+      gsap.to(collectionsContainerRef.current, {
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.4,
+        ease: "power2.inOut",
+        onComplete: () => {
+          if (collectionsContainerRef.current) {
+            collectionsContainerRef.current.style.pointerEvents = "none";
+          }
+        },
+      });
+    }
+
     if (modalContainerRef.current) {
       gsap.fromTo(
         modalContainerRef.current,
-        { opacity: 0, y: 30, scale: 0.95 },
+        { opacity: 0, y: 25, scale: 0.96 },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 1.2,
+          duration: 0.6,
           ease: "power3.out",
-          delay: 0.2,
+          delay: origin === "collections" ? 0.05 : 0.2,
         },
       );
     }
   };
 
   const handleCloseModal = () => {
+    const origin = projectOrigin;
     const tl = gsap.timeline({
       onComplete: () => {
         setModalActive(false);
         setSelectedProject(null);
+        if (origin !== "collections") {
+          setAppMode("universe");
+          setCollectionsModalActive(false);
+        }
       },
     });
 
-    if (modalContainerRef.current) {
-      tl.to(
-        modalContainerRef.current,
-        {
-          opacity: 0,
-          y: 20,
-          scale: 0.95,
-          duration: 0.6,
-          ease: "power3.inOut",
+    if (origin === "collections") {
+      // Synchronized cross-dissolve back to CollectionsView (PROJECTS modal)
+      if (modalContainerRef.current) {
+        tl.to(
+          modalContainerRef.current,
+          {
+            opacity: 0,
+            y: 15,
+            scale: 0.97,
+            duration: 0.42,
+            ease: "power2.inOut",
+          },
+          0,
+        );
+      }
+
+      if (collectionsContainerRef.current) {
+        collectionsContainerRef.current.style.pointerEvents = "auto";
+        tl.fromTo(
+          collectionsContainerRef.current,
+          {
+            opacity: 0,
+            scale: 0.97,
+            y: -8,
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.42,
+            ease: "power2.inOut",
+          },
+          0,
+        );
+      } else {
+        setCollectionsModalActive(true);
+      }
+    } else {
+      if (modalContainerRef.current) {
+        tl.to(
+          modalContainerRef.current,
+          {
+            opacity: 0,
+            y: 20,
+            scale: 0.95,
+            duration: 0.35,
+            ease: "power3.inOut",
+          },
+          0,
+        );
+      }
+    }
+  };
+
+  const handleCloseCollections = () => {
+    if (collectionsContainerRef.current) {
+      gsap.to(collectionsContainerRef.current, {
+        opacity: 0,
+        scale: 0.97,
+        y: 15,
+        duration: 0.35,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setCollectionsModalActive(false);
+          setAppMode("terminal");
         },
-        0,
-      );
+      });
+    } else {
+      setCollectionsModalActive(false);
+      setAppMode("terminal");
+    }
+  };
+
+  const handleNavigateTo3DFromCollections = () => {
+    if (collectionsContainerRef.current) {
+      gsap.to(collectionsContainerRef.current, {
+        opacity: 0,
+        scale: 0.97,
+        duration: 0.35,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setCollectionsModalActive(false);
+          setModalActive(false);
+          setSelectedProject(null);
+          setAppMode("universe");
+        },
+      });
+    } else {
+      setCollectionsModalActive(false);
+      setModalActive(false);
+      setSelectedProject(null);
+      setAppMode("universe");
     }
   };
 
@@ -322,7 +439,7 @@ function AppContent() {
               <group position={[-6, 0, 0]}>
                 <Universe
                   projects={PROJECTS}
-                  onPlanetClick={handlePlanetClick}
+                  onPlanetClick={(p) => handlePlanetClick(p, "universe")}
                   selectedProject={selectedProject}
                   activeUniverse={activeUniverse}
                   appMode={appMode}
@@ -357,7 +474,9 @@ function AppContent() {
               selectedProject={selectedProject}
               onEnterUniverse={() => setAppMode("universe")}
               onOpenDesigner={() => setDesignerModalActive(true)}
-              onSelectProject={(index) => handlePlanetClick(PROJECTS[index])}
+              onSelectProject={(index) =>
+                handlePlanetClick(PROJECTS[index], "universe")
+              }
               onOpenCollections={() => setCollectionsModalActive(true)}
               onClose3D={() => {
                 setCollectionsModalActive(true);
@@ -373,7 +492,7 @@ function AppContent() {
         {/* Project Modal */}
         <div
           ref={modalContainerRef}
-          className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center will-change-[opacity,transform]"
+          className="fixed inset-0 z-[70] pointer-events-none flex items-center justify-center will-change-[opacity,transform]"
           style={{ opacity: 0, visibility: modalActive ? "visible" : "hidden" }}
         >
           <div className="w-full h-full pointer-events-auto">
@@ -404,21 +523,13 @@ function AppContent() {
         {/* Collections Modal */}
         {collectionsModalActive && (
           <CollectionsView
+            containerRef={collectionsContainerRef}
             projects={PROJECTS}
-            onClose={() => {
-              setCollectionsModalActive(false);
-              setAppMode("terminal");
-            }}
-            onSelectProject={(project) => {
-              setCollectionsModalActive(false);
-              handlePlanetClick(project);
-            }}
-            onNavigateTo3D={() => {
-              setCollectionsModalActive(false);
-              setModalActive(false);
-              setSelectedProject(null);
-              setAppMode("universe");
-            }}
+            onClose={handleCloseCollections}
+            onSelectProject={(project) =>
+              handlePlanetClick(project, "collections")
+            }
+            onNavigateTo3D={handleNavigateTo3DFromCollections}
             isLight={isLight}
           />
         )}

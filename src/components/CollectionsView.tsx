@@ -27,6 +27,7 @@ interface CollectionsViewProps {
   onSelectProject: (project: Project) => void;
   onNavigateTo3D?: () => void;
   isLight?: boolean;
+  containerRef?: React.Ref<HTMLDivElement>;
 }
 
 export default function CollectionsView({
@@ -35,6 +36,7 @@ export default function CollectionsView({
   onSelectProject,
   onNavigateTo3D,
   isLight = false,
+  containerRef,
 }: CollectionsViewProps) {
   const { t, language, toggleLanguage } = useLanguage();
   const isES = language === 'es';
@@ -757,9 +759,12 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
   }, []);
 
   return (
-    <div className={`fixed inset-0 z-[60] flex items-center justify-center p-0 pointer-events-auto animate-fade-in-up ${
-      isLight ? 'bg-white/98 text-black' : 'bg-black/95 text-white'
-    }`}>
+    <div
+      ref={containerRef}
+      className={`fixed inset-0 z-[60] flex items-center justify-center p-0 pointer-events-auto will-change-[opacity,transform] ${
+        isLight ? 'bg-white/98 text-black' : 'bg-black/95 text-white'
+      }`}
+    >
       <div className={`relative w-full h-full flex flex-col font-mono overflow-hidden ${
         isLight 
           ? 'bg-[#f7f7fa] text-black shadow-[0_0_30px_rgba(0,0,0,0.15)]' 
@@ -785,14 +790,14 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                   onClose();
                 }
               }}
-              className={`cursor-target cursor-crosshair pulse-tactile font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-1.5 sm:px-2 py-1 flex items-center transition-all whitespace-nowrap shrink-0 bg-transparent border-0 shadow-none ${
+              className={`cursor-target cursor-crosshair pulse-tactile border font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2 sm:px-2.5 py-1 flex items-center transition-all whitespace-nowrap shrink-0 ${
                 isLight
-                  ? 'text-black hover:drop-shadow-[0_0_6px_rgba(0,0,0,0.6)]'
-                  : 'text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+                  ? 'border-black bg-black text-white hover:bg-black hover:text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]'
+                  : 'border-white bg-white text-black hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.4)] hover:shadow-[0_0_14px_rgba(255,255,255,0.7)]'
               }`}
-              title="3D MAP"
+              title="3D VIEW PROJECTS"
             >
-              <span>[ 3D MAP ]</span>
+              <span>3D VIEW PROJECTS</span>
             </button>
           </div>
 
@@ -863,7 +868,7 @@ AUTHENTIC DIGITAL BLUEPRINT // CC BY-NC 4.0
                         if (target.dataset.triedFallback) return;
                         target.dataset.triedFallback = 'true';
                         if (project.title.includes('REGNUM') || project.id === '1') {
-                          target.src = '/assets/img/REGNUM/regnum_1.png';
+                          target.src = '/assets/img/REGNUM/regnum_2.png';
                         } else if (project.title.includes('P3RMFRST') || project.id === '2') {
                           target.src = '/assets/img/P3RMFRST/p3rmfrst_1.png';
                         }

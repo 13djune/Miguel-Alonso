@@ -23,10 +23,10 @@ export const CREATIVE_PROJECTS: Project[] = [
     description:
       "Siluetas escultóricas en canvas pesado y lona técnica estructurada. Una exploración de proporciones de armadura medieval fusionadas con sastrería brutalista, ojales metálicos sobredimensionados y drapeados arquitectónicos con marcado claroscuro.",
     images: [
+      regnum4,
       regnum1,
       regnum2,
       regnum3,
-      regnum4,
       regnum5,
       regnum6,
       regnum7,
