@@ -371,6 +371,35 @@ function AppContent() {
     }
   };
 
+  const handleNavigateTo3DFromProject = () => {
+    setProjectOrigin("universe");
+    if (collectionsContainerRef.current) {
+      collectionsContainerRef.current.style.pointerEvents = "none";
+    }
+    setCollectionsModalActive(false);
+
+    if (modalContainerRef.current) {
+      gsap.to(modalContainerRef.current, {
+        opacity: 0,
+        y: 15,
+        scale: 0.97,
+        duration: 0.35,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setModalActive(false);
+          setSelectedProject(null);
+          setActiveUniverse("creative");
+          setAppMode("universe");
+        },
+      });
+    } else {
+      setModalActive(false);
+      setSelectedProject(null);
+      setActiveUniverse("creative");
+      setAppMode("universe");
+    }
+  };
+
   const handleNextProject = () => {
     if (!selectedProject) return;
     const currentIndex = PROJECTS.findIndex((p) => p.id === selectedProject.id);
@@ -507,6 +536,7 @@ function AppContent() {
                 )}
                 totalProjects={PROJECTS.length}
                 isLight={isLight}
+                onNavigateTo3DProject={handleNavigateTo3DFromProject}
               />
             )}
           </div>

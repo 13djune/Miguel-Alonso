@@ -454,7 +454,10 @@ export default function AsciiTree({
           <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-white/60">
             <span>DIR: 01</span>
             <span>//</span>
-            <span className="text-[#ffffff] font-bold">ONLINE</span>
+            <span className="online-red-pan font-bold">
+              <span className="online-red-text">ONLINE</span>
+              <span className="online-red-beam" aria-hidden="true" />
+            </span>
           </div>
         </div>
 

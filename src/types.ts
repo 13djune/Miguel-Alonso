@@ -8,7 +8,9 @@ export interface Hotspot {
 export interface ProjectSection {
   id: string;
   title: string;
+  titleEn?: string;
   content: string;
+  contentEn?: string;
 }
 
 export interface TechSheet {
@@ -59,7 +61,9 @@ export interface IndustryGarment {
 export interface Project {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   images: string[];
   modelUrl?: string;
   position: [number, number, number];
@@ -68,6 +72,7 @@ export interface Project {
   sections?: ProjectSection[];
   hotspots?: Record<number, Hotspot[]>; // Maps image index to an array of hotspots
   tags?: string[];
+  tagsEn?: string[];
   tools?: string[];
   universe?: 'creative' | 'industry';
   filterTags?: string[]; // available filter tags for submenu

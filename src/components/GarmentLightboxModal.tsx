@@ -454,7 +454,7 @@ export default function GarmentLightboxModal({
 
       {/* Central Interactive Zoom Viewport with Mobile Touch Swipe Navigation */}
       <div
-        className={`relative flex-1 w-full h-full flex items-center justify-center overflow-hidden select-none ${
+        className={`relative flex-1 w-full h-full flex items-center justify-center overflow-hidden select-none touch-pan-y ${
           zoomLevel > 1 ? (isPanning ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
         }`}
         onWheel={handleWheel}
@@ -469,14 +469,14 @@ export default function GarmentLightboxModal({
         onTouchCancel={handleTouchEnd}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Previous / Next Arrow Controls */}
+        {/* Previous / Next Arrow Controls - Exclusively hidden on mobile screens, kept on desktop */}
         {items.length > 1 && (
           <>
             <button
               type="button"
               onClick={prevImage}
               aria-label="Previous look"
-              className={`cursor-target cursor-crosshair pulse-tactile absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] ${
+              className={`cursor-target cursor-crosshair pulse-tactile absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold hidden md:flex items-center justify-center transition-all z-[115] ${
                 isLight
                   ? 'bg-white hover:bg-black text-black hover:text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
                   : 'bg-black/85 border-white hover:border-white hover:bg-white hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'
@@ -488,7 +488,7 @@ export default function GarmentLightboxModal({
               type="button"
               onClick={nextImage}
               aria-label="Next look"
-              className={`cursor-target cursor-crosshair pulse-tactile absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold flex items-center justify-center transition-all z-[115] ${
+              className={`cursor-target cursor-crosshair pulse-tactile absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 border font-mono text-sm sm:text-base font-bold hidden md:flex items-center justify-center transition-all z-[115] ${
                 isLight
                   ? 'bg-white hover:bg-black text-black hover:text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]'
                   : 'bg-black/85 border-white hover:border-white hover:bg-white hover:text-black text-white shadow-[0_0_15px_rgba(0,0,0,0.8)]'

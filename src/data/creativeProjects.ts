@@ -80,7 +80,9 @@ export const CREATIVE_PROJECTS: Project[] = [
     id: "2",
     title: "02 P3RMFRST",
     description:
-      "Indumentaria expedicionaria subcero bajo estética brutalista. Abrigos gabardina envolventes con cuello pasamontañas sobredimensionado, guantes de piel táctil reforzados y membranas termoselladas concebidas para condiciones extremas de permafrost.",
+      "Sistema de indumentaria técnica concebido bajo la crisis del permafrost ártico y la capacidad biológica y cultural de adaptación extrema. La pieza traduce la cosmología inuit —la división de la existencia en cuerpo, alma y espíritu— en un dispositivo textil modular. El cuerpo humano actúa como anclaje físico, mientras las capas exteriores completan la estructura de supervivencia ante un entorno en colapso geológico.",
+    descriptionEn:
+      "Technical outerwear system conceived amidst the Arctic permafrost crisis and the biological and cultural capacity for extreme adaptation. The piece translates Inuit cosmology—the division of existence into body, soul, and spirit—into a modular textile apparatus. The human body functions as a physical anchor, while the outer layers complete the survival architecture confronting an environment in geological collapse.",
     images: [
       "/assets/aistudio/LOOK_COMPLETO_920c88d9.png",
       p3rmfrst1,
@@ -92,33 +94,56 @@ export const CREATIVE_PROJECTS: Project[] = [
     position: [-5, 4, -5],
     color: "#00ffcc",
     distort: 0.4,
-    tags: ["SUB-ZERO", "BRUTALISMO", "PERMAFROST", "OUTERWEAR EXPEDICIONARIO", "PIEL TÁCTIL"],
-    tools: ["CINEMA 4D", "SUBSTANCE DESIGNER", "CLO 3D", "OCTANE RENDER"],
+    tags: [
+      "PERMAFROST DEGRADATION",
+      "INUIT ONTOLOGY",
+      "TRIPARTITE HOOD",
+      "RESILIENCE ARCHITECTURE",
+    ],
+    tagsEn: [
+      "PERMAFROST DEGRADATION",
+      "INUIT ONTOLOGY",
+      "TRIPARTITE HOOD",
+      "RESILIENCE ARCHITECTURE",
+    ],
+    tools: ["CLO3D", "BLENDER", "NOMAD SCULPT", "FIGMA WEAVY"],
     universe: "creative",
     sections: [
       {
         id: "sec-1",
-        title: "01 DINÁMICA GLACIAR",
+        title: "01 ESTRATIFICACIÓN BICAPA",
+        titleEn: "01 DUAL-LAYER STRATIFICATION",
         content:
-          "Diseñado para soportar ventiscas extremas y aislamiento térmico en expediciones polares. La superficie exterior repele escarcha y cristales de hielo mediante nanorrevestimiento hidrofóbico texturizado.",
+          "Abrigo modular dividido en dos capas técnicas superpuestas que simbolizan el plano anímico y espiritual de la materia viva. Ambas membranas aíslan térmicamente el núcleo mientras dejan que el propio cuerpo del usuario opere como el tercer componente: el contenedor biológico necesario para cerrar el ciclo.",
+        contentEn:
+          "Modular coat divided into two overlapping technical layers symbolizing the animic and spiritual planes of living matter. Both membranes thermally insulate the core while allowing the wearer's body to operate as the third component: the biological vessel required to close the cycle.",
       },
       {
         id: "sec-2",
-        title: "02 ESCUDO PERMAFROST",
+        title: "02 CAPUCHA TRIPARTITA",
+        titleEn: "02 TRIPARTITE HOOD",
         content:
-          "Abrigo de membrana multicapa con solapa envolvente facial y cuello túnel articulado. Protege las vías respiratorias mientras canaliza el flujo térmico corporal hacia el núcleo central de la prenda.",
+          "Estructura cefálica compuesta por tres hojas textiles independientes que convergen en una unidad hermética. Cada panel responde a una fracción del pensamiento inuit —cuerpo, alma y espíritu—, resolviendo el sellado facial contra el viento blanco mediante la unión de las tres partes.",
+        contentEn:
+          "Cephalic structure composed of three independent textile panels that converge into a hermetic unit. Each panel corresponds to a fraction of Inuit thought—body, soul, and spirit—achieving facial sealing against the whiteout wind through the convergence of all three parts.",
       },
       {
         id: "sec-3",
-        title: "03 GUANTES DE CONTROL",
+        title: "03 RESPUESTA AL DESHIELO",
+        titleEn: "03 THAW RESPONSE",
         content:
-          "Guantes táctiles en piel curtida al cromo con inserciones de goma de alto agarre y nudillos de polímero termoplástico para interacción precisa con interfaces en temperaturas bajo cero.",
+          "Membrana exterior diseñada para transiciones térmicas inestables provocadas por la fractura del permafrost. Combina impermeabilidad a la humedad líquida de superficie con protección cortavientos para ventiscas secas, optimizando la resistencia a la abrasión contra roca y hielo.",
+        contentEn:
+          "Outer membrane engineered for unstable thermal transitions induced by permafrost degradation. It combines impermeability to surface liquid moisture with windproof shielding for dry blizzards, optimizing abrasion resistance against rock and ice.",
       },
       {
         id: "sec-4",
-        title: "04 ARNESES Y AJUSTE TÁCTICO",
+        title: "04 MODULARIDAD ERGONÓMICA",
+        titleEn: "04 ERGONOMIC MODULARITY",
         content:
-          "Sistema de cinchas dorsales en cinta mil-spec con hebillas de liberación rápida que permiten comprimir el volumen de la prenda según la intensidad del viento o anclar material de escalada en hielo.",
+          "Patronaje de volumen adaptable que permite la reconfiguración rápida de las capas según el esfuerzo metabólico. El sistema distribuye los puntos de retención de calor y escape de condensación para garantizar la autonomía térmica en desplazamientos prolongados.",
+        contentEn:
+          "Adaptive volume patterning enabling rapid reconfiguration of layers according to metabolic output. The system distributes thermal retention nodes and condensation venting zones to guarantee thermal autonomy across prolonged expeditions.",
       },
     ],
     hotspots: {

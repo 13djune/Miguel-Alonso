@@ -23,6 +23,7 @@
     background-size: 3px 3px;
     pointer-events: none;
     z-index: 100;
+    opacity: 0.8;
   }
 }
 
@@ -61,7 +62,7 @@ a, button, [role="button"], input, select, textarea {
   height: 100%;
   pointer-events: none;
   z-index: 50;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 /* Focus mode element interaction with circular pulse feedback */
@@ -114,6 +115,86 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-t
   transform: none;
   margin: auto;
   max-height: calc(100vh - 110px);
+}
+
+/* Focus mode: ONLINE dark red horizontal panning light effect */
+div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-type(1) > main:nth-of-type(1) > div#terminal-modal:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span:nth-of-type(3),
+.online-red-pan {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 4px;
+  vertical-align: middle;
+}
+
+.online-red-text {
+  position: relative;
+  z-index: 1;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #ff3333;
+  text-shadow: 
+    0 0 4px rgba(139, 0, 0, 0.9),
+    0 0 10px rgba(180, 0, 0, 0.8),
+    0 0 18px rgba(139, 0, 0, 0.6);
+  background: linear-gradient(
+    90deg,
+    #7a0000 0%,
+    #990000 20%,
+    #ff4d4d 44%,
+    #ffffff 50%,
+    #ff4d4d 56%,
+    #990000 80%,
+    #7a0000 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: online-red-pan-text 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.online-red-beam {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 50%;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 0, 0, 0.15) 20%,
+    rgba(180, 0, 0, 0.7) 45%,
+    rgba(255, 60, 60, 0.85) 50%,
+    rgba(180, 0, 0, 0.7) 55%,
+    rgba(139, 0, 0, 0.15) 80%,
+    transparent 100%
+  );
+  filter: drop-shadow(0 0 6px rgba(180, 0, 0, 0.9));
+  transform: translateX(-150%);
+  animation: online-red-pan-beam 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes online-red-pan-text {
+  0% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -150% 0;
+  }
+}
+
+@keyframes online-red-pan-beam {
+  0% {
+    transform: translateX(-150%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
 }
 
 /* Focus mode: Profile radar chart styling - unselectable, no cursor highlight except vertex dots on hover */
@@ -276,41 +357,10 @@ div#root:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-t
 
 
 /* 
- * 2. CAPA DE TEXTURA CRT (Scanlines restauradas al nivel sutil)
+ * EFECTO CRT GLOBAL (Ajustado al 80% de intensidad)
  */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999999;
-  pointer-events: none;
-  
-  /* Scanlines menos intensas (como en el paso anterior) */
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.12) 50%
-  );
-  background-size: 100% 4px;
-  
-  /* Animación parpadeo */
-  animation: crt-scanlines 12s linear infinite;
-}
 
-/*
- * 3. ABERRACIÓN CROMÁTICA SUTIL
- */
-@keyframes crt-scanlines {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 100vh; }
-}
-
-/*
- * 1. CAPA DE CURVATURA TRINITRON (Arriba a abajo)
- * Simula la geometría cilíndrica vertical de los monitores CRT clásicos Sony.
- */
+/* 1. Capa de Curvatura Trinitron / Viñeta (80% intensidad) */
 body::before {
   content: "";
   position: fixed;
@@ -319,25 +369,22 @@ body::before {
   width: 100vw;
   height: 100vh;
   z-index: 999998;
-  pointer-events: none; /* REGLA DE ORO: No bloquea clicks */
-
-  /* REEMPLAZO DE BOX-SHADOW POR GRADIENTE PARA RENDIMIENTO EXTREMO (0 lag en repaints) */
+  pointer-events: none;
+  opacity: 0.8;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.2) 3%,
-    rgba(255, 255, 255, 0.02) 5%,
+    rgba(0, 0, 0, 0.56) 0%,
+    rgba(0, 0, 0, 0.16) 3%,
+    rgba(255, 255, 255, 0.016) 5%,
     transparent 10%,
     transparent 90%,
-    rgba(255, 255, 255, 0.01) 95%,
-    rgba(0, 0, 0, 0.2) 97%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(255, 255, 255, 0.008) 95%,
+    rgba(0, 0, 0, 0.16) 97%,
+    rgba(0, 0, 0, 0.56) 100%
   );
 }
 
-/*
- * 2. CAPA DE TEXTURA CRT (Scanlines + Reflejo sutil)
- */
+/* 2. Capa de Textura CRT (Scanlines reducidas al 80% de intensidad) */
 body::after {
   content: "";
   position: fixed;
@@ -347,26 +394,21 @@ body::after {
   height: 100vh;
   z-index: 999999;
   pointer-events: none;
-
-  /* Scanlines menos agresivos */
+  opacity: 0.8;
   background: linear-gradient(
     rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.12) 50%
+    rgba(0, 0, 0, 0.096) 50%
   );
   background-size: 100% 4px;
-  
-  /* Animación parpadeo */
   animation: crt-scanlines 12s linear infinite;
 }
 
-/*
- * 3. ABERRACIÓN CROMÁTICA SUTIL
- */
+/* 3. Aberración Cromática Sutil (80% intensidad: 1.6px / alpha 0.4) */
 body {
   position: relative;
   text-shadow: 
-    2px 0 1px rgba(255, 0, 0, 0.5), 
-    -2px 0 1px rgba(0, 255, 255, 0.5) !important;
+    1.6px 0 1px rgba(255, 0, 0, 0.4), 
+    -1.6px 0 1px rgba(0, 255, 255, 0.4) !important;
 }
 
 @keyframes crt-scanlines {

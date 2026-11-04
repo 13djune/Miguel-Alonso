@@ -15,6 +15,7 @@ interface ProjectModalProps {
   currentProjectIndex?: number;
   totalProjects?: number;
   isLight?: boolean;
+  onNavigateTo3DProject?: () => void;
 }
 export default function ProjectModal({
   project,
@@ -24,6 +25,7 @@ export default function ProjectModal({
   currentProjectIndex = 0,
   totalProjects = 1,
   isLight = false,
+  onNavigateTo3DProject,
 }: ProjectModalProps) {
   const isIndustry = Boolean(project.garments && project.garments.length > 0);
   const [show3D, setShow3D] = useState(false);
@@ -208,6 +210,16 @@ export default function ProjectModal({
     e.stopPropagation();
     setActiveHeroIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
   };
+
+  const handleView3DProject = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onNavigateTo3DProject) {
+      onNavigateTo3DProject();
+    } else {
+      handleClose();
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -220,12 +232,30 @@ export default function ProjectModal({
       <header className={`sticky top-0 z-[100] pt-2 sm:pt-4 md:pt-8 flex justify-between items-center border-b pb-2 sm:pb-4 shrink-0 px-2 sm:px-4 md:px-8 gap-1.5 sm:gap-4 overflow-hidden backdrop-blur-md ${
         isLight ? "bg-white/95 border-black text-black" : "bg-[#070707]/90 border-white text-white"
       }`}>
-        <div className={`font-mono text-[8px] sm:text-[10px] uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 border flex items-center gap-1 sm:gap-2 truncate shrink-0 ${
-          isLight ? "text-black bg-black/5 border-black" : "text-white bg-white/10 border-white"
-        }`}>
-          <span className={`w-1.5 h-1.5 ${isLight ? "bg-black" : "bg-white"} animate-pulse shrink-0`}></span>
-          <span className="hidden sm:inline truncate">{t("modal.sys.viewer")}</span>
-          <span className="sm:hidden">{language === 'es' ? 'VISOR' : 'VIEWER'}</span>
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          <div className={`font-mono text-[8px] sm:text-[10px] uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 border flex items-center gap-1 sm:gap-2 truncate shrink-0 ${
+            isLight ? "text-black bg-black/5 border-black" : "text-white bg-white/10 border-white"
+          }`}>
+            <span className={`w-1.5 h-1.5 ${isLight ? "bg-black" : "bg-white"} animate-pulse shrink-0`}></span>
+            <span className="hidden sm:inline truncate">{t("modal.sys.viewer")}</span>
+            <span className="sm:hidden">{language === 'es' ? 'VISOR' : 'VIEWER'}</span>
+          </div>
+
+          {/* 3D VIEW PROJECT button exclusively for SYS.CREATIVE */}
+          {!isIndustry && (
+            <button
+              type="button"
+              onClick={handleView3DProject}
+              className={`cursor-target cursor-crosshair pulse-tactile border font-mono font-bold text-[10px] sm:text-xs uppercase tracking-wider px-2 sm:px-2.5 py-1 flex items-center transition-all whitespace-nowrap shrink-0 ${
+                isLight
+                  ? 'border-black bg-black text-white hover:bg-black hover:text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]'
+                  : 'border-white bg-white text-black hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.4)] hover:shadow-[0_0_14px_rgba(255,255,255,0.7)]'
+              }`}
+              title="3D VIEW PROJECT"
+            >
+              <span>3D VIEW PROJECT</span>
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
           {onPrevProject && onNextProject && (
@@ -354,7 +384,7 @@ export default function ProjectModal({
                 <p className={`font-mono text-xs sm:text-sm md:text-[15px] leading-relaxed md:leading-loose ${
                   isLight ? "text-black font-medium" : "text-white/95"
                 }`}>
-                  {project.description}
+                  {(!isES && project.descriptionEn) ? project.descriptionEn : project.description}
                 </p>
               </div>
             )}
@@ -370,7 +400,7 @@ export default function ProjectModal({
                     <span className={`text-[8px] font-mono ${isLight ? "text-black/40" : "text-white/40"}`}>[TAGS]</span>
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
-                    {project.tags?.map((tag, i) => (
+                    {((!isES && project.tagsEn) ? project.tagsEn : project.tags)?.map((tag, i) => (
                       <span
                         key={`tag-${i}`}
                         className={`font-mono text-[9px] sm:text-[10px] border px-2 py-0.5 sm:py-1 uppercase tracking-wider ${
@@ -428,6 +458,7 @@ export default function ProjectModal({
                 <div className="flex flex-wrap gap-2 mb-4">
                   {sections.map((s, idx) => {
                     const isActive = activeSectionIndex === idx;
+                    const tabTitle = (!isES && s.titleEn) ? s.titleEn : s.title;
                     return (
                       <button
                         key={s.id || idx}
@@ -444,7 +475,7 @@ export default function ProjectModal({
                         }`}
                       >
                         {isActive && <span className={`text-[10px] ${isLight ? "text-white" : "text-black"}`}>►</span>}
-                        <span>{s.title}</span>
+                        <span>{tabTitle}</span>
                       </button>
                     );
                   })}
@@ -458,12 +489,12 @@ export default function ProjectModal({
                     isLight ? "text-black" : "text-white"
                   }`}>
                     <span className={isLight ? "text-black" : "text-white"}>&gt;</span>
-                    <span>{currentSection.title}</span>
+                    <span>{(!isES && currentSection.titleEn) ? currentSection.titleEn : currentSection.title}</span>
                   </h3>
                   <p className={`text-xs sm:text-sm md:text-base font-mono leading-relaxed md:leading-loose ${
                     isLight ? "text-black font-medium" : "text-white/90"
                   }`}>
-                    {currentSection.content}
+                    {(!isES && currentSection.contentEn) ? currentSection.contentEn : currentSection.content}
                   </p>
                 </div>
               </div>
